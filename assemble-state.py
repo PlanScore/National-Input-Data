@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 import urllib.parse
 import collections
+import hashlib
+import pickle
+import os
 import requests
 import pandas
 import geopandas
@@ -13,6 +16,29 @@ ACS_VARIABLES = [
     'B19013_001M', 'B29001_001M'
 ]
 
+def memoize(func):
+    def new_func(*args, **kwargs):
+        filename = 'memoized/{}-{}.pickle'.format(
+            func.__name__,
+            hashlib.md5(pickle.dumps((args, kwargs))).hexdigest()
+        )
+        
+        if os.path.exists(filename):
+            print(f'Found memoized data in {filename}')
+            with open(filename, 'rb') as file:
+                return pickle.load(file)
+        
+        response = func(*args, **kwargs)
+        
+        with open(filename, 'wb') as file:
+            print(f'Wrote memoized data to {filename}')
+            pickle.dump(response, file)
+        
+        return response
+    
+    return new_func
+
+@memoize
 def load_votes(votes_source):
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
@@ -34,6 +60,7 @@ def load_votes(votes_source):
     
     return df3
 
+@memoize
 def load_blocks(blocks_source):
     df = geopandas.read_file(blocks_source).to_crs(epsg=4326)
     
@@ -70,8 +97,9 @@ def load_blocks(blocks_source):
     
     print(df3)
     
-    return df3
+    return get_sf1(df3)
 
+@memoize
 def load_blockgroups(bgs_source):
     df = geopandas.read_file(bgs_source)
     
@@ -88,8 +116,27 @@ def load_blockgroups(bgs_source):
     
     print(df2)
     
-    return df2
+    return get_acs(df2)
 
+@memoize
+def get_state_counties(state_fips):
+    print('state_fips:', state_fips)
+    
+    query = urllib.parse.urlencode({
+        'get': 'NAME', # 'P001001,NAME,GEO_ID',
+        'for': 'county:*',
+        'in': f'state:{state_fips}'
+    })
+    
+    print(query)
+    
+    got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
+    head, tail = got.json()[0], got.json()[1:]
+    rows = [collections.OrderedDict(zip(head, row)) for row in tail]
+    
+    return [row['county'] for row in rows]
+
+@memoize
 def get_county_acs(state_fips, county_fips):
 
     query = urllib.parse.urlencode([
@@ -161,8 +208,69 @@ def get_acs(df_bgs):
     
     return df_bgs3
 
+@memoize
+def get_county_sf1(state_fips, county_fips):
+
+    query = urllib.parse.urlencode([
+        ('get', ','.join(['P001001', 'NAME'])),
+        ('for', 'block:*'),
+        ('in', f'state:{state_fips}'),
+        ('in', f'county:{county_fips}'),
+        ('in', 'tract:*'),
+    ])
+    
+    print(query)
+    
+    got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
+    head, tail = got.json()[0], got.json()[1:]
+    data = {
+        key: [row[i] for row in tail]
+        for (i, key) in enumerate(head)
+    }
+    
+    df_sf1 = pandas.DataFrame(data)
+    df_sf1.P001001 = df_sf1.P001001.astype(int)
+    
+    return df_sf1
+
+def get_sf1(df_blocks):
+
+    (state_fips, ) = df_blocks.STATEFP.unique()
+    
+    print('state_fips:', state_fips)
+    
+    counties = get_state_counties(state_fips)
+    
+    df_sf1 = pandas.concat([
+        get_county_sf1(state_fips, county_fips)
+        for county_fips in counties
+    ])
+    
+    print(df_blocks)
+    print(df_sf1)
+    
+    df_blocks2 = df_blocks.merge(df_sf1, how='left',
+        left_on=('STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE'),
+        right_on=('state', 'county', 'tract', 'block'),
+        )
+    
+    df_blocks3 = df_blocks2[[
+        'GEOID',
+        'ALAND',
+        'AWATER',
+        'STATEFP',
+        'COUNTYFP',
+        'TRACTCE',
+        'BLOCKCE',
+        'P001001',
+        ]]
+    
+    print(df_blocks3)
+    
+    return df_blocks3
+
 def main(votes_source, blocks_source, bgs_source):
-    df_bgs = get_acs(load_blockgroups(bgs_source))
+    df_bgs = load_blockgroups(bgs_source)
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
 
