@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 import urllib.parse
 import collections
 import hashlib
@@ -155,11 +156,15 @@ def get_county_acs(state_fips, county_fips):
     print(query)
     
     got = requests.get(f'https://api.census.gov/data/2018/acs/acs5?{query}')
-    head, tail = got.json()[0], got.json()[1:]
-    data = {
-        key: [row[i] for row in tail]
-        for (i, key) in enumerate(head)
-    }
+    try:
+        head, tail = got.json()[0], got.json()[1:]
+    except:
+        return None
+    else:
+        data = {
+            key: [row[i] for row in tail]
+            for (i, key) in enumerate(head)
+        }
     
     df_acs = pandas.DataFrame(data)
     
@@ -174,21 +179,11 @@ def get_acs(df_bgs):
     
     print('state_fips:', state_fips)
     
-    query = urllib.parse.urlencode({
-        'get': 'NAME', # 'P001001,NAME,GEO_ID',
-        'for': 'county:*',
-        'in': f'state:{state_fips}'
-    })
-    
-    print(query)
-    
-    got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
-    head, tail = got.json()[0], got.json()[1:]
-    rows = [collections.OrderedDict(zip(head, row)) for row in tail]
+    counties = get_state_counties(state_fips)
     
     df_acs = pandas.concat([
-        get_county_acs(state_fips, row['county'])
-        for row in rows
+        get_county_acs(state_fips, county_fips)
+        for county_fips in counties
     ])
     
     print(df_acs)
@@ -227,11 +222,15 @@ def get_county_sf1(state_fips, county_fips):
     print(query)
     
     got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
-    head, tail = got.json()[0], got.json()[1:]
-    data = {
-        key: [row[i] for row in tail]
-        for (i, key) in enumerate(head)
-    }
+    try:
+        head, tail = got.json()[0], got.json()[1:]
+    except:
+        return None
+    else:
+        data = {
+            key: [row[i] for row in tail]
+            for (i, key) in enumerate(head)
+        }
     
     df_sf1 = pandas.DataFrame(data)
     df_sf1.P001001 = df_sf1.P001001.astype(int)
@@ -376,9 +375,5 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks4[df_blocks4.ALAND > 0].to_file(output_dest, driver='GeoJSON')
 
 if __name__ == '__main__':
-    exit(main(
-        'assembled-state-RI.geojson',
-        '/vsizip/ri_2016.zip',
-        '/vsizip/tl_2019_44_tabblock10.zip',
-        '/vsizip/tl_2019_44_bg.zip',
-    ))
+    output_dest, votes_source, blocks_source, bgs_source = sys.argv[1:]
+    exit(main(output_dest, votes_source, blocks_source, bgs_source))
