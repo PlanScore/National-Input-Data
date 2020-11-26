@@ -1,4 +1,3 @@
-# Skip assembled-state-SD.geojson due to county name changes
 all: assembled-state-DE.geojson \
      assembled-state-ME.geojson \
      assembled-state-MA.geojson \
@@ -6,6 +5,7 @@ all: assembled-state-DE.geojson \
      assembled-state-ND.geojson \
      assembled-state-NH.geojson \
      assembled-state-RI.geojson \
+     assembled-state-SD.geojson \
      assembled-state-VT.geojson \
      assembled-state-WY.geojson
 

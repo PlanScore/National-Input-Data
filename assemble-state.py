@@ -53,6 +53,23 @@ def load_votes(votes_source):
         'G16PRERTRU': 'US President 2016 - REP',
     })
     
+    (state_fips, ) = df2.STATEFP.unique()
+    
+    if state_fips == '46':
+        # Special handling for VTD-AW in Pennington County, SD: reassign
+        # its votes to enclosing VTD-18 becase it contains no block points.
+        df2_county = df2[df2.COUNTYFP == '103']
+        (good_row, ) = df2_county[df2_county.VTDST == 'VTD-18'].index.tolist()
+        (bad_row, ) = df2_county[df2_county.VTDST == 'VTD-AW'].index.tolist()
+    
+        dem_votes = df2.columns.get_loc('US President 2016 - DEM')
+        rep_votes = df2.columns.get_loc('US President 2016 - REP')
+
+        df2.iat[good_row, dem_votes] += df2.iat[bad_row, dem_votes]
+        df2.iat[good_row, rep_votes] += df2.iat[bad_row, rep_votes]
+        df2.iat[bad_row, dem_votes] -= df2.iat[bad_row, dem_votes]
+        df2.iat[bad_row, rep_votes] -= df2.iat[bad_row, rep_votes]
+    
     df3 = df2[[
         #'STATEFP',
         #'COUNTYFP',
