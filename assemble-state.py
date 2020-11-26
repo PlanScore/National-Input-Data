@@ -269,10 +269,55 @@ def get_sf1(df_blocks):
     
     return df_blocks3
 
+def join_blocks_votes(df_blocks, df_votes):
+
+    input_votes = df_votes['US President 2016 - DEM'].sum() \
+                + df_votes['US President 2016 - REP'].sum()
+
+    # Join precinct votes to any block spatially contained within
+    df_blocks2 = geopandas.sjoin(df_blocks,
+        df_votes[['geometry', 'US President 2016 - DEM', 'US President 2016 - REP']],
+        op='within', how='left', rsuffix='votes')
+    
+    # Sum ALAND for each voting precinct
+    df_blocks3 = df_blocks2\
+        .groupby('index_votes', as_index=False).ALAND.sum()\
+        .rename(columns={'ALAND': 'ALAND_precinct'})
+    
+    # Join complete blocks with votes to summed precinct-summed ALAND
+    df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
+    
+    # Scale presidential votes by land area block/precinct fraction
+    df_blocks4['US President 2016 - DEM'] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
+    df_blocks4['US President 2016 - REP'] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
+    
+    # Select just a few columns
+    df_blocks5 = df_blocks4[[
+        'STATEFP', 'COUNTYFP', 'TRACTCE',
+        'BLOCKCE', 'NAME', 'GEOID', 'ALAND', 'AWATER',
+        'US President 2016 - DEM', 'US President 2016 - REP',
+        'geometry',
+        ]]
+    
+    output_votes = df_blocks5['US President 2016 - DEM'].sum() \
+                 + df_blocks5['US President 2016 - REP'].sum()
+    
+    assert round(input_votes / output_votes, 7) == 1, \
+        '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
+
+    return df_blocks5
+
 def main(votes_source, blocks_source, bgs_source):
     df_bgs = load_blockgroups(bgs_source)
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
+    
+    print(df_votes)
+    print(df_blocks)
+    
+    df_blocks2 = join_blocks_votes(df_blocks, df_votes)
+    
+    print(df_blocks2)
 
 if __name__ == '__main__':
     exit(main(
