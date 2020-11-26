@@ -53,9 +53,9 @@ def load_votes(votes_source):
     })
     
     df3 = df2[[
-        'STATEFP',
-        'COUNTYFP',
-        'NAME',
+        #'STATEFP',
+        #'COUNTYFP',
+        #'NAME',
         'US President 2016 - DEM',
         'US President 2016 - REP',
         'geometry'
@@ -268,6 +268,7 @@ def get_sf1(df_blocks):
         'TRACTCE',
         'BLOCKCE',
         'P001001',
+        'geometry',
         ]]
     
     print(df_blocks3)
