@@ -9,6 +9,11 @@ import pandas
 import geopandas
 import shapely.geometry
 
+BLOCK_FIELDS = [
+    'GEOID', 'STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE', #'NAME',
+    'ALAND', 'AWATER', 'geometry'
+]
+
 ACS_VARIABLES = [
     'B01001_001E', 'B02009_001E', 'B03002_012E', 'B15003_017E',
     'B15003_018E', 'B19013_001E', 'B29001_001E', 'B01001_001M',
@@ -283,7 +288,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
         .rename(columns={'ALAND': 'ALAND_bg'})
     
     # Join survey data to any block with matching GEOID prefix
-    df_blocks3 = df_blocks2.merge(df_blocks, on='GEOID_block', how='left')
+    df_blocks3 = df_blocks.merge(df_blocks2, on='GEOID_block', how='right')
     
     # Join complete blocks with survey data to block-group-summed ALAND
     df_blocks4 = df_blocks3.merge(df_bgs[ACS_VARIABLES + ['GEOID']],
@@ -291,14 +296,13 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     # Scale survey data by land area block/group fraction
     for variable in ACS_VARIABLES:
+        if variable.startswith('B19013'):
+            # Do not scale household income
+            continue
         df_blocks4[variable] *= (df_blocks4.ALAND / df_blocks4.ALAND_bg)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[[
-        'STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE',
-        'NAME', 'GEOID', 'ALAND', 'AWATER',
-        'geometry',
-        ] + ACS_VARIABLES]
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
     
     output_population = df_blocks5['B01001_001E'].sum() \
                       + df_blocks5['B01001_001E'].sum()
@@ -331,12 +335,9 @@ def join_blocks_votes(df_blocks, df_votes):
     df_blocks4['US President 2016 - REP'] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[[
-        'STATEFP', 'COUNTYFP', 'TRACTCE',
-        'BLOCKCE', 'NAME', 'GEOID', 'ALAND', 'AWATER',
-        'US President 2016 - DEM', 'US President 2016 - REP',
-        'geometry',
-        ]]
+    df_blocks5 = df_blocks4[
+        BLOCK_FIELDS + ['US President 2016 - DEM', 'US President 2016 - REP']
+    ]
     
     output_votes = df_blocks5['US President 2016 - DEM'].sum() \
                  + df_blocks5['US President 2016 - REP'].sum()
@@ -346,7 +347,7 @@ def join_blocks_votes(df_blocks, df_votes):
 
     return df_blocks5
 
-def main(votes_source, blocks_source, bgs_source):
+def main(output_dest, votes_source, blocks_source, bgs_source):
     df_bgs = load_blockgroups(bgs_source)
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
@@ -357,14 +358,25 @@ def main(votes_source, blocks_source, bgs_source):
     df_blocks2 = join_blocks_blockgroups(df_blocks, df_bgs)
     
     print(df_blocks2)
-    return
+    print(df_blocks2.columns)
     
-    df_blocks3 = join_blocks_votes(df_blocks2, df_votes)
+    print(df_votes)
+
+    df_blocks3 = join_blocks_votes(df_blocks, df_votes)
     
     print(df_blocks3)
+    print(df_blocks3.columns)
+    
+    df_blocks4 = df_blocks3.merge(df_blocks2, how='inner', on=BLOCK_FIELDS)
+    
+    print(df_blocks4)
+    print(df_blocks4.columns)
+    
+    df_blocks4[df_blocks4.ALAND > 0].to_file(output_dest, driver='GeoJSON')
 
 if __name__ == '__main__':
     exit(main(
+        'assembled-state-RI.geojson',
         '/vsizip/ri_2016.zip',
         '/vsizip/tl_2019_44_tabblock10.zip',
         '/vsizip/tl_2019_44_bg.zip',
