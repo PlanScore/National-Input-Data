@@ -269,6 +269,45 @@ def get_sf1(df_blocks):
     
     return df_blocks3
 
+def join_blocks_blockgroups(df_blocks, df_bgs):
+    
+    input_population = df_bgs['B01001_001E'].sum() \
+                     + df_bgs['B01001_001E'].sum()
+    
+    # Note shorter block group GEOID for later matching
+    df_blocks['GEOID_block'] = df_blocks.GEOID.str.slice(0, 12)
+    
+    # Sum ALAND for each block group
+    df_blocks2 = df_blocks[['GEOID_block', 'ALAND']]\
+        .groupby('GEOID_block', as_index=False).ALAND.sum()\
+        .rename(columns={'ALAND': 'ALAND_bg'})
+    
+    # Join survey data to any block with matching GEOID prefix
+    df_blocks3 = df_blocks2.merge(df_blocks, on='GEOID_block', how='left')
+    
+    # Join complete blocks with survey data to block-group-summed ALAND
+    df_blocks4 = df_blocks3.merge(df_bgs[ACS_VARIABLES + ['GEOID']],
+        left_on='GEOID_block', right_on='GEOID', how='left', suffixes=('', '_y'))
+    
+    # Scale survey data by land area block/group fraction
+    for variable in ACS_VARIABLES:
+        df_blocks4[variable] *= (df_blocks4.ALAND / df_blocks4.ALAND_bg)
+    
+    # Select just a few columns
+    df_blocks5 = df_blocks4[[
+        'STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE',
+        'NAME', 'GEOID', 'ALAND', 'AWATER',
+        'geometry',
+        ] + ACS_VARIABLES]
+    
+    output_population = df_blocks5['B01001_001E'].sum() \
+                      + df_blocks5['B01001_001E'].sum()
+    
+    assert round(input_population / output_population, 7) == 1, \
+        '{} population unnaccounted for'.format(abs(output_population - input_population))
+    
+    return df_blocks5
+
 def join_blocks_votes(df_blocks, df_votes):
 
     input_votes = df_votes['US President 2016 - DEM'].sum() \
@@ -284,7 +323,7 @@ def join_blocks_votes(df_blocks, df_votes):
         .groupby('index_votes', as_index=False).ALAND.sum()\
         .rename(columns={'ALAND': 'ALAND_precinct'})
     
-    # Join complete blocks with votes to summed precinct-summed ALAND
+    # Join complete blocks with votes to precinct-summed ALAND
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
     
     # Scale presidential votes by land area block/precinct fraction
@@ -312,12 +351,17 @@ def main(votes_source, blocks_source, bgs_source):
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
     
-    print(df_votes)
+    print(df_bgs)
     print(df_blocks)
     
-    df_blocks2 = join_blocks_votes(df_blocks, df_votes)
+    df_blocks2 = join_blocks_blockgroups(df_blocks, df_bgs)
     
     print(df_blocks2)
+    return
+    
+    df_blocks3 = join_blocks_votes(df_blocks2, df_votes)
+    
+    print(df_blocks3)
 
 if __name__ == '__main__':
     exit(main(
