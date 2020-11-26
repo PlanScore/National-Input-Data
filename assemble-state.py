@@ -70,18 +70,39 @@ def load_votes(votes_source):
 def load_blocks(blocks_source):
     df = geopandas.read_file(blocks_source).to_crs(epsg=4326)
     
-    df2 = df.rename(columns={
-        'GEOID10': 'GEOID',
-        'NAME10': 'NAME',
-        'ALAND10': 'ALAND',
-        'AWATER10': 'AWATER',
-        'INTPTLAT10': 'INTPTLAT',
-        'INTPTLON10': 'INTPTLON',
-        'STATEFP10': 'STATEFP',
-        'COUNTYFP10': 'COUNTYFP',
-        'TRACTCE10': 'TRACTCE',
-        'BLOCKCE10': 'BLOCKCE',
-    })
+    print('df.columns:', df.columns)
+    
+    if 'GEOID10' not in df.columns:
+        # Older block files include certain field names without the "10" suffix
+        df2 = df.rename(columns={
+            'STATEFP': 'STATEFP_bad',
+            'COUNTYFP': 'COUNTYFP_bad',
+            #'GEOID10': 'GEOID',
+            #'NAME10': 'NAME',
+            #'ALAND10': 'ALAND',
+            #'AWATER10': 'AWATER',
+            #'INTPTLAT10': 'INTPTLAT',
+            #'INTPTLON10': 'INTPTLON',
+            'STATEFP10': 'STATEFP',
+            'COUNTYFP10': 'COUNTYFP',
+            'TRACTCE10': 'TRACTCE',
+            'BLOCKCE10': 'BLOCKCE',
+        })
+    else:
+        df2 = df.rename(columns={
+            'GEOID10': 'GEOID',
+            'NAME10': 'NAME',
+            'ALAND10': 'ALAND',
+            'AWATER10': 'AWATER',
+            'INTPTLAT10': 'INTPTLAT',
+            'INTPTLON10': 'INTPTLON',
+            'STATEFP10': 'STATEFP',
+            'COUNTYFP10': 'COUNTYFP',
+            'TRACTCE10': 'TRACTCE',
+            'BLOCKCE10': 'BLOCKCE',
+        })
+    
+    print('df2.columns:', df2.columns)
     
     # Replace upstream polygon geometry with internal points
     df2.geometry = [
@@ -125,7 +146,7 @@ def load_blockgroups(bgs_source):
     return get_acs(df2)
 
 @memoize
-def get_state_counties(state_fips):
+def get_state_counties(state_fips, api_path):
     print('state_fips:', state_fips)
     
     query = urllib.parse.urlencode({
@@ -134,9 +155,9 @@ def get_state_counties(state_fips):
         'in': f'state:{state_fips}'
     })
     
-    print(query)
+    print(f'https://api.census.gov/data/{api_path}?{query}')
     
-    got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
+    got = requests.get(f'https://api.census.gov/data/{api_path}?{query}')
     head, tail = got.json()[0], got.json()[1:]
     rows = [collections.OrderedDict(zip(head, row)) for row in tail]
     
@@ -153,20 +174,24 @@ def get_county_acs(state_fips, county_fips):
         ('in', 'tract:*'),
     ])
     
-    print(query)
+    print(f'https://api.census.gov/data/2018/acs/acs5?{query}')
     
     got = requests.get(f'https://api.census.gov/data/2018/acs/acs5?{query}')
-    try:
-        head, tail = got.json()[0], got.json()[1:]
-    except:
-        return None
-    else:
-        data = {
-            key: [row[i] for row in tail]
-            for (i, key) in enumerate(head)
-        }
+    head, tail = got.json()[0], got.json()[1:]
+    data = {
+        key: [row[i] for row in tail]
+        for (i, key) in enumerate(head)
+    }
     
     df_acs = pandas.DataFrame(data)
+    
+    if (state_fips, county_fips) == ('46', '102'):
+        # In 2015, Shannon County, SD (FIPS 46113) was renamed to
+        # Oglala Lakota County (FIPS 46101). We use the old FIPS code
+        # to match cleanly with 2010 census blocks.
+        df_acs.county = ['113' for _ in range(len(df_acs))]
+        print(df_acs.columns)
+        #raise NotImplementedError()
     
     for variable in ACS_VARIABLES:
         df_acs[variable] = df_acs[variable].astype(int)
@@ -179,11 +204,11 @@ def get_acs(df_bgs):
     
     print('state_fips:', state_fips)
     
-    counties = get_state_counties(state_fips)
+    counties = get_state_counties(state_fips, '2018/acs/acs5')
     
     df_acs = pandas.concat([
         get_county_acs(state_fips, county_fips)
-        for county_fips in counties
+        for county_fips in sorted(counties)
     ])
     
     print(df_acs)
@@ -219,18 +244,14 @@ def get_county_sf1(state_fips, county_fips):
         ('in', 'tract:*'),
     ])
     
-    print(query)
+    print(f'https://api.census.gov/data/2010/dec/sf1?{query}')
     
     got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
-    try:
-        head, tail = got.json()[0], got.json()[1:]
-    except:
-        return None
-    else:
-        data = {
-            key: [row[i] for row in tail]
-            for (i, key) in enumerate(head)
-        }
+    head, tail = got.json()[0], got.json()[1:]
+    data = {
+        key: [row[i] for row in tail]
+        for (i, key) in enumerate(head)
+    }
     
     df_sf1 = pandas.DataFrame(data)
     df_sf1.P001001 = df_sf1.P001001.astype(int)
@@ -243,11 +264,11 @@ def get_sf1(df_blocks):
     
     print('state_fips:', state_fips)
     
-    counties = get_state_counties(state_fips)
+    counties = get_state_counties(state_fips, '2010/dec/sf1')
     
     df_sf1 = pandas.concat([
         get_county_sf1(state_fips, county_fips)
-        for county_fips in counties
+        for county_fips in sorted(counties)
     ])
     
     print(df_blocks)
@@ -276,8 +297,7 @@ def get_sf1(df_blocks):
 
 def join_blocks_blockgroups(df_blocks, df_bgs):
     
-    input_population = df_bgs['B01001_001E'].sum() \
-                     + df_bgs['B01001_001E'].sum()
+    input_population = df_bgs['B01001_001E'].sum()
     
     # Note shorter block group GEOID for later matching
     df_blocks['GEOID_block'] = df_blocks.GEOID.str.slice(0, 12)
@@ -304,8 +324,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
     
-    output_population = df_blocks5['B01001_001E'].sum() \
-                      + df_blocks5['B01001_001E'].sum()
+    output_population = df_blocks5['B01001_001E'].sum()
     
     assert round(input_population / output_population, 7) == 1, \
         '{} population unnaccounted for'.format(abs(output_population - input_population))

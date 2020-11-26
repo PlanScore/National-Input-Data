@@ -1,3 +1,4 @@
+# Skip assembled-state-SD.geojson due to county name changes
 all: assembled-state-DE.geojson \
      assembled-state-ME.geojson \
      assembled-state-MA.geojson \
@@ -5,7 +6,6 @@ all: assembled-state-DE.geojson \
      assembled-state-ND.geojson \
      assembled-state-NH.geojson \
      assembled-state-RI.geojson \
-     assembled-state-SD.geojson \
      assembled-state-VT.geojson \
      assembled-state-WY.geojson
 
@@ -37,9 +37,9 @@ assembled-state-RI.geojson: ri_2016.zip tl_2019_44_tabblock10.zip tl_2019_44_bg.
 	./assemble-state.py $@ \
 		/vsizip/ri_2016.zip /vsizip/tl_2019_44_tabblock10.zip /vsizip/tl_2019_44_bg.zip
 
-assembled-state-SD.geojson: sd_2016.zip tl_2019_46_tabblock10.zip tl_2019_46_bg.zip
+assembled-state-SD.geojson: sd_2016.zip tl_2011_46_tabblock.zip tl_2011_46_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/sd_2016.zip /vsizip/tl_2019_46_tabblock10.zip /vsizip/tl_2019_46_bg.zip
+		/vsizip/sd_2016.zip /vsizip/tl_2011_46_tabblock.zip /vsizip/tl_2011_46_bg.zip
 
 assembled-state-VT.geojson: vt_2016.zip tl_2019_50_tabblock10.zip tl_2019_50_bg.zip
 	./assemble-state.py $@ \
@@ -54,3 +54,9 @@ tl_2019_%_bg.zip:
 
 tl_2019_%_tabblock10.zip:
 	curl -OL https://www2.census.gov/geo/tiger/TIGER2019/TABBLOCK/tl_2019_$*_tabblock10.zip
+
+tl_2011_%_bg.zip:
+	curl -OL https://www2.census.gov/geo/tiger/TIGER2011/BG/tl_2011_$*_bg.zip
+
+tl_2011_%_tabblock.zip:
+	curl -OL https://www2.census.gov/geo/tiger/TIGER2011/TABBLOCK/tl_2011_$*_tabblock.zip
