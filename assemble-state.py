@@ -44,31 +44,64 @@ def memoize(func):
     
     return new_func
 
-@memoize
+def move_votes(df_out, df_in, field, good_value, bad_value):
+    (good_index, ) = df_in[df_in[field] == good_value].index.tolist()
+    (bad_index, ) = df_in[df_in[field] == bad_value].index.tolist()
+
+    dem_votes = df_in.columns.get_loc('US President 2016 - DEM')
+    rep_votes = df_in.columns.get_loc('US President 2016 - REP')
+
+    good_row = df_out.index.get_loc(good_index)
+    bad_row = df_out.index.get_loc(bad_index)
+
+    df_out.iat[good_row, dem_votes] += df_out.iat[bad_row, dem_votes]
+    df_out.iat[good_row, rep_votes] += df_out.iat[bad_row, rep_votes]
+    df_out.iat[bad_row, dem_votes] -= df_out.iat[bad_row, dem_votes]
+    df_out.iat[bad_row, rep_votes] -= df_out.iat[bad_row, rep_votes]
+
+#@memoize
 def load_votes(votes_source):
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
     df2 = df.rename(columns={
         'G16PREDCLI': 'US President 2016 - DEM',
         'G16PRERTRU': 'US President 2016 - REP',
+        'G16PREDCli': 'US President 2016 - DEM',
+        'G16PRERTru': 'US President 2016 - REP',
     })
     
-    (state_fips, ) = df2.STATEFP.unique()
+    assert 'US President 2016 - DEM' in df2.columns
+    assert 'US President 2016 - REP' in df2.columns
     
-    if state_fips == '46':
+    if 'STATEFP' in df2.columns:
+        (state_fips, ) = df2.STATEFP.unique()
+    else:
+        state_fips = None
+    
+    if os.path.basename(votes_source) == 'sd_2016.zip':
         # Special handling for VTD-AW in Pennington County, SD: reassign
         # its votes to enclosing VTD-18 becase it contains no block points.
-        df2_county = df2[df2.COUNTYFP == '103']
-        (good_row, ) = df2_county[df2_county.VTDST == 'VTD-18'].index.tolist()
-        (bad_row, ) = df2_county[df2_county.VTDST == 'VTD-AW'].index.tolist()
+        move_votes(df2, df2[df2.COUNTYFP == '103'], 'VTDST', 'VTD-18', 'VTD-AW')
     
-        dem_votes = df2.columns.get_loc('US President 2016 - DEM')
-        rep_votes = df2.columns.get_loc('US President 2016 - REP')
-
-        df2.iat[good_row, dem_votes] += df2.iat[bad_row, dem_votes]
-        df2.iat[good_row, rep_votes] += df2.iat[bad_row, rep_votes]
-        df2.iat[bad_row, dem_votes] -= df2.iat[bad_row, dem_votes]
-        df2.iat[bad_row, rep_votes] -= df2.iat[bad_row, rep_votes]
+    elif os.path.basename(votes_source) == 'fl_2016.zip':
+        # Several Florida precincts contain no block points.
+        move_votes(df2, df2, 'countypct', 'BROR032', 'BROZ073')
+        move_votes(df2, df2, 'countypct', 'DAD371', 'DAD100')
+        move_votes(df2, df2, 'countypct', 'BRE108', 'BRE999')
+        move_votes(df2, df2, 'countypct', 'PAL6178', 'PAL6180')
+        move_votes(df2, df2, 'countypct', 'PAL2050', 'PAL2052')
+        move_votes(df2, df2, 'countypct', 'LEO5261', 'LEO5223')
+        move_votes(df2, df2, 'countypct', 'LEO4154', 'LEO4152')
+        move_votes(df2, df2, 'countypct', 'LEO5251', 'LEO5228')
+        move_votes(df2, df2, 'countypct', 'PAL6207', 'PAL6204')
+        move_votes(df2, df2, 'countypct', 'LEO4184', 'LEO4106')
+        move_votes(df2, df2, 'countypct', 'PALNP', 'PAL1334')
+        move_votes(df2, df2, 'countypct', 'PAL6022', 'PAL6026')
+        move_votes(df2, df2, 'countypct', 'PAL1164', 'PAL1160')
+        move_votes(df2, df2, 'countypct', 'OSC100', 'OSC133')
+        move_votes(df2, df2, 'countypct', 'PAL4064', 'PAL4070')
+    
+    return df2
     
     df3 = df2[[
         #'STATEFP',
@@ -362,6 +395,14 @@ def join_blocks_votes(df_blocks, df_votes):
     df_blocks3 = df_blocks2\
         .groupby('index_votes', as_index=False).ALAND.sum()\
         .rename(columns={'ALAND': 'ALAND_precinct'})
+    
+    df_missing = df_votes.iloc[list(set(df_votes.index) - set(df_blocks3.index_votes))]
+    missing_count = df_missing['US President 2016 - DEM'].sum() \
+                  + df_missing['US President 2016 - REP'].sum()
+
+    if missing_count:
+        print('Missing votes:')
+        print(df_missing)
     
     # Join complete blocks with votes to precinct-summed ALAND
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
