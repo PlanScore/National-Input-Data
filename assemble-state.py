@@ -4,6 +4,7 @@ import urllib.parse
 import collections
 import hashlib
 import pickle
+import inspect
 import os
 import requests
 import pandas
@@ -21,6 +22,9 @@ ACS_VARIABLES = [
     'B02009_001M', 'B03002_012M', 'B15003_017M', 'B15003_018M',
     'B19013_001M', 'B29001_001M'
 ]
+
+VOTES_DEM = 'US President 2016 - DEM'
+VOTES_REP = 'US President 2016 - REP'
 
 def memoize(func):
     def new_func(*args, **kwargs):
@@ -44,80 +48,40 @@ def memoize(func):
     
     return new_func
 
-def move_votes(df_out, df_in, field, good_value, bad_value):
-    (good_index, ) = df_in[df_in[field] == good_value].index.tolist()
-    (bad_index, ) = df_in[df_in[field] == bad_value].index.tolist()
+def move_votes(df, good_index, bad_index):
+    print('Move votes from', bad_index, 'to', good_index)
 
-    dem_votes = df_in.columns.get_loc('US President 2016 - DEM')
-    rep_votes = df_in.columns.get_loc('US President 2016 - REP')
+    dem_votes = df.columns.get_loc(VOTES_DEM)
+    rep_votes = df.columns.get_loc(VOTES_REP)
 
-    good_row = df_out.index.get_loc(good_index)
-    bad_row = df_out.index.get_loc(bad_index)
+    good_row = df.index.get_loc(good_index)
+    bad_row = df.index.get_loc(bad_index)
 
-    df_out.iat[good_row, dem_votes] += df_out.iat[bad_row, dem_votes]
-    df_out.iat[good_row, rep_votes] += df_out.iat[bad_row, rep_votes]
-    df_out.iat[bad_row, dem_votes] -= df_out.iat[bad_row, dem_votes]
-    df_out.iat[bad_row, rep_votes] -= df_out.iat[bad_row, rep_votes]
+    df.iat[good_row, dem_votes] += df.iat[bad_row, dem_votes]
+    df.iat[good_row, rep_votes] += df.iat[bad_row, rep_votes]
+    df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
+    df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
 
-#@memoize
+@memoize
 def load_votes(votes_source):
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
     df2 = df.rename(columns={
-        'G16PREDCLI': 'US President 2016 - DEM',
-        'G16PRERTRU': 'US President 2016 - REP',
-        'G16PREDCli': 'US President 2016 - DEM',
-        'G16PRERTru': 'US President 2016 - REP',
+        'G16PREDCLI': VOTES_DEM,
+        'G16PRERTRU': VOTES_REP,
+        'G16PREDCli': VOTES_DEM,
+        'G16PRERTru': VOTES_REP,
     })
     
-    assert 'US President 2016 - DEM' in df2.columns
-    assert 'US President 2016 - REP' in df2.columns
-    
-    if 'STATEFP' in df2.columns:
-        (state_fips, ) = df2.STATEFP.unique()
-    else:
-        state_fips = None
-    
-    if os.path.basename(votes_source) == 'sd_2016.zip':
-        # Special handling for VTD-AW in Pennington County, SD: reassign
-        # its votes to enclosing VTD-18 becase it contains no block points.
-        move_votes(df2, df2[df2.COUNTYFP == '103'], 'VTDST', 'VTD-18', 'VTD-AW')
-    
-    elif os.path.basename(votes_source) == 'fl_2016.zip':
-        # Several Florida precincts contain no block points.
-        move_votes(df2, df2, 'countypct', 'BROR032', 'BROZ073')
-        move_votes(df2, df2, 'countypct', 'DAD371', 'DAD100')
-        move_votes(df2, df2, 'countypct', 'BRE108', 'BRE999')
-        move_votes(df2, df2, 'countypct', 'PAL6178', 'PAL6180')
-        move_votes(df2, df2, 'countypct', 'PAL2050', 'PAL2052')
-        move_votes(df2, df2, 'countypct', 'LEO5261', 'LEO5223')
-        move_votes(df2, df2, 'countypct', 'LEO4154', 'LEO4152')
-        move_votes(df2, df2, 'countypct', 'LEO5251', 'LEO5228')
-        move_votes(df2, df2, 'countypct', 'PAL6207', 'PAL6204')
-        move_votes(df2, df2, 'countypct', 'LEO4184', 'LEO4106')
-        move_votes(df2, df2, 'countypct', 'PALNP', 'PAL1334')
-        move_votes(df2, df2, 'countypct', 'PAL6022', 'PAL6026')
-        move_votes(df2, df2, 'countypct', 'PAL1164', 'PAL1160')
-        move_votes(df2, df2, 'countypct', 'OSC100', 'OSC133')
-        move_votes(df2, df2, 'countypct', 'PAL4064', 'PAL4070')
-    
-    elif os.path.basename(votes_source) == 'md_2016.zip':
-        # Two Maryland precincts contain no block points.
-        move_votes(df2, df2, 'preid', 'HOWA-01-020', 'HOWA-01-019')
-        move_votes(df2, df2, 'preid', 'WASH-24-001', 'WASH-03-005')
-    
-    elif os.path.basename(votes_source) == 'tx_2016.zip':
-        # One Texas precinct contains no block points.
-        move_votes(df2, df2, 'PCTKEY', '294085', '294207')
-    
-    return df2
+    assert VOTES_DEM in df2.columns
+    assert VOTES_REP in df2.columns
     
     df3 = df2[[
         #'STATEFP',
         #'COUNTYFP',
         #'NAME',
-        'US President 2016 - DEM',
-        'US President 2016 - REP',
+        VOTES_DEM,
+        VOTES_REP,
         'geometry'
         ]]
     
@@ -390,48 +354,70 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     return df_blocks5
 
+def print_df(df, name):
+    print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
+
 def join_blocks_votes(df_blocks, df_votes):
 
-    input_votes = df_votes['US President 2016 - DEM'].sum() \
-                + df_votes['US President 2016 - REP'].sum()
+    input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+    
+    while True:
+        # Join precinct votes to any block spatially contained within
+        df_blocks2 = geopandas.sjoin(df_blocks,
+            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+            op='within', how='left', rsuffix='votes')
+    
+        # Note any missing precincts and their vote counts
+        matched_indexes = set(df_blocks2.index_votes.dropna())
+        missing_indexes = set(df_votes.index) - matched_indexes
+        df_missing = df_votes.iloc[[df_votes.index.get_loc(i) for i in missing_indexes]]
+        df_missing2 = df_missing[
+            (df_missing[VOTES_DEM] > 0) | (df_missing[VOTES_REP] > 0)
+        ].to_crs(epsg=5070)
+    
+        # If everything matched, break out of this loop
+        if not len(df_missing2):
+            print('*' * 80)
+            break
+        
+        # Otherwise for each unmatched precinct, move vote counts to a neighbor
+        df_matched = df_votes.iloc[
+            [df_votes.index.get_loc(i) for i in matched_indexes]
+        ].to_crs(epsg=5070)
 
-    # Join precinct votes to any block spatially contained within
-    df_blocks2 = geopandas.sjoin(df_blocks,
-        df_votes[['geometry', 'US President 2016 - DEM', 'US President 2016 - REP']],
-        op='within', how='left', rsuffix='votes')
+        print('=' * 80)
+        print('Missing votes:', df_missing2[VOTES_DEM].sum() + df_missing2[VOTES_REP].sum())
+        print_df(df_missing2, 'df_missing2')
+        print(df_missing2.index)
+    
+        for (bad_index, bad_row) in df_missing2.iterrows():
+            # Select nearby voting precincts by overlapping envelopes, then move
+            # votes from missing precincts to the highest-overlap matched one
+            bad_envelope = bad_row.geometry.envelope
+            df_nearby = df_matched[df_matched.overlaps(bad_envelope)]
+            df_unions = df_nearby.envelope.union(bad_envelope)
+            df_intersections = df_nearby.envelope.intersection(bad_envelope)
+            df_IoUs = df_intersections.area / df_unions.area
+        
+            (good_index, ) = df_IoUs[df_IoUs == df_IoUs.max()].index.tolist()
+            move_votes(df_votes, good_index, bad_index)
     
     # Sum ALAND for each voting precinct
     df_blocks3 = df_blocks2\
         .groupby('index_votes', as_index=False).ALAND.sum()\
         .rename(columns={'ALAND': 'ALAND_precinct'})
     
-    # Note any missing precincts and their vote counts
-    df_missing = df_votes.iloc[list(set(df_votes.index) - set(df_blocks3.index_votes))]
-    missing_count = df_missing['US President 2016 - DEM'].sum() \
-                  + df_missing['US President 2016 - REP'].sum()
-
-    if missing_count:
-        print('Missing votes:')
-        pandas.set_option('display.max_rows', None)
-        pandas.set_option('display.max_columns', None)
-        print(df_missing)
-        pandas.reset_option('display.max_rows')
-        pandas.reset_option('display.max_columns')
-    
     # Join complete blocks with votes to precinct-summed ALAND
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
     
     # Scale presidential votes by land area block/precinct fraction
-    df_blocks4['US President 2016 - DEM'] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
-    df_blocks4['US President 2016 - REP'] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
+    df_blocks4[VOTES_DEM] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
+    df_blocks4[VOTES_REP] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[
-        BLOCK_FIELDS + ['US President 2016 - DEM', 'US President 2016 - REP']
-    ]
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP]]
     
-    output_votes = df_blocks5['US President 2016 - DEM'].sum() \
-                 + df_blocks5['US President 2016 - REP'].sum()
+    output_votes = df_blocks5[VOTES_DEM].sum() + df_blocks5[VOTES_REP].sum()
     
     # Complain if five or more votes are unaccounted for
     assert (abs(output_votes - input_votes) < 5), \
@@ -444,27 +430,20 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
     
-    print(df_bgs)
-    print(df_blocks)
+    print_df(df_blocks, 'df_blocks')
+    print_df(df_votes, 'df_votes')
+    df_blocksV = join_blocks_votes(df_blocks, df_votes)
     
-    df_blocks2 = join_blocks_blockgroups(df_blocks, df_bgs)
+    print_df(df_blocksV, 'df_blocksV')
+    print_df(df_bgs, 'df_bgs')
     
-    print(df_blocks2)
-    print(df_blocks2.columns)
+    df_blocksB = join_blocks_blockgroups(df_blocks, df_bgs)
+    print_df(df_blocksB, 'df_blocksB')
     
-    print(df_votes)
-
-    df_blocks3 = join_blocks_votes(df_blocks, df_votes)
+    df_blocks2 = df_blocksV.merge(df_blocksB, how='inner', on=BLOCK_FIELDS)
+    print_df(df_blocks2, 'df_blocks2')
     
-    print(df_blocks3)
-    print(df_blocks3.columns)
-    
-    df_blocks4 = df_blocks3.merge(df_blocks2, how='inner', on=BLOCK_FIELDS)
-    
-    print(df_blocks4)
-    print(df_blocks4.columns)
-    
-    df_blocks4[df_blocks4.ALAND > 0].to_file(output_dest, driver='GeoJSON')
+    df_blocks2[df_blocks2.ALAND > 0].to_file(output_dest, driver='GeoJSON')
 
 if __name__ == '__main__':
     output_dest, votes_source, blocks_source, bgs_source = sys.argv[1:]
