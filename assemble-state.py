@@ -101,6 +101,15 @@ def load_votes(votes_source):
         move_votes(df2, df2, 'countypct', 'OSC100', 'OSC133')
         move_votes(df2, df2, 'countypct', 'PAL4064', 'PAL4070')
     
+    elif os.path.basename(votes_source) == 'md_2016.zip':
+        # Two Maryland precincts contain no block points.
+        move_votes(df2, df2, 'preid', 'HOWA-01-020', 'HOWA-01-019')
+        move_votes(df2, df2, 'preid', 'WASH-24-001', 'WASH-03-005')
+    
+    elif os.path.basename(votes_source) == 'tx_2016.zip':
+        # One Texas precinct contains no block points.
+        move_votes(df2, df2, 'PCTKEY', '294085', '294207')
+    
     return df2
     
     df3 = df2[[
@@ -396,13 +405,18 @@ def join_blocks_votes(df_blocks, df_votes):
         .groupby('index_votes', as_index=False).ALAND.sum()\
         .rename(columns={'ALAND': 'ALAND_precinct'})
     
+    # Note any missing precincts and their vote counts
     df_missing = df_votes.iloc[list(set(df_votes.index) - set(df_blocks3.index_votes))]
     missing_count = df_missing['US President 2016 - DEM'].sum() \
                   + df_missing['US President 2016 - REP'].sum()
 
     if missing_count:
         print('Missing votes:')
+        pandas.set_option('display.max_rows', None)
+        pandas.set_option('display.max_columns', None)
         print(df_missing)
+        pandas.reset_option('display.max_rows')
+        pandas.reset_option('display.max_columns')
     
     # Join complete blocks with votes to precinct-summed ALAND
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
@@ -419,7 +433,8 @@ def join_blocks_votes(df_blocks, df_votes):
     output_votes = df_blocks5['US President 2016 - DEM'].sum() \
                  + df_blocks5['US President 2016 - REP'].sum()
     
-    assert round(input_votes / output_votes, 7) == 1, \
+    # Complain if five or more votes are unaccounted for
+    assert (abs(output_votes - input_votes) < 5), \
         '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
 
     return df_blocks5
