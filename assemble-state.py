@@ -13,7 +13,7 @@ import shapely.geometry
 
 BLOCK_FIELDS = [
     'GEOID', 'STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE', #'NAME',
-    'ALAND', 'AWATER', 'geometry'
+    'ALAND', 'AWATER', 'P001001', 'geometry'
 ]
 
 ACS_VARIABLES = [
@@ -442,8 +442,34 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     
     df_blocks2 = df_blocksV.merge(df_blocksB, how='inner', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
+    print(df_blocks2.columns)
     
-    df_blocks2[df_blocks2.ALAND > 0].to_file(output_dest, driver='GeoJSON')
+    # Final output column mapping
+    df_blocks3 = df_blocks2[df_blocks2.ALAND > 0][[
+        'GEOID',
+        'geometry',
+    ]]
+    
+    df_blocks3[VOTES_DEM] = df_blocks2[VOTES_DEM].round(5)
+    df_blocks3[VOTES_REP] = df_blocks2[VOTES_REP].round(5)
+    df_blocks3['Population 2010'] = df_blocks2['P001001'].round(5)
+    df_blocks3['Population 2018'] = df_blocks2['B01001_001E'].round(5)
+    df_blocks3['Population 2018, Margin'] = df_blocks2['B01001_001M'].round(5)
+    df_blocks3['Black Population 2018'] = df_blocks2['B02009_001E'].round(5)
+    df_blocks3['Black Population 2018, Margin'] = df_blocks2['B02009_001M'].round(5)
+    df_blocks3['Hispanic Population 2018'] = df_blocks2['B03002_012E'].round(5)
+    df_blocks3['Hispanic Population 2018, Margin'] = df_blocks2['B03002_012M'].round(5)
+    df_blocks3['High School or GED 2018'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
+    df_blocks3['High School or GED 2018, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    df_blocks3['Household Income 2018'] = df_blocks2['B19013_001E'].round(5)
+    df_blocks3['Household Income 2018, Margin'] = df_blocks2['B19013_001M'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2018'] = df_blocks2['B29001_001E'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2018, Margin'] = df_blocks2['B29001_001M'].round(5)
+    
+    print_df(df_blocks3, 'df_blocks3')
+    print(df_blocks3.columns)
+    
+    df_blocks3.to_file(output_dest, driver='GeoJSON')
 
 if __name__ == '__main__':
     output_dest, votes_source, blocks_source, bgs_source = sys.argv[1:]
