@@ -362,8 +362,11 @@ def join_blocks_votes(df_blocks, df_votes):
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     
     while True:
-        # Join precinct votes to any block spatially contained within
-        df_blocks2 = geopandas.sjoin(df_blocks,
+        starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+    
+        # Join precinct votes to any land block spatially contained within
+        df_blocks2 = geopandas.sjoin(
+            df_blocks[df_blocks.ALAND > 0],
             df_votes[['geometry', VOTES_DEM, VOTES_REP]],
             op='within', how='left', rsuffix='votes')
     
@@ -401,6 +404,10 @@ def join_blocks_votes(df_blocks, df_votes):
         
             (good_index, ) = df_IoUs[df_IoUs == df_IoUs.max()].index.tolist()
             move_votes(df_votes, good_index, bad_index)
+        
+        ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+        assert starting_votes == ending_votes, \
+            '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
     
     # Sum ALAND for each voting precinct
     df_blocks3 = df_blocks2\

@@ -53,6 +53,7 @@ Nation.gpkg: assembled-state-DE.geojson de_2016.zip \
              assembled-state-TN.geojson tn_2016.zip \
              assembled-state-TX.geojson tx_2016.zip \
              assembled-state-VT.geojson vt_2016.zip \
+             assembled-state-WI.geojson wi_2016.zip \
              assembled-state-WY.geojson wy_2016.zip
 	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
 	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
@@ -71,6 +72,7 @@ Nation.gpkg: assembled-state-DE.geojson de_2016.zip \
 	ogr2ogr -f GPKG -nln blocks_TN -nlt Point -overwrite $@ assembled-state-TN.geojson
 	ogr2ogr -f GPKG -nln blocks_TX -nlt Point -overwrite $@ assembled-state-TX.geojson
 	ogr2ogr -f GPKG -nln blocks_VT -nlt Point -overwrite $@ assembled-state-VT.geojson
+	ogr2ogr -f GPKG -nln blocks_WI -nlt Point -overwrite $@ assembled-state-WI.geojson
 	ogr2ogr -f GPKG -nln blocks_WY -nlt Point -overwrite $@ assembled-state-WY.geojson
 	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/de_2016.zip
 	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/fl_2016.zip
@@ -89,6 +91,7 @@ Nation.gpkg: assembled-state-DE.geojson de_2016.zip \
 	ogr2ogr -f GPKG -nln votes_TN -nlt MultiPolygon -overwrite $@ /vsizip/tn_2016.zip
 	ogr2ogr -f GPKG -nln votes_TX -nlt MultiPolygon -overwrite $@ /vsizip/tx_2016.zip
 	ogr2ogr -f GPKG -nln votes_VT -nlt MultiPolygon -overwrite $@ /vsizip/vt_2016.zip
+	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/wi_2016.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/wy_2016.zip
 
 assembled-state-DE.geojson: de_2016.zip tl_2019_10_tabblock10.zip tl_2019_10_bg.zip
