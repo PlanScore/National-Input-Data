@@ -16,56 +16,38 @@
 # 	• WI (risk of Rep gerrymander)
 # 
 
-all: assembled-state-DE.geojson \
+all: assembled-state-TX.geojson \
      assembled-state-FL.geojson \
+     assembled-state-DE.geojson \
      assembled-state-GA.geojson \
      assembled-state-IL.geojson \
+     assembled-state-MA.geojson \
      assembled-state-MD.geojson \
      assembled-state-ME.geojson \
-     assembled-state-MA.geojson \
      assembled-state-MI.geojson \
      assembled-state-MT.geojson \
-     assembled-state-ND.geojson \
      assembled-state-NC.geojson \
+     assembled-state-ND.geojson \
      assembled-state-NH.geojson \
      assembled-state-RI.geojson \
      assembled-state-SD.geojson \
      assembled-state-TN.geojson \
-     assembled-state-TX.geojson \
      assembled-state-VT.geojson \
      assembled-state-WI.geojson \
      assembled-state-WY.geojson
 
-Nation.gpkg: assembled-state-DE.geojson de_2016.zip \
-             assembled-state-FL.geojson fl_2016.zip \
-             assembled-state-GA.geojson ga_2016.zip \
-             assembled-state-IL.geojson il_2016.zip \
-             assembled-state-MD.geojson md_2016.zip \
-             assembled-state-ME.geojson me_2016.zip \
-             assembled-state-MA.geojson ma_2016.zip \
-             assembled-state-MI.geojson mi_2016.zip \
-             assembled-state-MT.geojson mt_2016.zip \
-             assembled-state-ND.geojson nd_2016.zip \
-             assembled-state-NC.geojson nc_2016.zip \
-             assembled-state-NH.geojson nh_2016.zip \
-             assembled-state-RI.geojson ri_2016.zip \
-             assembled-state-SD.geojson sd_2016.zip \
-             assembled-state-TN.geojson tn_2016.zip \
-             assembled-state-TX.geojson tx_2016.zip \
-             assembled-state-VT.geojson vt_2016.zip \
-             assembled-state-WI.geojson wi_2016.zip \
-             assembled-state-WY.geojson wy_2016.zip
+Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
 	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
 	ogr2ogr -f GPKG -nln blocks_GA -nlt Point -overwrite $@ assembled-state-GA.geojson
 	ogr2ogr -f GPKG -nln blocks_IL -nlt Point -overwrite $@ assembled-state-IL.geojson
+	ogr2ogr -f GPKG -nln blocks_MA -nlt Point -overwrite $@ assembled-state-MA.geojson
 	ogr2ogr -f GPKG -nln blocks_MD -nlt Point -overwrite $@ assembled-state-MD.geojson
 	ogr2ogr -f GPKG -nln blocks_ME -nlt Point -overwrite $@ assembled-state-ME.geojson
-	ogr2ogr -f GPKG -nln blocks_MA -nlt Point -overwrite $@ assembled-state-MA.geojson
 	ogr2ogr -f GPKG -nln blocks_MI -nlt Point -overwrite $@ assembled-state-MI.geojson
 	ogr2ogr -f GPKG -nln blocks_MT -nlt Point -overwrite $@ assembled-state-MT.geojson
-	ogr2ogr -f GPKG -nln blocks_ND -nlt Point -overwrite $@ assembled-state-ND.geojson
 	ogr2ogr -f GPKG -nln blocks_NC -nlt Point -overwrite $@ assembled-state-NC.geojson
+	ogr2ogr -f GPKG -nln blocks_ND -nlt Point -overwrite $@ assembled-state-ND.geojson
 	ogr2ogr -f GPKG -nln blocks_NH -nlt Point -overwrite $@ assembled-state-NH.geojson
 	ogr2ogr -f GPKG -nln blocks_RI -nlt Point -overwrite $@ assembled-state-RI.geojson
 	ogr2ogr -f GPKG -nln blocks_SD -nlt Point -overwrite $@ assembled-state-SD.geojson
@@ -78,13 +60,13 @@ Nation.gpkg: assembled-state-DE.geojson de_2016.zip \
 	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/fl_2016.zip
 	ogr2ogr -f GPKG -nln votes_GA -nlt MultiPolygon -overwrite $@ /vsizip/ga_2016.zip
 	ogr2ogr -f GPKG -nln votes_IL -nlt MultiPolygon -overwrite $@ /vsizip/il_2016.zip
+	ogr2ogr -f GPKG -nln votes_MA -nlt MultiPolygon -overwrite $@ /vsizip/ma_2016.zip
 	ogr2ogr -f GPKG -nln votes_MD -nlt MultiPolygon -overwrite $@ /vsizip/md_2016.zip
 	ogr2ogr -f GPKG -nln votes_ME -nlt MultiPolygon -overwrite $@ /vsizip/me_2016.zip
-	ogr2ogr -f GPKG -nln votes_MA -nlt MultiPolygon -overwrite $@ /vsizip/ma_2016.zip
 	ogr2ogr -f GPKG -nln votes_MI -nlt MultiPolygon -overwrite $@ /vsizip/mi_2016.zip
 	ogr2ogr -f GPKG -nln votes_MT -nlt MultiPolygon -overwrite $@ /vsizip/mt_2016.zip
-	ogr2ogr -f GPKG -nln votes_ND -nlt MultiPolygon -overwrite $@ /vsizip/nd_2016.zip
 	ogr2ogr -f GPKG -nln votes_NC -nlt MultiPolygon -overwrite $@ /vsizip/nc_2016.zip
+	ogr2ogr -f GPKG -nln votes_ND -nlt MultiPolygon -overwrite $@ /vsizip/nd_2016.zip
 	ogr2ogr -f GPKG -nln votes_NH -nlt MultiPolygon -overwrite $@ /vsizip/nh_2016.zip
 	ogr2ogr -f GPKG -nln votes_RI -nlt MultiPolygon -overwrite $@ /vsizip/ri_2016.zip
 	ogr2ogr -f GPKG -nln votes_SD -nlt MultiPolygon -overwrite $@ /vsizip/sd_2016.zip
