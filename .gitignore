@@ -1,6 +1,6 @@
 .venv
 memoized
 assembled-state-??.geojson
-tl_2019_*_bg.zip
-tl_2019_*_tabblock10.zip
+Census/tl_201?_*.zip
+Census/tl_201?_*.zip
 Nation.gpkg*

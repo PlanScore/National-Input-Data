@@ -76,92 +76,92 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2016.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2016.zip
 
-assembled-state-DE.geojson: VEST/de_2016.zip tl_2019_10_tabblock10.zip tl_2019_10_bg.zip
+assembled-state-DE.geojson: VEST/de_2016.zip Census/tl_2019_10_tabblock10.zip Census/tl_2019_10_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/de_2016.zip /vsizip/tl_2019_10_tabblock10.zip /vsizip/tl_2019_10_bg.zip
+		/vsizip/VEST/de_2016.zip /vsizip/Census/tl_2019_10_tabblock10.zip /vsizip/Census/tl_2019_10_bg.zip
 
-assembled-state-FL.geojson: VEST/fl_2016.zip tl_2019_12_tabblock10.zip tl_2019_12_bg.zip
+assembled-state-FL.geojson: VEST/fl_2016.zip Census/tl_2019_12_tabblock10.zip Census/tl_2019_12_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/fl_2016.zip /vsizip/tl_2019_12_tabblock10.zip /vsizip/tl_2019_12_bg.zip
+		/vsizip/VEST/fl_2016.zip /vsizip/Census/tl_2019_12_tabblock10.zip /vsizip/Census/tl_2019_12_bg.zip
 
-assembled-state-GA.geojson: VEST/ga_2016.zip tl_2019_13_tabblock10.zip tl_2019_13_bg.zip
+assembled-state-GA.geojson: VEST/ga_2016.zip Census/tl_2019_13_tabblock10.zip Census/tl_2019_13_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ga_2016.zip /vsizip/tl_2019_13_tabblock10.zip /vsizip/tl_2019_13_bg.zip
+		/vsizip/VEST/ga_2016.zip /vsizip/Census/tl_2019_13_tabblock10.zip /vsizip/Census/tl_2019_13_bg.zip
 
-assembled-state-IL.geojson: VEST/il_2016.zip tl_2019_17_tabblock10.zip tl_2019_17_bg.zip
+assembled-state-IL.geojson: VEST/il_2016.zip Census/tl_2019_17_tabblock10.zip Census/tl_2019_17_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/il_2016.zip /vsizip/tl_2019_17_tabblock10.zip /vsizip/tl_2019_17_bg.zip
+		/vsizip/VEST/il_2016.zip /vsizip/Census/tl_2019_17_tabblock10.zip /vsizip/Census/tl_2019_17_bg.zip
 
-assembled-state-MD.geojson: VEST/md_2016.zip tl_2019_24_tabblock10.zip tl_2019_24_bg.zip
+assembled-state-MD.geojson: VEST/md_2016.zip Census/tl_2019_24_tabblock10.zip Census/tl_2019_24_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/md_2016.zip /vsizip/tl_2019_24_tabblock10.zip /vsizip/tl_2019_24_bg.zip
+		/vsizip/VEST/md_2016.zip /vsizip/Census/tl_2019_24_tabblock10.zip /vsizip/Census/tl_2019_24_bg.zip
 
-assembled-state-ME.geojson: VEST/me_2016.zip tl_2019_23_tabblock10.zip tl_2019_23_bg.zip
+assembled-state-ME.geojson: VEST/me_2016.zip Census/tl_2019_23_tabblock10.zip Census/tl_2019_23_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/me_2016.zip /vsizip/tl_2019_23_tabblock10.zip /vsizip/tl_2019_23_bg.zip
+		/vsizip/VEST/me_2016.zip /vsizip/Census/tl_2019_23_tabblock10.zip /vsizip/Census/tl_2019_23_bg.zip
 
-assembled-state-MA.geojson: VEST/ma_2016.zip tl_2019_25_tabblock10.zip tl_2019_25_bg.zip
+assembled-state-MA.geojson: VEST/ma_2016.zip Census/tl_2019_25_tabblock10.zip Census/tl_2019_25_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ma_2016.zip /vsizip/tl_2019_25_tabblock10.zip /vsizip/tl_2019_25_bg.zip
+		/vsizip/VEST/ma_2016.zip /vsizip/Census/tl_2019_25_tabblock10.zip /vsizip/Census/tl_2019_25_bg.zip
 
-assembled-state-MI.geojson: VEST/mi_2016.zip tl_2019_26_tabblock10.zip tl_2019_26_bg.zip
+assembled-state-MI.geojson: VEST/mi_2016.zip Census/tl_2019_26_tabblock10.zip Census/tl_2019_26_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mi_2016.zip /vsizip/tl_2019_26_tabblock10.zip /vsizip/tl_2019_26_bg.zip
+		/vsizip/VEST/mi_2016.zip /vsizip/Census/tl_2019_26_tabblock10.zip /vsizip/Census/tl_2019_26_bg.zip
 
-assembled-state-MT.geojson: VEST/mt_2016.zip tl_2019_30_tabblock10.zip tl_2019_30_bg.zip
+assembled-state-MT.geojson: VEST/mt_2016.zip Census/tl_2019_30_tabblock10.zip Census/tl_2019_30_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mt_2016.zip /vsizip/tl_2019_30_tabblock10.zip /vsizip/tl_2019_30_bg.zip
+		/vsizip/VEST/mt_2016.zip /vsizip/Census/tl_2019_30_tabblock10.zip /vsizip/Census/tl_2019_30_bg.zip
 
-assembled-state-NC.geojson: VEST/nc_2016.zip tl_2019_37_tabblock10.zip tl_2019_37_bg.zip
+assembled-state-NC.geojson: VEST/nc_2016.zip Census/tl_2019_37_tabblock10.zip Census/tl_2019_37_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nc_2016.zip /vsizip/tl_2019_37_tabblock10.zip /vsizip/tl_2019_37_bg.zip
+		/vsizip/VEST/nc_2016.zip /vsizip/Census/tl_2019_37_tabblock10.zip /vsizip/Census/tl_2019_37_bg.zip
 
-assembled-state-ND.geojson: VEST/nd_2016.zip tl_2019_38_tabblock10.zip tl_2019_38_bg.zip
+assembled-state-ND.geojson: VEST/nd_2016.zip Census/tl_2019_38_tabblock10.zip Census/tl_2019_38_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nd_2016.zip /vsizip/tl_2019_38_tabblock10.zip /vsizip/tl_2019_38_bg.zip
+		/vsizip/VEST/nd_2016.zip /vsizip/Census/tl_2019_38_tabblock10.zip /vsizip/Census/tl_2019_38_bg.zip
 
-assembled-state-NH.geojson: VEST/nh_2016.zip tl_2019_33_tabblock10.zip tl_2019_33_bg.zip
+assembled-state-NH.geojson: VEST/nh_2016.zip Census/tl_2019_33_tabblock10.zip Census/tl_2019_33_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nh_2016.zip /vsizip/tl_2019_33_tabblock10.zip /vsizip/tl_2019_33_bg.zip
+		/vsizip/VEST/nh_2016.zip /vsizip/Census/tl_2019_33_tabblock10.zip /vsizip/Census/tl_2019_33_bg.zip
 
-assembled-state-RI.geojson: VEST/ri_2016.zip tl_2019_44_tabblock10.zip tl_2019_44_bg.zip
+assembled-state-RI.geojson: VEST/ri_2016.zip Census/tl_2019_44_tabblock10.zip Census/tl_2019_44_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ri_2016.zip /vsizip/tl_2019_44_tabblock10.zip /vsizip/tl_2019_44_bg.zip
+		/vsizip/VEST/ri_2016.zip /vsizip/Census/tl_2019_44_tabblock10.zip /vsizip/Census/tl_2019_44_bg.zip
 
-assembled-state-SD.geojson: VEST/sd_2016.zip tl_2011_46_tabblock.zip tl_2011_46_bg.zip
+assembled-state-SD.geojson: VEST/sd_2016.zip Census/tl_2011_46_tabblock.zip Census/tl_2011_46_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/sd_2016.zip /vsizip/tl_2011_46_tabblock.zip /vsizip/tl_2011_46_bg.zip
+		/vsizip/VEST/sd_2016.zip /vsizip/Census/tl_2011_46_tabblock.zip /vsizip/Census/tl_2011_46_bg.zip
 
-assembled-state-TN.geojson: VEST/tn_2016.zip tl_2019_47_tabblock10.zip tl_2019_47_bg.zip
+assembled-state-TN.geojson: VEST/tn_2016.zip Census/tl_2019_47_tabblock10.zip Census/tl_2019_47_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/tn_2016.zip /vsizip/tl_2019_47_tabblock10.zip /vsizip/tl_2019_47_bg.zip
+		/vsizip/VEST/tn_2016.zip /vsizip/Census/tl_2019_47_tabblock10.zip /vsizip/Census/tl_2019_47_bg.zip
 
-assembled-state-TX.geojson: VEST/tx_2016.zip tl_2019_48_tabblock10.zip tl_2019_48_bg.zip
+assembled-state-TX.geojson: VEST/tx_2016.zip Census/tl_2019_48_tabblock10.zip Census/tl_2019_48_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/tx_2016.zip /vsizip/tl_2019_48_tabblock10.zip /vsizip/tl_2019_48_bg.zip
+		/vsizip/VEST/tx_2016.zip /vsizip/Census/tl_2019_48_tabblock10.zip /vsizip/Census/tl_2019_48_bg.zip
 
-assembled-state-VT.geojson: VEST/vt_2016.zip tl_2019_50_tabblock10.zip tl_2019_50_bg.zip
+assembled-state-VT.geojson: VEST/vt_2016.zip Census/tl_2019_50_tabblock10.zip Census/tl_2019_50_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/vt_2016.zip /vsizip/tl_2019_50_tabblock10.zip /vsizip/tl_2019_50_bg.zip
+		/vsizip/VEST/vt_2016.zip /vsizip/Census/tl_2019_50_tabblock10.zip /vsizip/Census/tl_2019_50_bg.zip
 
-assembled-state-WI.geojson: VEST/wi_2016.zip tl_2019_55_tabblock10.zip tl_2019_55_bg.zip
+assembled-state-WI.geojson: VEST/wi_2016.zip Census/tl_2019_55_tabblock10.zip Census/tl_2019_55_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/wi_2016.zip /vsizip/tl_2019_55_tabblock10.zip /vsizip/tl_2019_55_bg.zip
+		/vsizip/VEST/wi_2016.zip /vsizip/Census/tl_2019_55_tabblock10.zip /vsizip/Census/tl_2019_55_bg.zip
 
-assembled-state-WY.geojson: VEST/wy_2016.zip tl_2019_56_tabblock10.zip tl_2019_56_bg.zip
+assembled-state-WY.geojson: VEST/wy_2016.zip Census/tl_2019_56_tabblock10.zip Census/tl_2019_56_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/wy_2016.zip /vsizip/tl_2019_56_tabblock10.zip /vsizip/tl_2019_56_bg.zip
+		/vsizip/VEST/wy_2016.zip /vsizip/Census/tl_2019_56_tabblock10.zip /vsizip/Census/tl_2019_56_bg.zip
 
-tl_2019_%_bg.zip:
-	curl -OL https://www2.census.gov/geo/tiger/TIGER2019/BG/tl_2019_$*_bg.zip
+Census/tl_2019_%_bg.zip:
+	curl -L https://www2.census.gov/geo/tiger/TIGER2019/BG/tl_2019_$*_bg.zip -o $@
 
-tl_2019_%_tabblock10.zip:
-	curl -OL https://www2.census.gov/geo/tiger/TIGER2019/TABBLOCK/tl_2019_$*_tabblock10.zip
+Census/tl_2019_%_tabblock10.zip:
+	curl -L https://www2.census.gov/geo/tiger/TIGER2019/TABBLOCK/tl_2019_$*_tabblock10.zip -o $@
 
-tl_2011_%_bg.zip:
-	curl -OL https://www2.census.gov/geo/tiger/TIGER2011/BG/tl_2011_$*_bg.zip
+Census/tl_2011_%_bg.zip:
+	curl -L https://www2.census.gov/geo/tiger/TIGER2011/BG/tl_2011_$*_bg.zip -o $@
 
-tl_2011_%_tabblock.zip:
-	curl -OL https://www2.census.gov/geo/tiger/TIGER2011/TABBLOCK/tl_2011_$*_tabblock.zip
+Census/tl_2011_%_tabblock.zip:
+	curl -L https://www2.census.gov/geo/tiger/TIGER2011/TABBLOCK/tl_2011_$*_tabblock.zip -o $@
 
 .PHONY: all
