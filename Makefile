@@ -17,6 +17,7 @@
 # 
 
 all: assembled-state-TX.geojson \
+     assembled-state-CA.geojson \
      assembled-state-FL.geojson \
      assembled-state-DE.geojson \
      assembled-state-GA.geojson \
@@ -38,6 +39,7 @@ all: assembled-state-TX.geojson \
      assembled-state-WY.geojson
 
 Nation.gpkg: all
+	ogr2ogr -f GPKG -nln blocks_CA -nlt Point -overwrite $@ assembled-state-CA.geojson
 	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
 	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
 	ogr2ogr -f GPKG -nln blocks_GA -nlt Point -overwrite $@ assembled-state-GA.geojson
@@ -58,6 +60,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_VT -nlt Point -overwrite $@ assembled-state-VT.geojson
 	ogr2ogr -f GPKG -nln blocks_WI -nlt Point -overwrite $@ assembled-state-WI.geojson
 	ogr2ogr -f GPKG -nln blocks_WY -nlt Point -overwrite $@ assembled-state-WY.geojson
+	ogr2ogr -f GPKG -nln votes_CA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ca_2016.zip
 	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/de_2016.zip
 	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2016.zip
 	ogr2ogr -f GPKG -nln votes_GA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ga_2016.zip
@@ -78,6 +81,10 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_VT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/vt_2016.zip
 	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2016.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2016.zip
+
+assembled-state-CA.geojson: VEST/ca_2016.zip Census/tl_2019_06_tabblock10.zip Census/tl_2019_06_bg.zip
+	./assemble-state.py $@ \
+		/vsizip/VEST/ca_2016.zip /vsizip/Census/tl_2019_06_tabblock10.zip /vsizip/Census/tl_2019_06_bg.zip
 
 assembled-state-DE.geojson: VEST/de_2016.zip Census/tl_2019_10_tabblock10.zip Census/tl_2019_10_bg.zip
 	./assemble-state.py $@ \

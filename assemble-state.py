@@ -348,9 +348,13 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
     
     output_population = df_blocks5['B01001_001E'].sum()
+    missing_population = abs(1 - input_population / output_population)
     
-    assert round(input_population / output_population, 7) == 1, \
-        '{} population unnaccounted for'.format(abs(output_population - input_population))
+    assert missing_population < .0002, \
+        '{} ({:.5f}%, more than 0.02%) population unnaccounted for'.format(
+            abs(output_population - input_population),
+            100 * missing_population,
+        )
     
     return df_blocks5
 
@@ -360,6 +364,7 @@ def print_df(df, name):
 def join_blocks_votes(df_blocks, df_votes):
 
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+    stop_moving = False
     
     while True:
         starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
@@ -379,7 +384,7 @@ def join_blocks_votes(df_blocks, df_votes):
         ].to_crs(epsg=5070)
     
         # If everything matched, break out of this loop
-        if not len(df_missing2):
+        if not len(df_missing2) or stop_moving:
             print('*' * 80)
             break
         
@@ -389,10 +394,11 @@ def join_blocks_votes(df_blocks, df_votes):
         ].to_crs(epsg=5070)
 
         print('=' * 80)
-        print('Missing votes:', df_missing2[VOTES_DEM].sum() + df_missing2[VOTES_REP].sum())
+        missing_vote_count = df_missing2[VOTES_DEM].sum() + df_missing2[VOTES_REP].sum()
+        print('Missing votes:', missing_vote_count)
         print_df(df_missing2, 'df_missing2')
         print(df_missing2.index)
-    
+
         for (bad_index, bad_row) in df_missing2.iterrows():
             # Select nearby voting precincts by overlapping envelopes, then move
             # votes from missing precincts to the highest-overlap matched one
@@ -402,13 +408,22 @@ def join_blocks_votes(df_blocks, df_votes):
             df_intersections = df_nearby.envelope.intersection(bad_envelope)
             df_IoUs = df_intersections.area / df_unions.area
         
-            (good_index, ) = df_IoUs[df_IoUs == df_IoUs.max()].index.tolist()
-            move_votes(df_votes, good_index, bad_index)
+            try:
+                (good_index, ) = df_IoUs[df_IoUs == df_IoUs.max()].index.tolist()
+            except ValueError:
+                # Skip this unmatchable precinct for now
+                continue
+            else:
+                move_votes(df_votes, good_index, bad_index)
         
         ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
         assert starting_votes == ending_votes, \
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
     
+        if missing_vote_count < 5:
+            # Stop altogether if missing count is low enough
+            stop_moving = True
+
     # Sum ALAND for each voting precinct
     df_blocks3 = df_blocks2\
         .groupby('index_votes', as_index=False).ALAND.sum()\
