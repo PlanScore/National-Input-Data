@@ -99,9 +99,9 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2016.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2016.zip
 
-assembled-state-AZ.geojson: VEST/az_2016.zip Census/tl_2019_04_tabblock10.zip Census/tl_2019_04_bg.zip
+assembled-state-AZ.geojson: VEST/az_2016.zip Census/tl_2011_04_tabblock.zip Census/tl_2011_04_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/az_2016.zip /vsizip/Census/tl_2019_04_tabblock10.zip /vsizip/Census/tl_2019_04_bg.zip
+		/vsizip/VEST/az_2016.zip /vsizip/Census/tl_2011_04_tabblock.zip /vsizip/Census/tl_2011_04_bg.zip
 
 assembled-state-CA.geojson: VEST/ca_2016.zip Census/tl_2019_06_tabblock10.zip Census/tl_2019_06_bg.zip
 	./assemble-state.py $@ \
