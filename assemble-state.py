@@ -187,7 +187,7 @@ def get_state_counties(state_fips, api_path):
     return [row['county'] for row in rows]
 
 @memoize
-def get_county_acs(state_fips, county_fips):
+def get_county_acs(state_fips, county_fips, api_path):
 
     query = urllib.parse.urlencode([
         ('get', ','.join(ACS_VARIABLES + ['NAME'])),
@@ -197,9 +197,9 @@ def get_county_acs(state_fips, county_fips):
         ('in', 'tract:*'),
     ])
     
-    print(f'https://api.census.gov/data/2018/acs/acs5?{query}')
+    print(f'https://api.census.gov/data/{api_path}?{query}')
     
-    got = requests.get(f'https://api.census.gov/data/2018/acs/acs5?{query}')
+    got = requests.get(f'https://api.census.gov/data/{api_path}?{query}')
     head, tail = got.json()[0], got.json()[1:]
     data = {
         key: [row[i] for row in tail]
@@ -230,7 +230,7 @@ def get_acs(df_bgs):
     counties = get_state_counties(state_fips, '2018/acs/acs5')
     
     df_acs = pandas.concat([
-        get_county_acs(state_fips, county_fips)
+        get_county_acs(state_fips, county_fips, '2018/acs/acs5')
         for county_fips in sorted(counties)
     ])
     
@@ -257,7 +257,7 @@ def get_acs(df_bgs):
     return df_bgs3
 
 @memoize
-def get_county_sf1(state_fips, county_fips):
+def get_county_sf1(state_fips, county_fips, api_path):
 
     query = urllib.parse.urlencode([
         ('get', ','.join(['P001001', 'NAME'])),
@@ -267,9 +267,9 @@ def get_county_sf1(state_fips, county_fips):
         ('in', 'tract:*'),
     ])
     
-    print(f'https://api.census.gov/data/2010/dec/sf1?{query}')
+    print(f'https://api.census.gov/data/{api_path}?{query}')
     
-    got = requests.get(f'https://api.census.gov/data/2010/dec/sf1?{query}')
+    got = requests.get(f'https://api.census.gov/data/{api_path}?{query}')
     head, tail = got.json()[0], got.json()[1:]
     data = {
         key: [row[i] for row in tail]
@@ -290,7 +290,7 @@ def get_sf1(df_blocks):
     counties = get_state_counties(state_fips, '2010/dec/sf1')
     
     df_sf1 = pandas.concat([
-        get_county_sf1(state_fips, county_fips)
+        get_county_sf1(state_fips, county_fips, '2010/dec/sf1')
         for county_fips in sorted(counties)
     ])
     
