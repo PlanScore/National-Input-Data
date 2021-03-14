@@ -483,8 +483,8 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks3['Hispanic Population 2018, Margin'] = df_blocks2['B03002_012M'].round(5)
     df_blocks3['High School or GED 2018'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2018, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
-    df_blocks3['Household Income 2018'] = df_blocks2['B19013_001E'].round(5)
-    df_blocks3['Household Income 2018, Margin'] = df_blocks2['B19013_001M'].round(5)
+    #df_blocks3['Household Income 2018'] = df_blocks2['B19013_001E'].round(5)
+    #df_blocks3['Household Income 2018, Margin'] = df_blocks2['B19013_001M'].round(5)
     df_blocks3['Citizen Voting-Age Population 2018'] = df_blocks2['B29001_001E'].round(5)
     df_blocks3['Citizen Voting-Age Population 2018, Margin'] = df_blocks2['B29001_001M'].round(5)
     
