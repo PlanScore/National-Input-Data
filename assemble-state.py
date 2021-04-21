@@ -23,8 +23,8 @@ ACS_VARIABLES = [
     'B19013_001M', 'B29001_001M'
 ]
 
-VOTES_DEM = 'US President 2016 - DEM'
-VOTES_REP = 'US President 2016 - REP'
+VOTES_DEM = 'US President 2020 - DEM'
+VOTES_REP = 'US President 2020 - REP'
 
 def memoize(func):
     def new_func(*args, **kwargs):
@@ -67,10 +67,10 @@ def load_votes(votes_source):
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
     df2 = df.rename(columns={
-        'G16PREDCLI': VOTES_DEM,
-        'G16PRERTRU': VOTES_REP,
-        'G16PREDCli': VOTES_DEM,
-        'G16PRERTru': VOTES_REP,
+        'G20PREDBID': VOTES_DEM,
+        'G20PRERTRU': VOTES_REP,
+        'G20PREDBid': VOTES_DEM,
+        'G20PRERTru': VOTES_REP,
     })
     
     assert VOTES_DEM in df2.columns

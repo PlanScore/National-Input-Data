@@ -260,7 +260,7 @@ assembled-state-NE.geojson: VEST/ne_2016.zip Census/tl_2019_31_tabblock10.zip Ce
 
 assembled-state-NH.geojson: VEST/nh_2016.zip Census/tl_2019_33_tabblock10.zip Census/tl_2019_33_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nh_2016.zip /vsizip/Census/tl_2019_33_tabblock10.zip /vsizip/Census/tl_2019_33_bg.zip
+		/vsizip/VEST/nh_2020.zip /vsizip/Census/tl_2019_33_tabblock10.zip /vsizip/Census/tl_2019_33_bg.zip
 
 assembled-state-NJ.geojson: VEST/nj_2016.zip Census/tl_2019_34_tabblock10.zip Census/tl_2019_34_bg.zip
 	./assemble-state.py $@ \
