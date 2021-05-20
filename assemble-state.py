@@ -150,7 +150,7 @@ def load_blocks(blocks_source):
     return get_sf1(df3)
 
 @memoize
-def load_blockgroups(bgs_source):
+def load_blockgroups(bgs_source, acs_year):
     df = geopandas.read_file(bgs_source)
     
     df2 = df[[
@@ -166,7 +166,7 @@ def load_blockgroups(bgs_source):
     
     print(df2)
     
-    return get_acs(df2)
+    return get_acs(df2, acs_year)
 
 @memoize
 def get_state_counties(state_fips, api_path):
@@ -221,16 +221,16 @@ def get_county_acs(state_fips, county_fips, api_path):
     
     return df_acs
 
-def get_acs(df_bgs):
+def get_acs(df_bgs, acs_year):
 
     (state_fips, ) = df_bgs.STATEFP.unique()
     
     print('state_fips:', state_fips)
     
-    counties = get_state_counties(state_fips, '2018/acs/acs5')
+    counties = get_state_counties(state_fips, f'{acs_year}/acs/acs5')
     
     df_acs = pandas.concat([
-        get_county_acs(state_fips, county_fips, '2018/acs/acs5')
+        get_county_acs(state_fips, county_fips, f'{acs_year}/acs/acs5')
         for county_fips in sorted(counties)
     ])
     
@@ -448,7 +448,7 @@ def join_blocks_votes(df_blocks, df_votes):
     return df_blocks5
 
 def main(output_dest, votes_source, blocks_source, bgs_source):
-    df_bgs = load_blockgroups(bgs_source)
+    df_bgs = load_blockgroups(bgs_source, '2019')
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
     
@@ -475,18 +475,18 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks3[VOTES_DEM] = df_blocks2[VOTES_DEM].round(5)
     df_blocks3[VOTES_REP] = df_blocks2[VOTES_REP].round(5)
     df_blocks3['Population 2010'] = df_blocks2['P001001'].round(5)
-    df_blocks3['Population 2018'] = df_blocks2['B01001_001E'].round(5)
-    df_blocks3['Population 2018, Margin'] = df_blocks2['B01001_001M'].round(5)
-    df_blocks3['Black Population 2018'] = df_blocks2['B02009_001E'].round(5)
-    df_blocks3['Black Population 2018, Margin'] = df_blocks2['B02009_001M'].round(5)
-    df_blocks3['Hispanic Population 2018'] = df_blocks2['B03002_012E'].round(5)
-    df_blocks3['Hispanic Population 2018, Margin'] = df_blocks2['B03002_012M'].round(5)
-    df_blocks3['High School or GED 2018'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
-    df_blocks3['High School or GED 2018, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
-    #df_blocks3['Household Income 2018'] = df_blocks2['B19013_001E'].round(5)
-    #df_blocks3['Household Income 2018, Margin'] = df_blocks2['B19013_001M'].round(5)
-    df_blocks3['Citizen Voting-Age Population 2018'] = df_blocks2['B29001_001E'].round(5)
-    df_blocks3['Citizen Voting-Age Population 2018, Margin'] = df_blocks2['B29001_001M'].round(5)
+    df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
+    df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
+    df_blocks3['Black Population 2019'] = df_blocks2['B02009_001E'].round(5)
+    df_blocks3['Black Population 2019, Margin'] = df_blocks2['B02009_001M'].round(5)
+    df_blocks3['Hispanic Population 2019'] = df_blocks2['B03002_012E'].round(5)
+    df_blocks3['Hispanic Population 2019, Margin'] = df_blocks2['B03002_012M'].round(5)
+    df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
+    df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    #df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
+    #df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['B29001_001E'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['B29001_001M'].round(5)
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
