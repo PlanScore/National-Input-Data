@@ -19,12 +19,14 @@
 all: assembled-state-TX.geojson \
      assembled-state-CA.geojson \
      assembled-state-FL.geojson \
+     assembled-state-AK.geojson \
      assembled-state-AL.geojson \
      assembled-state-AR.geojson \
      assembled-state-AZ.geojson \
      assembled-state-CO.geojson \
      assembled-state-DE.geojson \
      assembled-state-GA.geojson \
+     assembled-state-HI.geojson \
      assembled-state-IA.geojson \
      assembled-state-ID.geojson \
      assembled-state-IL.geojson \
@@ -60,6 +62,7 @@ all: assembled-state-TX.geojson \
      assembled-state-WY.geojson
 
 Nation.gpkg: all
+	ogr2ogr -f GPKG -nln blocks_AK -nlt Point -overwrite $@ assembled-state-AK.geojson
 	ogr2ogr -f GPKG -nln blocks_AL -nlt Point -overwrite $@ assembled-state-AL.geojson
 	ogr2ogr -f GPKG -nln blocks_AR -nlt Point -overwrite $@ assembled-state-AR.geojson
 	ogr2ogr -f GPKG -nln blocks_AZ -nlt Point -overwrite $@ assembled-state-AZ.geojson
@@ -68,6 +71,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
 	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
 	ogr2ogr -f GPKG -nln blocks_GA -nlt Point -overwrite $@ assembled-state-GA.geojson
+	ogr2ogr -f GPKG -nln blocks_HI -nlt Point -overwrite $@ assembled-state-HI.geojson
 	ogr2ogr -f GPKG -nln blocks_IA -nlt Point -overwrite $@ assembled-state-IA.geojson
 	ogr2ogr -f GPKG -nln blocks_ID -nlt Point -overwrite $@ assembled-state-ID.geojson
 	ogr2ogr -f GPKG -nln blocks_IL -nlt Point -overwrite $@ assembled-state-IL.geojson
@@ -101,6 +105,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_WA -nlt Point -overwrite $@ assembled-state-WA.geojson
 	ogr2ogr -f GPKG -nln blocks_WI -nlt Point -overwrite $@ assembled-state-WI.geojson
 	ogr2ogr -f GPKG -nln blocks_WY -nlt Point -overwrite $@ assembled-state-WY.geojson
+	ogr2ogr -f GPKG -nln votes_AK -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ak_2016.zip
 	ogr2ogr -f GPKG -nln votes_AL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/al_2016.zip
 	ogr2ogr -f GPKG -nln votes_AR -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ar_2016.zip
 	ogr2ogr -f GPKG -nln votes_AZ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/az_2016.zip
@@ -109,6 +114,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/de_2016.zip
 	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2016.zip
 	ogr2ogr -f GPKG -nln votes_GA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ga_2016.zip
+	ogr2ogr -f GPKG -nln votes_HI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/hi_2016.zip
 	ogr2ogr -f GPKG -nln votes_IA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ia_2016.zip
 	ogr2ogr -f GPKG -nln votes_ID -nlt MultiPolygon -overwrite $@ /vsizip/VEST/id_2016.zip
 	ogr2ogr -f GPKG -nln votes_IL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/il_2016.zip
@@ -144,6 +150,10 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2016.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2016.zip
 
+assembled-state-AK.geojson: VEST/ak_2016.zip Census/tl_2011_02_tabblock.zip Census/tl_2011_02_bg.zip
+	./assemble-state.py $@ \
+		/vsizip/VEST/ak_2016.zip /vsizip/Census/tl_2011_02_tabblock.zip /vsizip/Census/tl_2011_02_bg.zip
+
 assembled-state-AL.geojson: VEST/al_2016.zip Census/tl_2011_01_tabblock.zip Census/tl_2011_01_bg.zip
 	./assemble-state.py $@ \
 		/vsizip/VEST/al_2016.zip /vsizip/Census/tl_2011_01_tabblock.zip /vsizip/Census/tl_2011_01_bg.zip
@@ -175,6 +185,10 @@ assembled-state-FL.geojson: VEST/fl_2016.zip Census/tl_2019_12_tabblock10.zip Ce
 assembled-state-GA.geojson: VEST/ga_2016.zip Census/tl_2019_13_tabblock10.zip Census/tl_2019_13_bg.zip
 	./assemble-state.py $@ \
 		/vsizip/VEST/ga_2016.zip /vsizip/Census/tl_2019_13_tabblock10.zip /vsizip/Census/tl_2019_13_bg.zip
+
+assembled-state-HI.geojson: VEST/hi_2016.zip Census/tl_2019_15_tabblock10.zip Census/tl_2019_15_bg.zip
+	./assemble-state.py $@ \
+		/vsizip/VEST/hi_2016.zip /vsizip/Census/tl_2019_15_tabblock10.zip /vsizip/Census/tl_2019_15_bg.zip
 
 assembled-state-IA.geojson: VEST/ia_2016.zip Census/tl_2019_19_tabblock10.zip Census/tl_2019_19_bg.zip
 	./assemble-state.py $@ \
