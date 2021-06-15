@@ -23,8 +23,10 @@ ACS_VARIABLES = [
     'B19013_001M', 'B29001_001M'
 ]
 
-VOTES_DEM = 'US President 2020 - DEM'
-VOTES_REP = 'US President 2020 - REP'
+VOTES_DEM16 = 'US President 2016 - DEM'
+VOTES_REP16 = 'US President 2016 - REP'
+VOTES_DEM20 = 'US President 2020 - DEM'
+VOTES_REP20 = 'US President 2020 - REP'
 
 def memoize(func):
     def new_func(*args, **kwargs):
@@ -48,7 +50,7 @@ def memoize(func):
     
     return new_func
 
-def move_votes(df, good_index, bad_index):
+def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
     print('Move votes from', bad_index, 'to', good_index)
 
     dem_votes = df.columns.get_loc(VOTES_DEM)
@@ -67,23 +69,37 @@ def load_votes(votes_source):
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
     df2 = df.rename(columns={
-        'G20PREDBID': VOTES_DEM,
-        'G20PRERTRU': VOTES_REP,
-        'G20PREDBid': VOTES_DEM,
-        'G20PRERTru': VOTES_REP,
+        'G16PREDCLI': VOTES_DEM16,
+        'G16PRERTRU': VOTES_REP16,
+        'G20PREDBID': VOTES_DEM20,
+        'G20PRERTRU': VOTES_REP20,
+        'G16PREDCli': VOTES_DEM16,
+        'G16PRERTru': VOTES_REP16,
+        'G20PREDBid': VOTES_DEM20,
+        'G20PRERTru': VOTES_REP20,
     })
     
-    assert VOTES_DEM in df2.columns
-    assert VOTES_REP in df2.columns
+    assert VOTES_DEM20 in df2.columns or VOTES_DEM16 in df2.columns
+    assert VOTES_REP20 in df2.columns or VOTES_REP16 in df2.columns
     
-    df3 = df2[[
-        #'STATEFP',
-        #'COUNTYFP',
-        #'NAME',
-        VOTES_DEM,
-        VOTES_REP,
-        'geometry'
-        ]]
+    if VOTES_DEM20 in df2.columns:
+        df3 = df2[[
+            #'STATEFP',
+            #'COUNTYFP',
+            #'NAME',
+            VOTES_DEM20,
+            VOTES_REP20,
+            'geometry'
+            ]]
+    else:
+        df3 = df2[[
+            #'STATEFP',
+            #'COUNTYFP',
+            #'NAME',
+            VOTES_DEM16,
+            VOTES_REP16,
+            'geometry'
+            ]]
     
     print(df3)
     
@@ -361,7 +377,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
 
-def join_blocks_votes(df_blocks, df_votes):
+def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
 
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     stop_moving = False
@@ -414,7 +430,7 @@ def join_blocks_votes(df_blocks, df_votes):
                 # Skip this unmatchable precinct for now
                 continue
             else:
-                move_votes(df_votes, good_index, bad_index)
+                move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP)
         
         ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
         assert starting_votes == ending_votes, \
@@ -454,7 +470,10 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     
     print_df(df_blocks, 'df_blocks')
     print_df(df_votes, 'df_votes')
-    df_blocksV = join_blocks_votes(df_blocks, df_votes)
+    if VOTES_DEM20 in df_votes.columns:
+        df_blocksV = join_blocks_votes(df_blocks, df_votes, VOTES_DEM20, VOTES_REP20)
+    else:
+        df_blocksV = join_blocks_votes(df_blocks, df_votes, VOTES_DEM16, VOTES_REP16)
     
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
@@ -472,8 +491,12 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
         'geometry',
     ]]
     
-    df_blocks3[VOTES_DEM] = df_blocks2[VOTES_DEM].round(5)
-    df_blocks3[VOTES_REP] = df_blocks2[VOTES_REP].round(5)
+    if VOTES_DEM20 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM20] = df_blocks2[VOTES_DEM20].round(5)
+        df_blocks3[VOTES_REP20] = df_blocks2[VOTES_REP20].round(5)
+    else:
+        df_blocks3[VOTES_DEM16] = df_blocks2[VOTES_DEM16].round(5)
+        df_blocks3[VOTES_REP16] = df_blocks2[VOTES_REP16].round(5)
     df_blocks3['Population 2010'] = df_blocks2['P001001'].round(5)
     df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
     df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
