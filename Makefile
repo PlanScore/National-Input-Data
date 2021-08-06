@@ -120,7 +120,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_CO -nlt MultiPolygon -overwrite $@ /vsizip/VEST/co_2020.zip
 	ogr2ogr -f GPKG -nln votes_DC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/dc_2020.zip
 	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/de_2020.zip
-	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2016.zip
+	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2020.zip
 	ogr2ogr -f GPKG -nln votes_GA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ga_2020.zip
 	ogr2ogr -f GPKG -nln votes_HI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/hi_2020.zip
 	ogr2ogr -f GPKG -nln votes_IA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ia_2020.zip
@@ -192,9 +192,9 @@ assembled-state-DE.geojson: VEST/de_2020.zip Census/tl_2019_10_tabblock10.zip Ce
 	./assemble-state.py $@ \
 		/vsizip/VEST/de_2020.zip /vsizip/Census/tl_2019_10_tabblock10.zip /vsizip/Census/tl_2019_10_bg.zip
 
-assembled-state-FL.geojson: VEST/fl_2016.zip Census/tl_2019_12_tabblock10.zip Census/tl_2019_12_bg.zip
+assembled-state-FL.geojson: VEST/fl_2020.zip Census/tl_2019_12_tabblock10.zip Census/tl_2019_12_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/fl_2016.zip /vsizip/Census/tl_2019_12_tabblock10.zip /vsizip/Census/tl_2019_12_bg.zip
+		/vsizip/VEST/fl_2020.zip /vsizip/Census/tl_2019_12_tabblock10.zip /vsizip/Census/tl_2019_12_bg.zip
 
 assembled-state-GA.geojson: VEST/ga_2020.zip Census/tl_2019_13_tabblock10.zip Census/tl_2019_13_bg.zip
 	./assemble-state.py $@ \
