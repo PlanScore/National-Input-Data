@@ -360,5 +360,158 @@ Census/tl_2011_%_bg.zip:
 Census/tl_2011_%_tabblock.zip:
 	curl -L https://www2.census.gov/geo/tiger/TIGER2011/TABBLOCK/tl_2011_$*_tabblock.zip -o $@
 
+Census/dc2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/District_of_Columbia/dc2020.pl.zip -o $@
+
+Census/al2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Alabama/al2020.pl.zip -o $@
+
+Census/ak2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Alaska/ak2020.pl.zip -o $@
+
+Census/az2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Arizona/az2020.pl.zip -o $@
+
+Census/ar2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Arkansas/ar2020.pl.zip -o $@
+
+Census/ca2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/California/ca2020.pl.zip -o $@
+
+Census/co2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Colorado/co2020.pl.zip -o $@
+
+Census/ct2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Connecticut/ct2020.pl.zip -o $@
+
+Census/de2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Delaware/de2020.pl.zip -o $@
+
+Census/fl2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Florida/fl2020.pl.zip -o $@
+
+Census/ga2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Georgia/ga2020.pl.zip -o $@
+
+Census/hi2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Hawaii/hi2020.pl.zip -o $@
+
+Census/id2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Idaho/id2020.pl.zip -o $@
+
+Census/il2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Illinois/il2020.pl.zip -o $@
+
+Census/in2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Indiana/in2020.pl.zip -o $@
+
+Census/ia2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Iowa/ia2020.pl.zip -o $@
+
+Census/ks2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Kansas/ks2020.pl.zip -o $@
+
+Census/ky2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Kentucky/ky2020.pl.zip -o $@
+
+Census/la2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Louisiana/la2020.pl.zip -o $@
+
+Census/me2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Maine/me2020.pl.zip -o $@
+
+Census/md2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Maryland/md2020.pl.zip -o $@
+
+Census/ma2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Massachusetts/ma2020.pl.zip -o $@
+
+Census/mi2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Michigan/mi2020.pl.zip -o $@
+
+Census/mn2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Minnesota/mn2020.pl.zip -o $@
+
+Census/ms2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Mississippi/ms2020.pl.zip -o $@
+
+Census/mo2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Missouri/mo2020.pl.zip -o $@
+
+Census/mt2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Montana/mt2020.pl.zip -o $@
+
+Census/ne2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Nebraska/ne2020.pl.zip -o $@
+
+Census/nv2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Nevada/nv2020.pl.zip -o $@
+
+Census/nh2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/New_Hampshire/nh2020.pl.zip -o $@
+
+Census/nj2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/New_Jersey/nj2020.pl.zip -o $@
+
+Census/nm2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/New_Mexico/nm2020.pl.zip -o $@
+
+Census/ny2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/New_York/ny2020.pl.zip -o $@
+
+Census/nc2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/North_Carolina/nc2020.pl.zip -o $@
+
+Census/nd2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/North_Dakota/nd2020.pl.zip -o $@
+
+Census/oh2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Ohio/oh2020.pl.zip -o $@
+
+Census/ok2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Oklahoma/ok2020.pl.zip -o $@
+
+Census/or2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Oregon/or2020.pl.zip -o $@
+
+Census/pa2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Pennsylvania/pa2020.pl.zip -o $@
+
+Census/ri2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Rhode_Island/ri2020.pl.zip -o $@
+
+Census/sc2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/South_Carolina/sc2020.pl.zip -o $@
+
+Census/sd2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/South_Dakota/sd2020.pl.zip -o $@
+
+Census/tn2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Tennessee/tn2020.pl.zip -o $@
+
+Census/tx2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Texas/tx2020.pl.zip -o $@
+
+Census/ut2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Utah/ut2020.pl.zip -o $@
+
+Census/vt2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Vermont/vt2020.pl.zip -o $@
+
+Census/va2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Virginia/va2020.pl.zip -o $@
+
+Census/wa2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Washington/wa2020.pl.zip -o $@
+
+Census/wv2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/West_Virginia/wv2020.pl.zip -o $@
+
+Census/wi2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Wisconsin/wi2020.pl.zip -o $@
+
+Census/wy2020.pl.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/Wyoming/wy2020.pl.zip -o $@
+
 .PHONY: all
 .SECONDARY:

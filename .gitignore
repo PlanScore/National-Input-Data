@@ -3,4 +3,5 @@ memoized/*.pickle
 assembled-state-??.geojson
 Census/tl_201?_*.zip
 Census/tl_201?_*.zip
+Census/??2020.pl.zip
 Nation.gpkg*
