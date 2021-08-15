@@ -16,14 +16,25 @@ import zipfile
 
 BLOCK_FIELDS = [
     'GEOCODE', 'STATE', 'COUNTY', 'TRACT', 'BLOCK', #'NAME',
-    'AREALAND', 'AREAWATER', 'P0010001', 'geometry'
+    'AREALAND', 'AREAWATER', 'P0010001', 'P0020002', 'P0020006',
+    'P0020013', 'P0020008', 'P0020015', 'geometry',
 ]
 
 ACS_VARIABLES = [
-    'B01001_001E', 'B02009_001E', 'B03002_012E', 'B15003_017E',
-    'B15003_018E', 'B19013_001E', 'B29001_001E', 'B01001_001M',
-    'B02009_001M', 'B03002_012M', 'B15003_017M', 'B15003_018M',
-    'B19013_001M', 'B29001_001M'
+    'B01001_001E',
+    'B02009_001E',
+    'B03002_012E',
+    'B15003_017E',
+    'B15003_018E',
+    #'B19013_001E',
+    'B29001_001E',
+    'B01001_001M',
+    'B02009_001M',
+    'B03002_012M',
+    'B15003_017M',
+    'B15003_018M',
+    #'B19013_001M',
+    'B29001_001M',
 ]
 
 VOTES_DEM16 = 'US President 2016 - DEM'
@@ -126,7 +137,6 @@ def load_blocks(blocks_source):
             'AREALAND': int(row[84]),
             'AREAWATER': int(row[85]),
             'geometry': shapely.geometry.Point(float(row[93]), float(row[92])),
-            'POP100': int(row[90]),
             'P0010001': int(row[96+1]), # Total Population
             'P0020002': int(row[167+2]), # Hispanic or Latino
             'P0020006': int(row[167+6]), # Non-Hispanic Black
@@ -145,7 +155,7 @@ def load_blocks(blocks_source):
     
     return df
 
-@memoize
+#@memoize
 def load_blockgroups(bgs_source, acs_year):
     df = geopandas.read_file(bgs_source)
     
@@ -158,6 +168,7 @@ def load_blockgroups(bgs_source, acs_year):
         'COUNTYFP',
         'TRACTCE',
         'BLKGRPCE',
+        'geometry',
         ]]
     
     print(df2)
@@ -246,6 +257,7 @@ def get_acs(df_bgs, acs_year):
         'COUNTYFP',
         'TRACTCE',
         'BLKGRPCE',
+        'geometry',
         ] + ACS_VARIABLES]
     
     print(df_bgs3)
@@ -318,32 +330,43 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     input_population = df_bgs['B01001_001E'].sum()
     
-    # Note shorter block group GEOID for later matching
-    df_blocks['GEOCODE_block'] = df_blocks.GEOCODE.str.slice(0, 12)
+    #print_df(df_blocks[['GEOCODE', 'geometry']], 'df_blocks')
+    #print_df(df_bgs[['GEOID', 'geometry']], 'df_bgs')
     
-    # Sum ALAND for each block group
-    df_blocks2 = df_blocks[['GEOCODE_block', 'AREALAND']]\
-        .groupby('GEOCODE_block', as_index=False).AREALAND.sum()\
+    df_sjoined = geopandas.sjoin(df_blocks, df_bgs.to_crs(df_blocks.crs), op='within')
+    
+    #print_df(df_sjoined[['GEOCODE', 'GEOID', 'geometry', 'ALAND', 'AREALAND']], 'df_sjoined')
+    #print(df_sjoined.columns)
+    
+    #df_mismatched = df_sjoined[df_sjoined.GEOID != df_sjoined.GEOCODE.str.slice(0, 12)]
+    #print_df(df_mismatched[['GEOCODE', 'GEOID', 'geometry', 'ALAND', 'AREALAND']], 'df_mismatched')
+    
+    # Sum AREALAND for each block group
+    df_bg2 = df_sjoined[['GEOID', 'AREALAND']]\
+        .groupby('GEOID', as_index=False).AREALAND.sum()\
         .rename(columns={'AREALAND': 'AREALAND_bg'})
     
-    # Join survey data to any block with matching GEOCODE prefix
-    df_blocks3 = df_blocks.merge(df_blocks2, on='GEOCODE_block', how='right')
+    #print_df(df_bg2, 'df_bg2')
     
-    # Join complete blocks with survey data to block-group-summed AREALAND
-    df_blocks4 = df_blocks3.merge(df_bgs[ACS_VARIABLES + ['GEOID']],
-        left_on='GEOCODE_block', right_on='GEOID', how='left', suffixes=('', '_y'))
+    # Join land area data to any block with matching block group GEOID
+    df_blocks2 = df_sjoined.merge(df_bg2, on='GEOID', how='right')
     
+    #print_df(df_blocks2, 'df_blocks2')
+    #print(df_blocks2.columns)
+
     # Scale survey data by land area block/group fraction
     for variable in ACS_VARIABLES:
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
-        df_blocks4[variable] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_bg)
+        df_blocks2[variable] *= (df_blocks2.AREALAND / df_blocks2.AREALAND_bg)
+    
+    #print_df(df_blocks2, 'df_blocks2')
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
+    df_blocks3 = df_blocks2[BLOCK_FIELDS + ACS_VARIABLES]
     
-    output_population = df_blocks5['B01001_001E'].sum()
+    output_population = df_blocks3['B01001_001E'].sum()
     missing_population = abs(1 - input_population / output_population)
     
     assert missing_population < .0002, \
@@ -352,7 +375,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
             100 * missing_population,
         )
     
-    return df_blocks5
+    return df_blocks3
 
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
@@ -466,8 +489,10 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     print(df_blocks2.columns)
     
     # Final output column mapping
-    df_blocks3 = df_blocks2[df_blocks2.ALAND > 0][[
-        'GEOID',
+    df_blocks3 = df_blocks2[df_blocks2.AREALAND > 0].rename(
+        columns={'GEOCODE': 'GEOID20'}
+    )[[
+        'GEOID20',
         'geometry',
     ]]
     
@@ -477,13 +502,16 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     else:
         df_blocks3[VOTES_DEM16] = df_blocks2[VOTES_DEM16].round(5)
         df_blocks3[VOTES_REP16] = df_blocks2[VOTES_REP16].round(5)
-    df_blocks3['Population 2010'] = df_blocks2['P001001'].round(5)
+    df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
     df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
-    df_blocks3['Black Population 2019'] = df_blocks2['B02009_001E'].round(5)
-    df_blocks3['Black Population 2019, Margin'] = df_blocks2['B02009_001M'].round(5)
-    df_blocks3['Hispanic Population 2019'] = df_blocks2['B03002_012E'].round(5)
-    df_blocks3['Hispanic Population 2019, Margin'] = df_blocks2['B03002_012M'].round(5)
+    #df_blocks3['Black Population 2019'] = df_blocks2['B02009_001E'].round(5)
+    #df_blocks3['Black Population 2019, Margin'] = df_blocks2['B02009_001M'].round(5)
+    df_blocks3['Black Population 2020'] = (df_blocks2['P0020006'] + df_blocks2['P0020013']).round(5)
+    #df_blocks3['Hispanic Population 2019'] = df_blocks2['B03002_012E'].round(5)
+    #df_blocks3['Hispanic Population 2019, Margin'] = df_blocks2['B03002_012M'].round(5)
+    df_blocks3['Hispanic Population 2020'] = df_blocks2['P0020002'].round(5)
+    df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
     df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
     #df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
