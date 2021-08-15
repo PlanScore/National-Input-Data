@@ -304,9 +304,9 @@ assembled-state-PA.geojson: VEST/pa_2016.zip Census/tl_2019_42_tabblock10.zip Ce
 	./assemble-state.py $@ \
 		/vsizip/VEST/pa_2016.zip /vsizip/Census/tl_2019_42_tabblock10.zip /vsizip/Census/tl_2019_42_bg.zip
 
-assembled-state-RI.geojson: VEST/ri_2020.zip Census/tl_2019_44_tabblock10.zip Census/tl_2019_44_bg.zip
+assembled-state-RI.geojson: VEST/ri_2020.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ri_2020.zip /vsizip/Census/tl_2019_44_tabblock10.zip /vsizip/Census/tl_2019_44_bg.zip
+		/vsizip/VEST/ri_2020.zip Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip
 
 assembled-state-SC.geojson: VEST/sc_2020.zip Census/tl_2011_45_tabblock.zip Census/tl_2011_45_bg.zip
 	./assemble-state.py $@ \

@@ -10,10 +10,13 @@ import requests
 import pandas
 import geopandas
 import shapely.geometry
+import csv
+import io
+import zipfile
 
 BLOCK_FIELDS = [
-    'GEOID', 'STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE', #'NAME',
-    'ALAND', 'AWATER', 'P001001', 'geometry'
+    'GEOCODE', 'STATE', 'COUNTY', 'TRACT', 'BLOCK', #'NAME',
+    'AREALAND', 'AREAWATER', 'P0010001', 'geometry'
 ]
 
 ACS_VARIABLES = [
@@ -105,65 +108,42 @@ def load_votes(votes_source):
     
     return df3
 
-@memoize
+#@memoize
 def load_blocks(blocks_source):
-    df = geopandas.read_file(blocks_source).to_crs(epsg=4326)
-    
-    print('df.columns:', df.columns)
-    
-    if 'GEOID10' not in df.columns:
-        # Older block files include certain field names without the "10" suffix
-        df2 = df.rename(columns={
-            'STATEFP': 'STATEFP_bad',
-            'COUNTYFP': 'COUNTYFP_bad',
-            #'GEOID10': 'GEOID',
-            #'NAME10': 'NAME',
-            #'ALAND10': 'ALAND',
-            #'AWATER10': 'AWATER',
-            #'INTPTLAT10': 'INTPTLAT',
-            #'INTPTLON10': 'INTPTLON',
-            'STATEFP10': 'STATEFP',
-            'COUNTYFP10': 'COUNTYFP',
-            'TRACTCE10': 'TRACTCE',
-            'BLOCKCE10': 'BLOCKCE',
-        })
-    else:
-        df2 = df.rename(columns={
-            'GEOID10': 'GEOID',
-            'NAME10': 'NAME',
-            'ALAND10': 'ALAND',
-            'AWATER10': 'AWATER',
-            'INTPTLAT10': 'INTPTLAT',
-            'INTPTLON10': 'INTPTLON',
-            'STATEFP10': 'STATEFP',
-            'COUNTYFP10': 'COUNTYFP',
-            'TRACTCE10': 'TRACTCE',
-            'BLOCKCE10': 'BLOCKCE',
-        })
-    
-    print('df2.columns:', df2.columns)
-    
-    # Replace upstream polygon geometry with internal points
-    df2.geometry = [
-        shapely.geometry.Point(float(row['INTPTLON']), float(row['INTPTLAT']))
-        for (index, row) in df2.iterrows()
+    zf = zipfile.ZipFile(blocks_source)
+    fs = [io.TextIOWrapper(zf.open(name)) for name in zf.namelist()]
+    pls = [csv.reader(file, delimiter='|') for file in fs]
+    rows = (plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls))
+    blocks = [
+        {
+            'STATE': row[12],
+            'COUNTY': row[14],
+            'TRACT': row[32],
+            'BLOCK': row[34],
+            'NAME': row[87],
+            #'GEOID': row[8],
+            'GEOCODE': row[9],
+            'AREALAND': int(row[84]),
+            'AREAWATER': int(row[85]),
+            'geometry': shapely.geometry.Point(float(row[93]), float(row[92])),
+            'POP100': int(row[90]),
+            'P0010001': int(row[96+1]), # Total Population
+            'P0020002': int(row[167+2]), # Hispanic or Latino
+            'P0020006': int(row[167+6]), # Non-Hispanic Black
+            'P0020013': int(row[167+13]), # Non-Hispanic Black + White
+            'P0020008': int(row[167+8]), # Non-Hispanic Asian
+            'P0020015': int(row[167+15]), # Non-Hispanic Asian + White
+        }
+        for row in rows if row[2] == '750'
     ]
     
-    df3 = df2[[
-        'STATEFP',
-        'COUNTYFP',
-        'TRACTCE',
-        'BLOCKCE',
-        'NAME',
-        'GEOID',
-        'ALAND',
-        'AWATER',
-        'geometry',
-        ]]
+    df = geopandas.GeoDataFrame(
+        blocks,
+        crs='EPSG:4326',
+        geometry='geometry',
+    )
     
-    print(df3)
-    
-    return get_sf1(df3)
+    return df
 
 @memoize
 def load_blockgroups(bgs_source, acs_year):
@@ -339,26 +319,26 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     input_population = df_bgs['B01001_001E'].sum()
     
     # Note shorter block group GEOID for later matching
-    df_blocks['GEOID_block'] = df_blocks.GEOID.str.slice(0, 12)
+    df_blocks['GEOCODE_block'] = df_blocks.GEOCODE.str.slice(0, 12)
     
     # Sum ALAND for each block group
-    df_blocks2 = df_blocks[['GEOID_block', 'ALAND']]\
-        .groupby('GEOID_block', as_index=False).ALAND.sum()\
-        .rename(columns={'ALAND': 'ALAND_bg'})
+    df_blocks2 = df_blocks[['GEOCODE_block', 'AREALAND']]\
+        .groupby('GEOCODE_block', as_index=False).AREALAND.sum()\
+        .rename(columns={'AREALAND': 'AREALAND_bg'})
     
-    # Join survey data to any block with matching GEOID prefix
-    df_blocks3 = df_blocks.merge(df_blocks2, on='GEOID_block', how='right')
+    # Join survey data to any block with matching GEOCODE prefix
+    df_blocks3 = df_blocks.merge(df_blocks2, on='GEOCODE_block', how='right')
     
-    # Join complete blocks with survey data to block-group-summed ALAND
+    # Join complete blocks with survey data to block-group-summed AREALAND
     df_blocks4 = df_blocks3.merge(df_bgs[ACS_VARIABLES + ['GEOID']],
-        left_on='GEOID_block', right_on='GEOID', how='left', suffixes=('', '_y'))
+        left_on='GEOCODE_block', right_on='GEOID', how='left', suffixes=('', '_y'))
     
     # Scale survey data by land area block/group fraction
     for variable in ACS_VARIABLES:
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
-        df_blocks4[variable] *= (df_blocks4.ALAND / df_blocks4.ALAND_bg)
+        df_blocks4[variable] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_bg)
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
@@ -387,7 +367,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     
         # Join precinct votes to any land block spatially contained within
         df_blocks2 = geopandas.sjoin(
-            df_blocks[df_blocks.ALAND > 0],
+            df_blocks[df_blocks.AREALAND > 0],
             df_votes[['geometry', VOTES_DEM, VOTES_REP]],
             op='within', how='left', rsuffix='votes')
     
@@ -442,15 +422,15 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
 
     # Sum ALAND for each voting precinct
     df_blocks3 = df_blocks2\
-        .groupby('index_votes', as_index=False).ALAND.sum()\
-        .rename(columns={'ALAND': 'ALAND_precinct'})
+        .groupby('index_votes', as_index=False).AREALAND.sum()\
+        .rename(columns={'AREALAND': 'AREALAND_precinct'})
     
-    # Join complete blocks with votes to precinct-summed ALAND
+    # Join complete blocks with votes to precinct-summed AREALAND
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
     
     # Scale presidential votes by land area block/precinct fraction
-    df_blocks4[VOTES_DEM] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
-    df_blocks4[VOTES_REP] *= (df_blocks4.ALAND / df_blocks4.ALAND_precinct)
+    df_blocks4[VOTES_DEM] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
+    df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP]]
