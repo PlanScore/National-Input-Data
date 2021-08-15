@@ -119,7 +119,7 @@ def load_votes(votes_source):
     
     return df3
 
-#@memoize
+@memoize
 def load_blocks(blocks_source):
     zf = zipfile.ZipFile(blocks_source)
     fs = [io.TextIOWrapper(zf.open(name)) for name in zf.namelist()]
@@ -155,7 +155,7 @@ def load_blocks(blocks_source):
     
     return df
 
-#@memoize
+@memoize
 def load_blockgroups(bgs_source, acs_year):
     df = geopandas.read_file(bgs_source)
     
