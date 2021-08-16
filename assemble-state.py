@@ -122,7 +122,10 @@ def load_votes(votes_source):
 @memoize
 def load_blocks(blocks_source):
     zf = zipfile.ZipFile(blocks_source)
-    fs = [io.TextIOWrapper(zf.open(name)) for name in zf.namelist()]
+    fs = [
+        io.TextIOWrapper(zf.open(name), encoding='Latin-1')
+        for name in sorted(zf.namelist())
+    ]
     pls = [csv.reader(file, delimiter='|') for file in fs]
     rows = (plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls))
     blocks = [
