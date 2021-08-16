@@ -264,68 +264,6 @@ def get_acs(df_bgs, acs_year):
     
     return df_bgs3
 
-@memoize
-def get_county_sf1(state_fips, county_fips, api_path):
-
-    query = urllib.parse.urlencode([
-        ('get', ','.join(['P001001', 'NAME'])),
-        ('for', 'block:*'),
-        ('in', f'state:{state_fips}'),
-        ('in', f'county:{county_fips}'),
-        ('in', 'tract:*'),
-    ])
-    
-    print(f'https://api.census.gov/data/{api_path}?{query}')
-    
-    got = requests.get(f'https://api.census.gov/data/{api_path}?{query}')
-    head, tail = got.json()[0], got.json()[1:]
-    data = {
-        key: [row[i] for row in tail]
-        for (i, key) in enumerate(head)
-    }
-    
-    df_sf1 = pandas.DataFrame(data)
-    df_sf1.P001001 = df_sf1.P001001.astype(int)
-    
-    return df_sf1
-
-def get_sf1(df_blocks):
-
-    (state_fips, ) = df_blocks.STATEFP.unique()
-    
-    print('state_fips:', state_fips)
-    
-    counties = get_state_counties(state_fips, '2010/dec/sf1')
-    
-    df_sf1 = pandas.concat([
-        get_county_sf1(state_fips, county_fips, '2010/dec/sf1')
-        for county_fips in sorted(counties)
-    ])
-    
-    print(df_blocks)
-    print(df_sf1)
-    
-    df_blocks2 = df_blocks.merge(df_sf1, how='left',
-        left_on=('STATEFP', 'COUNTYFP', 'TRACTCE', 'BLOCKCE'),
-        right_on=('state', 'county', 'tract', 'block'),
-        )
-    
-    df_blocks3 = df_blocks2[[
-        'GEOID',
-        'ALAND',
-        'AWATER',
-        'STATEFP',
-        'COUNTYFP',
-        'TRACTCE',
-        'BLOCKCE',
-        'P001001',
-        'geometry',
-        ]]
-    
-    print(df_blocks3)
-    
-    return df_blocks3
-
 def join_blocks_blockgroups(df_blocks, df_bgs):
     
     input_population = df_blocks['P0010001'].sum()
