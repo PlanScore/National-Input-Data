@@ -328,7 +328,7 @@ def get_sf1(df_blocks):
 
 def join_blocks_blockgroups(df_blocks, df_bgs):
     
-    input_population = df_bgs['B01001_001E'].sum()
+    input_population = df_blocks['P0010001'].sum()
     
     #print_df(df_blocks[['GEOCODE', 'geometry']], 'df_blocks')
     #print_df(df_bgs[['GEOID', 'geometry']], 'df_bgs')
@@ -366,7 +366,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     # Select just a few columns
     df_blocks3 = df_blocks2[BLOCK_FIELDS + ACS_VARIABLES]
     
-    output_population = df_blocks3['B01001_001E'].sum()
+    output_population = df_blocks3['P0010001'].sum()
     missing_population = abs(1 - input_population / output_population)
     
     assert missing_population < .0002, \
