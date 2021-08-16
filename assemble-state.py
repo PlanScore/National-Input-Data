@@ -268,43 +268,27 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     input_population = df_blocks['P0010001'].sum()
     
-    #print_df(df_blocks[['GEOCODE', 'geometry']], 'df_blocks')
-    #print_df(df_bgs[['GEOID', 'geometry']], 'df_bgs')
-    
-    df_sjoined = geopandas.sjoin(df_blocks, df_bgs.to_crs(df_blocks.crs), op='within')
-    
-    #print_df(df_sjoined[['GEOCODE', 'GEOID', 'geometry', 'ALAND', 'AREALAND']], 'df_sjoined')
-    #print(df_sjoined.columns)
-    
-    #df_mismatched = df_sjoined[df_sjoined.GEOID != df_sjoined.GEOCODE.str.slice(0, 12)]
-    #print_df(df_mismatched[['GEOCODE', 'GEOID', 'geometry', 'ALAND', 'AREALAND']], 'df_mismatched')
+    df_blocks2 = geopandas.sjoin(df_blocks, df_bgs.to_crs(df_blocks.crs), op='within')
     
     # Sum AREALAND for each block group
-    df_bg2 = df_sjoined[['GEOID', 'AREALAND']]\
+    df_bg3 = df_blocks2[['GEOID', 'AREALAND']]\
         .groupby('GEOID', as_index=False).AREALAND.sum()\
         .rename(columns={'AREALAND': 'AREALAND_bg'})
     
-    #print_df(df_bg2, 'df_bg2')
-    
     # Join land area data to any block with matching block group GEOID
-    df_blocks2 = df_sjoined.merge(df_bg2, on='GEOID', how='right')
+    df_blocks4 = df_blocks2.merge(df_bg3, on='GEOID', how='right')
     
-    #print_df(df_blocks2, 'df_blocks2')
-    #print(df_blocks2.columns)
-
     # Scale survey data by land area block/group fraction
     for variable in ACS_VARIABLES:
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
-        df_blocks2[variable] *= (df_blocks2.AREALAND / df_blocks2.AREALAND_bg)
-    
-    #print_df(df_blocks2, 'df_blocks2')
+        df_blocks4[variable] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_bg)
     
     # Select just a few columns
-    df_blocks3 = df_blocks2[BLOCK_FIELDS + ACS_VARIABLES]
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
     
-    output_population = df_blocks3['P0010001'].sum()
+    output_population = df_blocks5['P0010001'].sum()
     missing_population = abs(1 - input_population / output_population)
     
     assert missing_population < .0002, \
@@ -313,7 +297,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
             100 * missing_population,
         )
     
-    return df_blocks3
+    return df_blocks5
 
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
