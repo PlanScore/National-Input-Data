@@ -17,7 +17,7 @@ import zipfile
 BLOCK_FIELDS = [
     'GEOCODE', 'STATE', 'COUNTY', 'TRACT', 'BLOCK', #'NAME',
     'AREALAND', 'AREAWATER', 'P0010001', 'P0020002', 'P0020006',
-    'P0020013', 'P0020008', 'P0020015', 'geometry',
+    'P0020013', 'P0020008', 'P0020015', 'P0030001', 'geometry',
 ]
 
 ACS_VARIABLES = [
@@ -28,6 +28,7 @@ ACS_VARIABLES = [
     'B15003_018E',
     #'B19013_001E',
     'B29001_001E',
+    'cvap_1_est',
     'B01001_001M',
     'B02009_001M',
     'B03002_012M',
@@ -35,6 +36,7 @@ ACS_VARIABLES = [
     'B15003_018M',
     #'B19013_001M',
     'B29001_001M',
+    'cvap_1_moe',
 ]
 
 VOTES_DEM16 = 'US President 2016 - DEM'
@@ -119,7 +121,7 @@ def load_votes(votes_source):
     
     return df3
 
-@memoize
+#@memoize
 def load_blocks(blocks_source):
     zf = zipfile.ZipFile(blocks_source)
     fs = [
@@ -146,6 +148,7 @@ def load_blocks(blocks_source):
             'P0020013': int(row[167+13]), # Non-Hispanic Black + White
             'P0020008': int(row[167+8]), # Non-Hispanic Asian
             'P0020015': int(row[167+15]), # Non-Hispanic Asian + White
+            'P0030001': int(row[240+1]), # Total population 18 years and over
         }
         for row in rows if row[2] == '750'
     ]
@@ -158,8 +161,8 @@ def load_blocks(blocks_source):
     
     return df
 
-@memoize
-def load_blockgroups(bgs_source, acs_year):
+#@memoize
+def load_blockgroups(bgs_source, cvap_source, acs_year):
     df = geopandas.read_file(bgs_source)
     
     df2 = df[[
@@ -176,7 +179,53 @@ def load_blockgroups(bgs_source, acs_year):
     
     print(df2)
     
-    return get_acs(df2, acs_year)
+    df3 = load_cvap(cvap_source)
+    print_df(df3, 'df3')
+
+    df4 = df3[df3.geoid.str.slice(7, 9) == df2.iloc[0].STATEFP]
+    df4.geoid = df4.geoid.str.slice(7, 19)
+
+    print_df(df4, 'df4')
+    
+    df5 = df2
+    
+    for lnnumber in (1, 4, 5, 9, 10, 13):
+        df4_partial = df4[df4.lnnumber == lnnumber][[
+            'geoid', 'cvap_est', 'cvap_moe'
+        ]].rename(columns={
+            'geoid': 'GEOID',
+            'cvap_est': f'cvap_{lnnumber}_est',
+            'cvap_moe': f'cvap_{lnnumber}_moe',
+        })
+        df5 = df5.merge(df4_partial, how='left', on='GEOID')
+
+        assert len(df4_partial) == len(df5)
+        assert df4_partial[f'cvap_{lnnumber}_est'].sum() == df5[f'cvap_{lnnumber}_est'].sum()
+
+    print_df(df5, 'df5')
+    
+    return get_acs(df5, acs_year)
+
+@memoize
+def load_cvap(cvap_source):
+    zf = zipfile.ZipFile(cvap_source)
+    file = io.TextIOWrapper(zf.open('BlockGr.csv'), encoding='Latin-1')
+    rows = csv.DictReader(file, dialect='excel')
+    
+    df = pandas.DataFrame(rows).convert_dtypes()
+    
+    df2 = df[[
+        'geoid',
+        'lnnumber', # Check documentation for line number meanings
+        'cvap_est',
+        'cvap_moe',
+    ]]
+    
+    df2.lnnumber = df2.lnnumber.astype(int)
+    df2.cvap_est = df2.cvap_est.astype(int)
+    df2.cvap_moe = df2.cvap_moe.astype(int)
+    
+    return df2
 
 @memoize
 def get_state_counties(state_fips, api_path):
@@ -391,8 +440,8 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
 
     return df_blocks5
 
-def main(output_dest, votes_source, blocks_source, bgs_source):
-    df_bgs = load_blockgroups(bgs_source, '2019')
+def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
+    df_bgs = load_blockgroups(bgs_source, cvap_source, '2019')
     df_blocks = load_blocks(blocks_source)
     df_votes = load_votes(votes_source)
     
@@ -441,8 +490,9 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
     #df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
     #df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
-    #df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['B29001_001E'].round(5)
-    #df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['B29001_001M'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['cvap_1_est'].round(5)
+    df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_1_moe'].round(5)
+    df_blocks3['Voting-Age Population 2020'] = df_blocks2['P0030001'].round(5)
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
@@ -450,5 +500,5 @@ def main(output_dest, votes_source, blocks_source, bgs_source):
     df_blocks3.to_file(output_dest, driver='GeoJSON')
 
 if __name__ == '__main__':
-    output_dest, votes_source, blocks_source, bgs_source = sys.argv[1:]
-    exit(main(output_dest, votes_source, blocks_source, bgs_source))
+    output_dest, votes_source, blocks_source, bgs_source, cvap_source = sys.argv[1:]
+    exit(main(output_dest, votes_source, blocks_source, bgs_source, cvap_source))

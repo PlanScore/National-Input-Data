@@ -304,9 +304,9 @@ assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019
 	./assemble-state.py $@ \
 		/vsizip/VEST/pa_2016.zip Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip
 
-assembled-state-RI.geojson: VEST/ri_2020.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip
+assembled-state-RI.geojson: VEST/ri_2020.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ri_2020.zip Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip
+		/vsizip/VEST/ri_2020.zip Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-SC.geojson: VEST/sc_2020.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip
 	./assemble-state.py $@ \
@@ -347,6 +347,10 @@ assembled-state-WI.geojson: VEST/wi_2020.zip Census/wi2020.pl.zip Census/tl_2019
 assembled-state-WY.geojson: VEST/wy_2020.zip Census/wy2020.pl.zip Census/tl_2019_56_bg.zip
 	./assemble-state.py $@ \
 		/vsizip/VEST/wy_2020.zip Census/wy2020.pl.zip /vsizip/Census/tl_2019_56_bg.zip
+
+# Linked from https://www.census.gov/programs-surveys/decennial-census/about/voting-rights/cvap.2019.html
+Census/CVAP_2015-2019_ACS_csv_files.zip:
+	curl -L https://www2.census.gov/programs-surveys/decennial/rdo/datasets/2019/2019-cvap/CVAP_2015-2019_ACS_csv_files.zip -o $@
 
 Census/tl_2019_%_bg.zip:
 	curl -L https://www2.census.gov/geo/tiger/TIGER2019/BG/tl_2019_$*_bg.zip -o $@
