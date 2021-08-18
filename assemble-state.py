@@ -16,7 +16,7 @@ import zipfile
 
 BLOCK_FIELDS = [
     'GEOCODE', 'STATE', 'COUNTY', 'TRACT', 'BLOCK', #'NAME',
-    'AREALAND', 'AREAWATER', 'P0010001', 'P0020002', 'P0020006',
+    'P0010001', 'P0020002', 'P0020006',
     'P0020013', 'P0020008', 'P0020015', 'P0030001', 'geometry',
 ]
 
@@ -29,6 +29,11 @@ ACS_VARIABLES = [
     #'B19013_001E',
     'B29001_001E',
     'cvap_1_est',
+    'cvap_4_est',
+    'cvap_5_est',
+    'cvap_9_est',
+    'cvap_10_est',
+    'cvap_13_est',
     'B01001_001M',
     'B02009_001M',
     'B03002_012M',
@@ -37,6 +42,11 @@ ACS_VARIABLES = [
     #'B19013_001M',
     'B29001_001M',
     'cvap_1_moe',
+    'cvap_4_moe',
+    'cvap_5_moe',
+    'cvap_9_moe',
+    'cvap_10_moe',
+    'cvap_13_moe',
 ]
 
 VOTES_DEM16 = 'US President 2016 - DEM'
@@ -322,10 +332,10 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     df_blocks2 = geopandas.sjoin(df_blocks, df_bgs.to_crs(df_blocks.crs), op='within')
     
-    # Sum AREALAND for each block group
-    df_bg3 = df_blocks2[['GEOID', 'AREALAND']]\
-        .groupby('GEOID', as_index=False).AREALAND.sum()\
-        .rename(columns={'AREALAND': 'AREALAND_bg'})
+    # Sum P0030001 (VAP) for each block group
+    df_bg3 = df_blocks2[['GEOID', 'P0030001']]\
+        .groupby('GEOID', as_index=False).P0030001.sum()\
+        .rename(columns={'P0030001': 'P0030001_bg'})
     
     # Join land area data to any block with matching block group GEOID
     df_blocks4 = df_blocks2.merge(df_bg3, on='GEOID', how='right')
@@ -335,7 +345,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
-        df_blocks4[variable] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_bg)
+        df_blocks4[variable] *= (df_blocks4.P0030001 / df_blocks4.P0030001_bg)
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
@@ -417,17 +427,17 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
             # Stop altogether if missing count is low enough
             stop_moving = True
 
-    # Sum ALAND for each voting precinct
+    # Sum P0030001 (VAP) for each voting precinct
     df_blocks3 = df_blocks2\
-        .groupby('index_votes', as_index=False).AREALAND.sum()\
-        .rename(columns={'AREALAND': 'AREALAND_precinct'})
+        .groupby('index_votes', as_index=False).P0030001.sum()\
+        .rename(columns={'P0030001': 'P0030001_precinct'})
     
-    # Join complete blocks with votes to precinct-summed AREALAND
+    # Join complete blocks with votes to precinct-summed P0030001 (VAP)
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
     
     # Scale presidential votes by land area block/precinct fraction
-    df_blocks4[VOTES_DEM] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
-    df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
+    df_blocks4[VOTES_DEM] *= (df_blocks4.P0030001 / df_blocks4.P0030001_precinct)
+    df_blocks4[VOTES_REP] *= (df_blocks4.P0030001 / df_blocks4.P0030001_precinct)
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP]]
@@ -463,7 +473,7 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     print(df_blocks2.columns)
     
     # Final output column mapping
-    df_blocks3 = df_blocks2[df_blocks2.AREALAND > 0].rename(
+    df_blocks3 = df_blocks2[df_blocks2.P0030001 > 0].rename(
         columns={'GEOCODE': 'GEOID20'}
     )[[
         'GEOID20',
@@ -481,17 +491,23 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     #df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
     df_blocks3['Black Population 2019'] = df_blocks2['B02009_001E'].round(5)
     df_blocks3['Black Population 2019, Margin'] = df_blocks2['B02009_001M'].round(5)
-    #df_blocks3['Black Population 2020'] = (df_blocks2['P0020006'] + df_blocks2['P0020013']).round(5)
+    df_blocks3['Black Population 2020'] = (df_blocks2['P0020006'] + df_blocks2['P0020013']).round(5)
     df_blocks3['Hispanic Population 2019'] = df_blocks2['B03002_012E'].round(5)
     df_blocks3['Hispanic Population 2019, Margin'] = df_blocks2['B03002_012M'].round(5)
-    #df_blocks3['Hispanic Population 2020'] = df_blocks2['P0020002'].round(5)
-    #df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
+    df_blocks3['Hispanic Population 2020'] = df_blocks2['P0020002'].round(5)
+    df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
     df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
     #df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
     #df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['cvap_1_est'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_1_moe'].round(5)
+    df_blocks3['Black Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_5_est'] + df_blocks2['cvap_10_est']).round(5)
+    df_blocks3['Black Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_4_moe'] + df_blocks2['cvap_9_moe']).round(5)
+    df_blocks3['Asian Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_4_est'] + df_blocks2['cvap_9_est']).round(5)
+    df_blocks3['Asian Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_5_moe'] + df_blocks2['cvap_10_moe']).round(5)
+    df_blocks3['Hispanic Citizen Voting-Age Population 2019'] = df_blocks2['cvap_13_est'].round(5)
+    df_blocks3['Hispanic Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_13_moe'].round(5)
     df_blocks3['Voting-Age Population 2020'] = df_blocks2['P0030001'].round(5)
     
     print_df(df_blocks3, 'df_blocks3')
