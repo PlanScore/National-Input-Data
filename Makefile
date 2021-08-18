@@ -160,193 +160,193 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2020.zip
 	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2020.zip
 
-assembled-state-AK.geojson: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2011_02_bg.zip
+assembled-state-AK.geojson: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2011_02_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ak_2020.zip Census/ak2020.pl.zip /vsizip/Census/tl_2011_02_bg.zip
+		/vsizip/VEST/ak_2020.zip Census/ak2020.pl.zip /vsizip/Census/tl_2011_02_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-AL.geojson: VEST/al_2020.zip Census/al2020.pl.zip Census/tl_2011_01_bg.zip
+assembled-state-AL.geojson: VEST/al_2020.zip Census/al2020.pl.zip Census/tl_2011_01_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/al_2020.zip Census/al2020.pl.zip /vsizip/Census/tl_2011_01_bg.zip
+		/vsizip/VEST/al_2020.zip Census/al2020.pl.zip /vsizip/Census/tl_2011_01_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-AR.geojson: VEST/ar_2020.zip Census/ar2020.pl.zip Census/tl_2011_05_bg.zip
+assembled-state-AR.geojson: VEST/ar_2020.zip Census/ar2020.pl.zip Census/tl_2011_05_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ar_2020.zip Census/ar2020.pl.zip /vsizip/Census/tl_2011_05_bg.zip
+		/vsizip/VEST/ar_2020.zip Census/ar2020.pl.zip /vsizip/Census/tl_2011_05_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-AZ.geojson: VEST/az_2020.zip Census/az2020.pl.zip Census/tl_2011_04_bg.zip
+assembled-state-AZ.geojson: VEST/az_2020.zip Census/az2020.pl.zip Census/tl_2011_04_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/az_2020.zip Census/az2020.pl.zip /vsizip/Census/tl_2011_04_bg.zip
+		/vsizip/VEST/az_2020.zip Census/az2020.pl.zip /vsizip/Census/tl_2011_04_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-CA.geojson: VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2019_06_bg.zip
+assembled-state-CA.geojson: VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2019_06_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ca_2016.zip Census/ca2020.pl.zip /vsizip/Census/tl_2019_06_bg.zip
+		/vsizip/VEST/ca_2016.zip Census/ca2020.pl.zip /vsizip/Census/tl_2019_06_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-CO.geojson: VEST/co_2020.zip Census/co2020.pl.zip Census/tl_2019_08_bg.zip
+assembled-state-CO.geojson: VEST/co_2020.zip Census/co2020.pl.zip Census/tl_2019_08_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/co_2020.zip Census/co2020.pl.zip /vsizip/Census/tl_2019_08_bg.zip
+		/vsizip/VEST/co_2020.zip Census/co2020.pl.zip /vsizip/Census/tl_2019_08_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-DC.geojson: VEST/dc_2020.zip Census/dc2020.pl.zip Census/tl_2019_11_bg.zip
+assembled-state-DC.geojson: VEST/dc_2020.zip Census/dc2020.pl.zip Census/tl_2019_11_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/dc_2020.zip Census/dc2020.pl.zip /vsizip/Census/tl_2019_11_bg.zip
+		/vsizip/VEST/dc_2020.zip Census/dc2020.pl.zip /vsizip/Census/tl_2019_11_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-DE.geojson: VEST/de_2020.zip Census/de2020.pl.zip Census/tl_2019_10_bg.zip
+assembled-state-DE.geojson: VEST/de_2020.zip Census/de2020.pl.zip Census/tl_2019_10_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/de_2020.zip Census/de2020.pl.zip /vsizip/Census/tl_2019_10_bg.zip
+		/vsizip/VEST/de_2020.zip Census/de2020.pl.zip /vsizip/Census/tl_2019_10_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-FL.geojson: VEST/fl_2020.zip Census/fl2020.pl.zip Census/tl_2019_12_bg.zip
+assembled-state-FL.geojson: VEST/fl_2020.zip Census/fl2020.pl.zip Census/tl_2019_12_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/fl_2020.zip Census/fl2020.pl.zip /vsizip/Census/tl_2019_12_bg.zip
+		/vsizip/VEST/fl_2020.zip Census/fl2020.pl.zip /vsizip/Census/tl_2019_12_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-GA.geojson: VEST/ga_2020.zip Census/ga2020.pl.zip Census/tl_2019_13_bg.zip
+assembled-state-GA.geojson: VEST/ga_2020.zip Census/ga2020.pl.zip Census/tl_2019_13_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ga_2020.zip Census/ga2020.pl.zip /vsizip/Census/tl_2019_13_bg.zip
+		/vsizip/VEST/ga_2020.zip Census/ga2020.pl.zip /vsizip/Census/tl_2019_13_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-HI.geojson: VEST/hi_2020.zip Census/hi2020.pl.zip Census/tl_2019_15_bg.zip
+assembled-state-HI.geojson: VEST/hi_2020.zip Census/hi2020.pl.zip Census/tl_2019_15_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/hi_2020.zip Census/hi2020.pl.zip /vsizip/Census/tl_2019_15_bg.zip
+		/vsizip/VEST/hi_2020.zip Census/hi2020.pl.zip /vsizip/Census/tl_2019_15_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-IA.geojson: VEST/ia_2020.zip Census/ia2020.pl.zip Census/tl_2019_19_bg.zip
+assembled-state-IA.geojson: VEST/ia_2020.zip Census/ia2020.pl.zip Census/tl_2019_19_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ia_2020.zip Census/ia2020.pl.zip /vsizip/Census/tl_2019_19_bg.zip
+		/vsizip/VEST/ia_2020.zip Census/ia2020.pl.zip /vsizip/Census/tl_2019_19_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-ID.geojson: VEST/id_2020.zip Census/id2020.pl.zip Census/tl_2019_16_bg.zip
+assembled-state-ID.geojson: VEST/id_2020.zip Census/id2020.pl.zip Census/tl_2019_16_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/id_2020.zip Census/id2020.pl.zip /vsizip/Census/tl_2019_16_bg.zip
+		/vsizip/VEST/id_2020.zip Census/id2020.pl.zip /vsizip/Census/tl_2019_16_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-IL.geojson: VEST/il_2020.zip Census/il2020.pl.zip Census/tl_2019_17_bg.zip
+assembled-state-IL.geojson: VEST/il_2020.zip Census/il2020.pl.zip Census/tl_2019_17_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/il_2020.zip Census/il2020.pl.zip /vsizip/Census/tl_2019_17_bg.zip
+		/vsizip/VEST/il_2020.zip Census/il2020.pl.zip /vsizip/Census/tl_2019_17_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-IN.geojson: VEST/in_2016.zip Census/in2020.pl.zip Census/tl_2019_18_bg.zip
+assembled-state-IN.geojson: VEST/in_2016.zip Census/in2020.pl.zip Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/in_2016.zip Census/in2020.pl.zip /vsizip/Census/tl_2019_18_bg.zip
+		/vsizip/VEST/in_2016.zip Census/in2020.pl.zip /vsizip/Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-KS.geojson: VEST/ks_2020.zip Census/ks2020.pl.zip Census/tl_2019_20_bg.zip
+assembled-state-KS.geojson: VEST/ks_2020.zip Census/ks2020.pl.zip Census/tl_2019_20_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ks_2020.zip Census/ks2020.pl.zip /vsizip/Census/tl_2019_20_bg.zip
+		/vsizip/VEST/ks_2020.zip Census/ks2020.pl.zip /vsizip/Census/tl_2019_20_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-KY.geojson: VEST/ky_2016.zip Census/ky2020.pl.zip Census/tl_2019_21_bg.zip
+assembled-state-KY.geojson: VEST/ky_2016.zip Census/ky2020.pl.zip Census/tl_2019_21_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ky_2016.zip Census/ky2020.pl.zip /vsizip/Census/tl_2019_21_bg.zip
+		/vsizip/VEST/ky_2016.zip Census/ky2020.pl.zip /vsizip/Census/tl_2019_21_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-LA.geojson: VEST/la_2020.zip Census/la2020.pl.zip Census/tl_2019_22_bg.zip
+assembled-state-LA.geojson: VEST/la_2020.zip Census/la2020.pl.zip Census/tl_2019_22_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/la_2020.zip Census/la2020.pl.zip /vsizip/Census/tl_2019_22_bg.zip
+		/vsizip/VEST/la_2020.zip Census/la2020.pl.zip /vsizip/Census/tl_2019_22_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MD.geojson: VEST/md_2016.zip Census/md2020.pl.zip Census/tl_2019_24_bg.zip
+assembled-state-MD.geojson: VEST/md_2016.zip Census/md2020.pl.zip Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/md_2016.zip Census/md2020.pl.zip /vsizip/Census/tl_2019_24_bg.zip
+		/vsizip/VEST/md_2016.zip Census/md2020.pl.zip /vsizip/Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-ME.geojson: VEST/me_2020.zip Census/me2020.pl.zip Census/tl_2019_23_bg.zip
+assembled-state-ME.geojson: VEST/me_2020.zip Census/me2020.pl.zip Census/tl_2019_23_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/me_2020.zip Census/me2020.pl.zip /vsizip/Census/tl_2019_23_bg.zip
+		/vsizip/VEST/me_2020.zip Census/me2020.pl.zip /vsizip/Census/tl_2019_23_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MA.geojson: VEST/ma_2016.zip Census/ma2020.pl.zip Census/tl_2019_25_bg.zip
+assembled-state-MA.geojson: VEST/ma_2016.zip Census/ma2020.pl.zip Census/tl_2019_25_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ma_2016.zip Census/ma2020.pl.zip /vsizip/Census/tl_2019_25_bg.zip
+		/vsizip/VEST/ma_2016.zip Census/ma2020.pl.zip /vsizip/Census/tl_2019_25_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MI.geojson: VEST/mi_2020.zip Census/mi2020.pl.zip Census/tl_2019_26_bg.zip
+assembled-state-MI.geojson: VEST/mi_2020.zip Census/mi2020.pl.zip Census/tl_2019_26_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mi_2020.zip Census/mi2020.pl.zip /vsizip/Census/tl_2019_26_bg.zip
+		/vsizip/VEST/mi_2020.zip Census/mi2020.pl.zip /vsizip/Census/tl_2019_26_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MN.geojson: VEST/mn_2020.zip Census/mn2020.pl.zip Census/tl_2019_27_bg.zip
+assembled-state-MN.geojson: VEST/mn_2020.zip Census/mn2020.pl.zip Census/tl_2019_27_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mn_2020.zip Census/mn2020.pl.zip /vsizip/Census/tl_2019_27_bg.zip
+		/vsizip/VEST/mn_2020.zip Census/mn2020.pl.zip /vsizip/Census/tl_2019_27_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MO.geojson: VEST/mo_2016.zip Census/mo2020.pl.zip Census/tl_2019_29_bg.zip
+assembled-state-MO.geojson: VEST/mo_2016.zip Census/mo2020.pl.zip Census/tl_2019_29_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mo_2016.zip Census/mo2020.pl.zip /vsizip/Census/tl_2019_29_bg.zip
+		/vsizip/VEST/mo_2016.zip Census/mo2020.pl.zip /vsizip/Census/tl_2019_29_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MT.geojson: VEST/mt_2020.zip Census/mt2020.pl.zip Census/tl_2019_30_bg.zip
+assembled-state-MT.geojson: VEST/mt_2020.zip Census/mt2020.pl.zip Census/tl_2019_30_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mt_2020.zip Census/mt2020.pl.zip /vsizip/Census/tl_2019_30_bg.zip
+		/vsizip/VEST/mt_2020.zip Census/mt2020.pl.zip /vsizip/Census/tl_2019_30_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NC.geojson: VEST/nc_2020.zip Census/nc2020.pl.zip Census/tl_2019_37_bg.zip
+assembled-state-NC.geojson: VEST/nc_2020.zip Census/nc2020.pl.zip Census/tl_2019_37_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nc_2020.zip Census/nc2020.pl.zip /vsizip/Census/tl_2019_37_bg.zip
+		/vsizip/VEST/nc_2020.zip Census/nc2020.pl.zip /vsizip/Census/tl_2019_37_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-ND.geojson: VEST/nd_2020.zip Census/nd2020.pl.zip Census/tl_2019_38_bg.zip
+assembled-state-ND.geojson: VEST/nd_2020.zip Census/nd2020.pl.zip Census/tl_2019_38_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nd_2020.zip Census/nd2020.pl.zip /vsizip/Census/tl_2019_38_bg.zip
+		/vsizip/VEST/nd_2020.zip Census/nd2020.pl.zip /vsizip/Census/tl_2019_38_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NE.geojson: VEST/ne_2020.zip Census/ne2020.pl.zip Census/tl_2019_31_bg.zip
+assembled-state-NE.geojson: VEST/ne_2020.zip Census/ne2020.pl.zip Census/tl_2019_31_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ne_2020.zip Census/ne2020.pl.zip /vsizip/Census/tl_2019_31_bg.zip
+		/vsizip/VEST/ne_2020.zip Census/ne2020.pl.zip /vsizip/Census/tl_2019_31_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NH.geojson: VEST/nh_2020.zip Census/nh2020.pl.zip Census/tl_2019_33_bg.zip
+assembled-state-NH.geojson: VEST/nh_2020.zip Census/nh2020.pl.zip Census/tl_2019_33_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nh_2020.zip Census/nh2020.pl.zip /vsizip/Census/tl_2019_33_bg.zip
+		/vsizip/VEST/nh_2020.zip Census/nh2020.pl.zip /vsizip/Census/tl_2019_33_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NJ.geojson: VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2019_34_bg.zip
+assembled-state-NJ.geojson: VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2019_34_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nj_2016.zip Census/nj2020.pl.zip /vsizip/Census/tl_2019_34_bg.zip
+		/vsizip/VEST/nj_2016.zip Census/nj2020.pl.zip /vsizip/Census/tl_2019_34_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NM.geojson: VEST/nm_2016.zip Census/nm2020.pl.zip Census/tl_2019_35_bg.zip
+assembled-state-NM.geojson: VEST/nm_2016.zip Census/nm2020.pl.zip Census/tl_2019_35_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nm_2016.zip Census/nm2020.pl.zip /vsizip/Census/tl_2019_35_bg.zip
+		/vsizip/VEST/nm_2016.zip Census/nm2020.pl.zip /vsizip/Census/tl_2019_35_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-NV.geojson: VEST/nv_2020.zip Census/nv2020.pl.zip Census/tl_2019_32_bg.zip
+assembled-state-NV.geojson: VEST/nv_2020.zip Census/nv2020.pl.zip Census/tl_2019_32_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nv_2020.zip Census/nv2020.pl.zip /vsizip/Census/tl_2019_32_bg.zip
+		/vsizip/VEST/nv_2020.zip Census/nv2020.pl.zip /vsizip/Census/tl_2019_32_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-OH.geojson: VEST/oh_2020.zip Census/oh2020.pl.zip Census/tl_2019_39_bg.zip
+assembled-state-OH.geojson: VEST/oh_2020.zip Census/oh2020.pl.zip Census/tl_2019_39_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/oh_2020.zip Census/oh2020.pl.zip /vsizip/Census/tl_2019_39_bg.zip
+		/vsizip/VEST/oh_2020.zip Census/oh2020.pl.zip /vsizip/Census/tl_2019_39_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-OK.geojson: VEST/ok_2020.zip Census/ok2020.pl.zip Census/tl_2019_40_bg.zip
+assembled-state-OK.geojson: VEST/ok_2020.zip Census/ok2020.pl.zip Census/tl_2019_40_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ok_2020.zip Census/ok2020.pl.zip /vsizip/Census/tl_2019_40_bg.zip
+		/vsizip/VEST/ok_2020.zip Census/ok2020.pl.zip /vsizip/Census/tl_2019_40_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-OR.geojson: VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2019_41_bg.zip
+assembled-state-OR.geojson: VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2019_41_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/or_2016.zip Census/or2020.pl.zip /vsizip/Census/tl_2019_41_bg.zip
+		/vsizip/VEST/or_2016.zip Census/or2020.pl.zip /vsizip/Census/tl_2019_41_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip
+assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/pa_2016.zip Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip
+		/vsizip/VEST/pa_2016.zip Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-RI.geojson: VEST/ri_2020.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
 		/vsizip/VEST/ri_2020.zip Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-SC.geojson: VEST/sc_2020.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip
+assembled-state-SC.geojson: VEST/sc_2020.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/sc_2020.zip Census/sc2020.pl.zip /vsizip/Census/tl_2011_45_bg.zip
+		/vsizip/VEST/sc_2020.zip Census/sc2020.pl.zip /vsizip/Census/tl_2011_45_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-SD.geojson: VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2011_46_bg.zip
+assembled-state-SD.geojson: VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2011_46_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/sd_2016.zip Census/sd2020.pl.zip /vsizip/Census/tl_2011_46_bg.zip
+		/vsizip/VEST/sd_2016.zip Census/sd2020.pl.zip /vsizip/Census/tl_2011_46_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-TN.geojson: VEST/tn_2016.zip Census/tn2020.pl.zip Census/tl_2019_47_bg.zip
+assembled-state-TN.geojson: VEST/tn_2016.zip Census/tn2020.pl.zip Census/tl_2019_47_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/tn_2016.zip Census/tn2020.pl.zip /vsizip/Census/tl_2019_47_bg.zip
+		/vsizip/VEST/tn_2016.zip Census/tn2020.pl.zip /vsizip/Census/tl_2019_47_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-UT.geojson: VEST/ut_2020.zip Census/ut2020.pl.zip Census/tl_2019_49_bg.zip
+assembled-state-UT.geojson: VEST/ut_2020.zip Census/ut2020.pl.zip Census/tl_2019_49_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ut_2020.zip Census/ut2020.pl.zip /vsizip/Census/tl_2019_49_bg.zip
+		/vsizip/VEST/ut_2020.zip Census/ut2020.pl.zip /vsizip/Census/tl_2019_49_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-VA.geojson: VEST/va_2016.zip Census/va2020.pl.zip Census/tl_2011_51_bg.zip
+assembled-state-VA.geojson: VEST/va_2016.zip Census/va2020.pl.zip Census/tl_2011_51_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/va_2016.zip Census/va2020.pl.zip /vsizip/Census/tl_2011_51_bg.zip
+		/vsizip/VEST/va_2016.zip Census/va2020.pl.zip /vsizip/Census/tl_2011_51_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-TX.geojson: VEST/tx_2020.zip Census/tx2020.pl.zip Census/tl_2019_48_bg.zip
+assembled-state-TX.geojson: VEST/tx_2020.zip Census/tx2020.pl.zip Census/tl_2019_48_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/tx_2020.zip Census/tx2020.pl.zip /vsizip/Census/tl_2019_48_bg.zip
+		/vsizip/VEST/tx_2020.zip Census/tx2020.pl.zip /vsizip/Census/tl_2019_48_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-VT.geojson: VEST/vt_2020.zip Census/vt2020.pl.zip Census/tl_2019_50_bg.zip
+assembled-state-VT.geojson: VEST/vt_2020.zip Census/vt2020.pl.zip Census/tl_2019_50_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/vt_2020.zip Census/vt2020.pl.zip /vsizip/Census/tl_2019_50_bg.zip
+		/vsizip/VEST/vt_2020.zip Census/vt2020.pl.zip /vsizip/Census/tl_2019_50_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-WA.geojson: VEST/wa_2016.zip Census/wa2020.pl.zip Census/tl_2019_53_bg.zip
+assembled-state-WA.geojson: VEST/wa_2016.zip Census/wa2020.pl.zip Census/tl_2019_53_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/wa_2016.zip Census/wa2020.pl.zip /vsizip/Census/tl_2019_53_bg.zip
+		/vsizip/VEST/wa_2016.zip Census/wa2020.pl.zip /vsizip/Census/tl_2019_53_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-WI.geojson: VEST/wi_2020.zip Census/wi2020.pl.zip Census/tl_2019_55_bg.zip
+assembled-state-WI.geojson: VEST/wi_2020.zip Census/wi2020.pl.zip Census/tl_2019_55_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/wi_2020.zip Census/wi2020.pl.zip /vsizip/Census/tl_2019_55_bg.zip
+		/vsizip/VEST/wi_2020.zip Census/wi2020.pl.zip /vsizip/Census/tl_2019_55_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-WY.geojson: VEST/wy_2020.zip Census/wy2020.pl.zip Census/tl_2019_56_bg.zip
+assembled-state-WY.geojson: VEST/wy_2020.zip Census/wy2020.pl.zip Census/tl_2019_56_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/wy_2020.zip Census/wy2020.pl.zip /vsizip/Census/tl_2019_56_bg.zip
+		/vsizip/VEST/wy_2020.zip Census/wy2020.pl.zip /vsizip/Census/tl_2019_56_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 # Linked from https://www.census.gov/programs-surveys/decennial-census/about/voting-rights/cvap.2019.html
 Census/CVAP_2015-2019_ACS_csv_files.zip:
