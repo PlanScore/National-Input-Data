@@ -15,9 +15,21 @@ import io
 import zipfile
 
 BLOCK_FIELDS = [
-    'GEOCODE', 'STATE', 'COUNTY', 'TRACT', 'BLOCK', #'NAME',
-    'P0010001', 'P0020002', 'P0020006',
-    'P0020013', 'P0020008', 'P0020015', 'P0030001', 'geometry',
+    'GEOCODE',
+    'STATE',
+    'COUNTY',
+    'TRACT',
+    'BLOCK',
+    #'NAME',
+    'AREALAND',
+    'P0010001',
+    'P0020002',
+    'P0020006',
+    'P0020013',
+    'P0020008',
+    'P0020015',
+    'P0030001',
+    'geometry',
 ]
 
 ACS_VARIABLES = [
@@ -473,7 +485,7 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     print(df_blocks2.columns)
     
     # Final output column mapping
-    df_blocks3 = df_blocks2[df_blocks2.P0030001 > 0].rename(
+    df_blocks3 = df_blocks2.rename(
         columns={'GEOCODE': 'GEOID20'}
     )[[
         'GEOID20',
