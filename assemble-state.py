@@ -384,9 +384,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     while True:
         starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     
-        # Join precinct votes to any populated block spatially contained within
+        # Join precinct votes to any land block spatially contained within
         df_blocks2 = geopandas.sjoin(
-            df_blocks[df_blocks.P0010001 > 0],
+            df_blocks[df_blocks.AREALAND > 0],
             df_votes[['geometry', VOTES_DEM, VOTES_REP]],
             op='within', how='left', rsuffix='votes')
     
@@ -439,17 +439,17 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
             # Stop altogether if missing count is low enough
             stop_moving = True
 
-    # Sum population for each voting precinct
+    # Sum land area for each voting precinct
     df_blocks3 = df_blocks2\
-        .groupby('index_votes', as_index=False).P0010001.sum()\
-        .rename(columns={'P0010001': 'P0010001_precinct'})
+        .groupby('index_votes', as_index=False).AREALAND.sum()\
+        .rename(columns={'AREALAND': 'AREALAND_precinct'})
     
-    # Join complete blocks with votes to precinct-summed population
+    # Join complete blocks with votes to precinct-summed land area
     df_blocks4 = df_blocks3.merge(df_blocks2, on='index_votes', how='left')
     
-    # Scale presidential votes by population block/precinct fraction
-    df_blocks4[VOTES_DEM] *= (df_blocks4.P0010001 / df_blocks4.P0010001_precinct)
-    df_blocks4[VOTES_REP] *= (df_blocks4.P0010001 / df_blocks4.P0010001_precinct)
+    # Scale presidential votes by land area block/precinct fraction
+    df_blocks4[VOTES_DEM] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
+    df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP]]
