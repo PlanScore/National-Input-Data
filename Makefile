@@ -24,6 +24,7 @@ all: assembled-state-TX.geojson \
      assembled-state-AR.geojson \
      assembled-state-AZ.geojson \
      assembled-state-CO.geojson \
+     assembled-state-CT.geojson \
      assembled-state-DC.geojson \
      assembled-state-DE.geojson \
      assembled-state-GA.geojson \
@@ -71,6 +72,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_AZ -nlt Point -overwrite $@ assembled-state-AZ.geojson
 	ogr2ogr -f GPKG -nln blocks_CA -nlt Point -overwrite $@ assembled-state-CA.geojson
 	ogr2ogr -f GPKG -nln blocks_CO -nlt Point -overwrite $@ assembled-state-CO.geojson
+	ogr2ogr -f GPKG -nln blocks_CT -nlt Point -overwrite $@ assembled-state-CT.geojson
 	ogr2ogr -f GPKG -nln blocks_DC -nlt Point -overwrite $@ assembled-state-DC.geojson
 	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
 	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
@@ -118,6 +120,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_AZ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/az_2020.zip
 	ogr2ogr -f GPKG -nln votes_CA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ca_2016.zip
 	ogr2ogr -f GPKG -nln votes_CO -nlt MultiPolygon -overwrite $@ /vsizip/VEST/co_2020.zip
+	ogr2ogr -f GPKG -nln votes_CT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/tc_2020.zip
 	ogr2ogr -f GPKG -nln votes_DC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/dc_2020.zip
 	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/de_2020.zip
 	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2020.zip
@@ -183,6 +186,10 @@ assembled-state-CA.geojson: VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2019
 assembled-state-CO.geojson: VEST/co_2020.zip Census/co2020.pl.zip Census/tl_2019_08_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
 		/vsizip/VEST/co_2020.zip Census/co2020.pl.zip /vsizip/Census/tl_2019_08_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+
+assembled-state-CT.geojson: VEST/ct_2020.zip Census/ct2020.pl.zip Census/tl_2019_09_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+	./assemble-state.py $@ \
+		/vsizip/VEST/ct_2020.zip Census/ct2020.pl.zip /vsizip/Census/tl_2019_09_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-DC.geojson: VEST/dc_2020.zip Census/dc2020.pl.zip Census/tl_2019_11_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \

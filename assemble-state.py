@@ -40,12 +40,6 @@ ACS_VARIABLES = [
     'B15003_018E',
     #'B19013_001E',
     'B29001_001E',
-    'cvap_1_est',
-    'cvap_4_est',
-    'cvap_5_est',
-    'cvap_9_est',
-    'cvap_10_est',
-    'cvap_13_est',
     'B01001_001M',
     'B02009_001M',
     'B03002_012M',
@@ -53,6 +47,15 @@ ACS_VARIABLES = [
     'B15003_018M',
     #'B19013_001M',
     'B29001_001M',
+]
+
+CVAP_VARIABLES = [
+    'cvap_1_est',
+    'cvap_4_est',
+    'cvap_5_est',
+    'cvap_9_est',
+    'cvap_10_est',
+    'cvap_13_est',
     'cvap_1_moe',
     'cvap_4_moe',
     'cvap_5_moe',
@@ -332,7 +335,7 @@ def get_acs(df_bgs, acs_year):
         'TRACTCE',
         'BLKGRPCE',
         'geometry',
-        ] + ACS_VARIABLES]
+        ] + ACS_VARIABLES + CVAP_VARIABLES]
     
     print(df_bgs3)
     
@@ -353,14 +356,14 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     df_blocks4 = df_blocks2.merge(df_bg3, on='GEOID', how='right')
     
     # Scale survey data by land area block/group fraction
-    for variable in ACS_VARIABLES:
+    for variable in (ACS_VARIABLES + CVAP_VARIABLES):
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
         df_blocks4[variable] *= (df_blocks4.P0030001 / df_blocks4.P0030001_bg)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES]
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES + CVAP_VARIABLES]
     
     output_population = df_blocks5['P0010001'].sum()
     missing_population = abs(1 - input_population / output_population)
