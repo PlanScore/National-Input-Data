@@ -455,7 +455,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP]]
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP, 'index_votes']]
     
     output_votes = df_blocks5[VOTES_DEM].sum() + df_blocks5[VOTES_REP].sum()
     
@@ -489,10 +489,11 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     
     # Final output column mapping
     df_blocks3 = df_blocks2.rename(
-        columns={'GEOCODE': 'GEOID20'}
+        columns={'GEOCODE': 'GEOID20', 'index_votes': 'precinct'}
     )[[
         'GEOID20',
         'geometry',
+        'precinct',
     ]]
     
     if VOTES_DEM20 in df_blocks2.columns:
