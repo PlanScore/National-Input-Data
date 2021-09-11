@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import io
+import sys
 import csv
 import zipfile
 import geopandas
@@ -7,8 +8,10 @@ import geopandas
 assemble = __import__('assemble-state')
 
 if __name__ == '__main__':
-    blocks = assemble.load_blocks('Census/ri2020.pl.zip')
-    precincts = geopandas.read_file('/vsizip/VEST/ri_2020.zip').to_crs(epsg=4326)
+    blocks_path, precincts_source, output_path = sys.argv[1:]
+
+    blocks = assemble.load_blocks(blocks_path)
+    precincts = geopandas.read_file(precincts_source)
     
     joined1 = geopandas.sjoin(blocks, precincts.to_crs(blocks.crs), op='within', lsuffix='block', rsuffix='precinct')
     
@@ -17,9 +20,10 @@ if __name__ == '__main__':
     joined2 = joined1[[
         column for column in joined1.columns
         if column not in ('geometry',)
+        and not column.startswith('G20')
     ]]
     
     print(joined2)
     
-    joined2.to_csv('/tmp/ri2020-blocks-votes.csv')
+    joined2.to_csv(output_path)
 
