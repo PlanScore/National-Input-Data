@@ -129,12 +129,12 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_IA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ia_2020.zip
 	ogr2ogr -f GPKG -nln votes_ID -nlt MultiPolygon -overwrite $@ /vsizip/VEST/id_2020.zip
 	ogr2ogr -f GPKG -nln votes_IL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/il_2020.zip
-	ogr2ogr -f GPKG -nln votes_IN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/in_2016.zip
+	ogr2ogr -f GPKG -nln votes_IN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/in_2020.zip
 	ogr2ogr -f GPKG -nln votes_KS -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ks_2020.zip
 	ogr2ogr -f GPKG -nln votes_KY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ky_2016.zip
 	ogr2ogr -f GPKG -nln votes_LA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/la_2020.zip
 	ogr2ogr -f GPKG -nln votes_MA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ma_2020.zip
-	ogr2ogr -f GPKG -nln votes_MD -nlt MultiPolygon -overwrite $@ /vsizip/VEST/md_2016.zip
+	ogr2ogr -f GPKG -nln votes_MD -nlt MultiPolygon -overwrite $@ /vsizip/VEST/md_2020.zip
 	ogr2ogr -f GPKG -nln votes_ME -nlt MultiPolygon -overwrite $@ /vsizip/VEST/me_2020.zip
 	ogr2ogr -f GPKG -nln votes_MI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mi_2020.zip
 	ogr2ogr -f GPKG -nln votes_MN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mn_2020.zip
@@ -223,9 +223,9 @@ assembled-state-IL.geojson: VEST/il_2020.zip Census/il2020.pl.zip Census/tl_2019
 	./assemble-state.py $@ \
 		/vsizip/VEST/il_2020.zip Census/il2020.pl.zip /vsizip/Census/tl_2019_17_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-IN.geojson: VEST/in_2016.zip Census/in2020.pl.zip Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+assembled-state-IN.geojson: VEST/in_2020.zip Census/in2020.pl.zip Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/in_2016.zip Census/in2020.pl.zip /vsizip/Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+		/vsizip/VEST/in_2020.zip Census/in2020.pl.zip /vsizip/Census/tl_2019_18_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-KS.geojson: VEST/ks_2020.zip Census/ks2020.pl.zip Census/tl_2019_20_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
@@ -239,9 +239,9 @@ assembled-state-LA.geojson: VEST/la_2020.zip Census/la2020.pl.zip Census/tl_2019
 	./assemble-state.py $@ \
 		/vsizip/VEST/la_2020.zip Census/la2020.pl.zip /vsizip/Census/tl_2019_22_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-MD.geojson: VEST/md_2016.zip Census/md2020.pl.zip Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+assembled-state-MD.geojson: VEST/md_2020.zip Census/md2020.pl.zip Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/md_2016.zip Census/md2020.pl.zip /vsizip/Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+		/vsizip/VEST/md_2020.zip Census/md2020.pl.zip /vsizip/Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-ME.geojson: VEST/me_2020.zip Census/me2020.pl.zip Census/tl_2019_23_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
