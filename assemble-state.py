@@ -72,6 +72,8 @@ VOTES_DEM_P20 = 'US President 2020 - DEM'
 VOTES_REP_P20 = 'US President 2020 - REP'
 VOTES_DEM_S16 = 'US Senate 2016 - DEM'
 VOTES_REP_S16 = 'US Senate 2016 - REP'
+VOTES_DEM_S18 = 'US Senate 2018 - DEM'
+VOTES_REP_S18 = 'US Senate 2018 - REP'
 VOTES_DEM_S20 = 'US Senate 2020 - DEM'
 VOTES_REP_S20 = 'US Senate 2020 - REP'
 
@@ -82,6 +84,8 @@ VOTE_COLUMNS = (
     VOTES_REP_P20,
     VOTES_DEM_S16,
     VOTES_REP_S16,
+    VOTES_DEM_S18,
+    VOTES_REP_S18,
     VOTES_DEM_S20,
     VOTES_REP_S20,
 )
@@ -134,6 +138,8 @@ def load_votes(votes_source):
         'G20PRER': VOTES_REP_P20,
         'G16USSD': VOTES_DEM_S16,
         'G16USSR': VOTES_REP_S16,
+        'G18USSD': VOTES_DEM_S18,
+        'G18USSR': VOTES_REP_S18,
         'G20USSD': VOTES_DEM_S20,
         'G20USSR': VOTES_REP_S20,
     }
@@ -471,6 +477,8 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     ]]
     if VOTES_DEM in (VOTES_DEM_P20, VOTES_DEM_S20):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2020'})
+    elif VOTES_DEM in (VOTES_DEM_S18, ):
+        df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2018'})
     elif VOTES_DEM in (VOTES_DEM_P16, VOTES_DEM_S16):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2016'})
     
@@ -482,20 +490,26 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
 
     return df_blocks6
 
-def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
+def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2019')
     df_blocks = load_blocks(blocks_source)
-    df_votes = load_votes(votes_source)
-    
     print_df(df_blocks, 'df_blocks')
-    print_df(df_votes, 'df_votes')
+
     df_blocksV = df_blocks
-    if VOTES_DEM_P20 in df_votes.columns:
-        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20)
-    if VOTES_DEM_S20 in df_votes.columns:
-        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S20, VOTES_REP_S20)
-    if VOTES_DEM_P16 in df_votes.columns:
-        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
+    for votes_source in reversed(votes_sources):
+        df_votes = load_votes(votes_source)
+        print_df(df_votes, votes_source)
+
+        if VOTES_DEM_P20 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20)
+        if VOTES_DEM_S20 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S20, VOTES_REP_S20)
+        if VOTES_DEM_S18 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S18, VOTES_REP_S18)
+        if VOTES_DEM_P16 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
+        if VOTES_DEM_S16 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16)
     
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
@@ -513,6 +527,7 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
             'GEOCODE',
             'geometry',
             'index_votes2016',
+            'index_votes2018',
             'index_votes2020',
         )
         if column in df_blocks2.columns
@@ -520,6 +535,7 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
         columns={
             'GEOCODE': 'GEOID20',
             'index_votes2020': 'precinct2020',
+            'index_votes2018': 'precinct2018',
             'index_votes2016': 'precinct2016',
         }
     )
@@ -533,6 +549,9 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     if VOTES_DEM_S20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S20] = df_blocks2[VOTES_DEM_S20].round(5)
         df_blocks3[VOTES_REP_S20] = df_blocks2[VOTES_REP_S20].round(5)
+    if VOTES_DEM_S18 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_S18] = df_blocks2[VOTES_DEM_S18].round(5)
+        df_blocks3[VOTES_REP_S18] = df_blocks2[VOTES_REP_S18].round(5)
     if VOTES_DEM_S16 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S16] = df_blocks2[VOTES_DEM_S16].round(5)
         df_blocks3[VOTES_REP_S16] = df_blocks2[VOTES_REP_S16].round(5)
@@ -568,7 +587,7 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('output_dest')
-parser.add_argument('votes_source')
+parser.add_argument('votes_sources', nargs='*')
 parser.add_argument('blocks_source')
 parser.add_argument('bgs_source')
 parser.add_argument('cvap_source')
@@ -577,7 +596,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     exit(main(
         args.output_dest,
-        args.votes_source,
+        args.votes_sources,
         args.blocks_source,
         args.bgs_source,
         args.cvap_source,

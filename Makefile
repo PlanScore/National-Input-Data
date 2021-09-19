@@ -311,9 +311,10 @@ assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019
 	./assemble-state.py $@ \
 		/vsizip/VEST/pa_2016.zip Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-RI.geojson: VEST/ri_2020.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+assembled-state-RI.geojson: VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ri_2020.zip Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+		/vsizip/VEST/ri_2020.zip /vsizip/VEST/ri_2018.zip /vsizip/VEST/ri_2016.zip \
+		Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-SC.geojson: VEST/sc_2020.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
