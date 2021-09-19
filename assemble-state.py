@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import argparse
 import urllib.parse
 import collections
 import hashlib
@@ -13,6 +14,7 @@ import shapely.geometry
 import csv
 import io
 import zipfile
+import re
 
 BLOCK_FIELDS = [
     'GEOCODE',
@@ -64,10 +66,25 @@ CVAP_VARIABLES = [
     'cvap_13_moe',
 ]
 
-VOTES_DEM16 = 'US President 2016 - DEM'
-VOTES_REP16 = 'US President 2016 - REP'
-VOTES_DEM20 = 'US President 2020 - DEM'
-VOTES_REP20 = 'US President 2020 - REP'
+VOTES_DEM_P16 = 'US President 2016 - DEM'
+VOTES_REP_P16 = 'US President 2016 - REP'
+VOTES_DEM_P20 = 'US President 2020 - DEM'
+VOTES_REP_P20 = 'US President 2020 - REP'
+VOTES_DEM_S16 = 'US Senate 2016 - DEM'
+VOTES_REP_S16 = 'US Senate 2016 - REP'
+VOTES_DEM_S20 = 'US Senate 2020 - DEM'
+VOTES_REP_S20 = 'US Senate 2020 - REP'
+
+VOTE_COLUMNS = (
+    VOTES_DEM_P16,
+    VOTES_REP_P16,
+    VOTES_DEM_P20,
+    VOTES_REP_P20,
+    VOTES_DEM_S16,
+    VOTES_REP_S16,
+    VOTES_DEM_S20,
+    VOTES_REP_S20,
+)
 
 def memoize(func):
     def new_func(*args, **kwargs):
@@ -105,45 +122,37 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
     df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
     df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
 
-@memoize
+#@memoize
 def load_votes(votes_source):
+    ''' Return dataframe with vote columns and geometry only
+    '''
+    vote_pattern = re.compile(r'^G(16|18|20)(PRE|USS)(D|R)', re.I)
+    column_mapping = {
+        'G16PRED': VOTES_DEM_P16,
+        'G16PRER': VOTES_REP_P16,
+        'G20PRED': VOTES_DEM_P20,
+        'G20PRER': VOTES_REP_P20,
+        'G16USSD': VOTES_DEM_S16,
+        'G16USSR': VOTES_REP_S16,
+        'G20USSD': VOTES_DEM_S20,
+        'G20USSR': VOTES_REP_S20,
+    }
+
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
     
-    df2 = df.rename(columns={
-        'G16PREDCLI': VOTES_DEM16,
-        'G16PRERTRU': VOTES_REP16,
-        'G20PREDBID': VOTES_DEM20,
-        'G20PRERTRU': VOTES_REP20,
-        'G16PREDCli': VOTES_DEM16,
-        'G16PRERTru': VOTES_REP16,
-        'G20PREDBid': VOTES_DEM20,
-        'G20PRERTru': VOTES_REP20,
+    df2 = df[[
+        column for column in df.columns
+        if vote_pattern.match(column)
+        or column == 'geometry'
+    ]]
+
+    df3 = df2.rename(columns={
+        column: column_mapping[vote_pattern.match(column).group(0).upper()]
+        for column in df2.columns
+        if vote_pattern.match(column)
     })
     
-    assert VOTES_DEM20 in df2.columns or VOTES_DEM16 in df2.columns
-    assert VOTES_REP20 in df2.columns or VOTES_REP16 in df2.columns
-    
-    if VOTES_DEM20 in df2.columns:
-        df3 = df2[[
-            #'STATEFP',
-            #'COUNTYFP',
-            #'NAME',
-            VOTES_DEM20,
-            VOTES_REP20,
-            'geometry'
-            ]]
-    else:
-        df3 = df2[[
-            #'STATEFP',
-            #'COUNTYFP',
-            #'NAME',
-            VOTES_DEM16,
-            VOTES_REP16,
-            'geometry'
-            ]]
-    
-    print(df3)
-    
+    print_df(df3, votes_source)
     return df3
 
 @memoize
@@ -380,7 +389,7 @@ def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
 
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
-    ''' Return df_blocks[BLOCK_FIELDS + votes + precinct]
+    ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     stop_moving = False
@@ -456,10 +465,13 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP, 'index_votes']]
-    if (VOTES_DEM, VOTES_REP) == (VOTES_DEM20, VOTES_REP20):
+    df_blocks5 = df_blocks4[BLOCK_FIELDS + ['index_votes'] + [
+        column for column in df_blocks4.columns
+        if column in VOTE_COLUMNS
+    ]]
+    if VOTES_DEM in (VOTES_DEM_P20, VOTES_DEM_S20):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2020'})
-    else:
+    elif VOTES_DEM in (VOTES_DEM_P16, VOTES_DEM_S16):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2016'})
     
     output_votes = df_blocks6[VOTES_DEM].sum() + df_blocks6[VOTES_REP].sum()
@@ -477,10 +489,13 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     
     print_df(df_blocks, 'df_blocks')
     print_df(df_votes, 'df_votes')
-    if VOTES_DEM20 in df_votes.columns:
-        df_blocksV = join_blocks_votes(df_blocks, df_votes, VOTES_DEM20, VOTES_REP20)
-    else:
-        df_blocksV = join_blocks_votes(df_blocks, df_votes, VOTES_DEM16, VOTES_REP16)
+    df_blocksV = df_blocks
+    if VOTES_DEM_P20 in df_votes.columns:
+        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20)
+    if VOTES_DEM_S20 in df_votes.columns:
+        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S20, VOTES_REP_S20)
+    if VOTES_DEM_P16 in df_votes.columns:
+        df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
     
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
@@ -509,12 +524,19 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
         }
     )
     
-    if VOTES_DEM20 in df_blocks2.columns:
-        df_blocks3[VOTES_DEM20] = df_blocks2[VOTES_DEM20].round(5)
-        df_blocks3[VOTES_REP20] = df_blocks2[VOTES_REP20].round(5)
-    else:
-        df_blocks3[VOTES_DEM16] = df_blocks2[VOTES_DEM16].round(5)
-        df_blocks3[VOTES_REP16] = df_blocks2[VOTES_REP16].round(5)
+    if VOTES_DEM_P20 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_P20] = df_blocks2[VOTES_DEM_P20].round(5)
+        df_blocks3[VOTES_REP_P20] = df_blocks2[VOTES_REP_P20].round(5)
+    if VOTES_DEM_P16 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_P16] = df_blocks2[VOTES_DEM_P16].round(5)
+        df_blocks3[VOTES_REP_P16] = df_blocks2[VOTES_REP_P16].round(5)
+    if VOTES_DEM_S20 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_S20] = df_blocks2[VOTES_DEM_S20].round(5)
+        df_blocks3[VOTES_REP_S20] = df_blocks2[VOTES_REP_S20].round(5)
+    if VOTES_DEM_S16 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_S16] = df_blocks2[VOTES_DEM_S16].round(5)
+        df_blocks3[VOTES_REP_S16] = df_blocks2[VOTES_REP_S16].round(5)
+
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     #df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
     #df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
@@ -544,6 +566,19 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     
     df_blocks3.to_file(output_dest, driver='GeoJSON')
 
+parser = argparse.ArgumentParser()
+parser.add_argument('output_dest')
+parser.add_argument('votes_source')
+parser.add_argument('blocks_source')
+parser.add_argument('bgs_source')
+parser.add_argument('cvap_source')
+
 if __name__ == '__main__':
-    output_dest, votes_source, blocks_source, bgs_source, cvap_source = sys.argv[1:]
-    exit(main(output_dest, votes_source, blocks_source, bgs_source, cvap_source))
+    args = parser.parse_args()
+    exit(main(
+        args.output_dest,
+        args.votes_source,
+        args.blocks_source,
+        args.bgs_source,
+        args.cvap_source,
+    ))
