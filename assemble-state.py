@@ -380,7 +380,8 @@ def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
 
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
-
+    ''' Return df_blocks[BLOCK_FIELDS + votes + precinct]
+    '''
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     stop_moving = False
     
@@ -456,14 +457,18 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + [VOTES_DEM, VOTES_REP, 'index_votes']]
+    if (VOTES_DEM, VOTES_REP) == (VOTES_DEM20, VOTES_REP20):
+        df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2020'})
+    else:
+        df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2016'})
     
-    output_votes = df_blocks5[VOTES_DEM].sum() + df_blocks5[VOTES_REP].sum()
+    output_votes = df_blocks6[VOTES_DEM].sum() + df_blocks6[VOTES_REP].sum()
     
     # Complain if five or more votes are unaccounted for
     assert (abs(output_votes - input_votes) < 5), \
         '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
 
-    return df_blocks5
+    return df_blocks6
 
 def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2019')
@@ -488,13 +493,21 @@ def main(output_dest, votes_source, blocks_source, bgs_source, cvap_source):
     print(df_blocks2.columns)
     
     # Final output column mapping
-    df_blocks3 = df_blocks2.rename(
-        columns={'GEOCODE': 'GEOID20', 'index_votes': 'precinct'}
-    )[[
-        'GEOID20',
-        'geometry',
-        'precinct',
-    ]]
+    df_blocks3 = df_blocks2[[
+        column for column in (
+            'GEOCODE',
+            'geometry',
+            'index_votes2016',
+            'index_votes2020',
+        )
+        if column in df_blocks2.columns
+    ]].rename(
+        columns={
+            'GEOCODE': 'GEOID20',
+            'index_votes2020': 'precinct2020',
+            'index_votes2016': 'precinct2016',
+        }
+    )
     
     if VOTES_DEM20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM20] = df_blocks2[VOTES_DEM20].round(5)
