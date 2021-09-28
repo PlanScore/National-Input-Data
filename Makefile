@@ -118,7 +118,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_AL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/al_2020.zip
 	ogr2ogr -f GPKG -nln votes_AR -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ar_2020.zip
 	ogr2ogr -f GPKG -nln votes_AZ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/az_2020.zip
-	ogr2ogr -f GPKG -nln votes_CA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ca_2016.zip
+	ogr2ogr -f GPKG -nln votes_CA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ca_2020.zip
 	ogr2ogr -f GPKG -nln votes_CO -nlt MultiPolygon -overwrite $@ /vsizip/VEST/co_2020.zip
 	ogr2ogr -f GPKG -nln votes_CT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/tc_2020.zip
 	ogr2ogr -f GPKG -nln votes_DC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/dc_2020.zip
@@ -183,9 +183,9 @@ assembled-state-AZ.geojson: VEST/az_2020.zip VEST/az_2018.zip VEST/az_2016.zip C
 		/vsizip/VEST/az_2020.zip /vsizip/VEST/az_2018.zip /vsizip/VEST/az_2016.zip \
 		Census/az2020.pl.zip /vsizip/Census/tl_2019_04_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-CA.geojson: VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2019_06_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+assembled-state-CA.geojson: VEST/ca_2020.zip Census/ca2020.pl.zip Census/tl_2019_06_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ca_2016.zip \
+		/vsizip/VEST/ca_2020.zip \
 		Census/ca2020.pl.zip /vsizip/Census/tl_2019_06_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-CO.geojson: VEST/co_2020.zip VEST/co_2018.zip VEST/co_2016.zip Census/co2020.pl.zip Census/tl_2019_08_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
