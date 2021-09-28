@@ -338,9 +338,9 @@ assembled-state-OK.geojson: VEST/ok_2020.zip VEST/ok_2018.zip VEST/ok_2016.zip C
 		/vsizip/VEST/ok_2020.zip /vsizip/VEST/ok_2018.zip /vsizip/VEST/ok_2016.zip \
 		Census/ok2020.pl.zip /vsizip/Census/tl_2019_40_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
-assembled-state-OR.geojson: VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2019_41_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
+assembled-state-OR.geojson: VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2019_41_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/or_2016.zip \
+		/vsizip/VEST/or_2020.zip /vsizip/VEST/or_2018.zip /vsizip/VEST/or_2016.zip \
 		Census/or2020.pl.zip /vsizip/Census/tl_2019_41_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
