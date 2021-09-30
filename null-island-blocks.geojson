@@ -32,7 +32,7 @@
       "properties": {
         "GEOCODE": "0200",
         "P0010001": 2,
-        "AREALAND": 100,
+        "AREALAND": 101,
 
         "STATE": "00",
         "COUNTY": "000",
@@ -58,7 +58,7 @@
       "properties": {
         "GEOCODE": "0300",
         "P0010001": 4,
-        "AREALAND": 100,
+        "AREALAND": 102,
 
         "STATE": "00",
         "COUNTY": "000",
@@ -84,7 +84,7 @@
       "properties": {
         "GEOCODE": "0500",
         "P0010001": 8,
-        "AREALAND": 100,
+        "AREALAND": 104,
 
         "STATE": "00",
         "COUNTY": "000",
@@ -110,7 +110,7 @@
       "properties": {
         "GEOCODE": "0800",
         "P0010001": 16,
-        "AREALAND": 100,
+        "AREALAND": 108,
 
         "STATE": "00",
         "COUNTY": "000",
@@ -136,7 +136,7 @@
       "properties": {
         "GEOCODE": "1000",
         "P0010001": 32,
-        "AREALAND": 100,
+        "AREALAND": 116,
 
         "STATE": "00",
         "COUNTY": "000",
