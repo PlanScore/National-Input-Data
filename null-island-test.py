@@ -81,7 +81,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     
         # Join precinct votes to any land block spatially contained within
         # Progressively buffer census blocks by larger amounts to intersect
-        for r in [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
+        for r in [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
             df_blocks2 = geopandas.sjoin(
                 df_blocks,
                 df_votes[['geometry', VOTES_DEM, VOTES_REP]],
@@ -96,7 +96,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
             if df_blocks2_unmatched.empty:
                 print('* ' * 40)
                 break
-            #assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+            assemble.print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r:.5f}')
             
             # Buffer unmatched blocks so they'll match
             geom_index = df_blocks.columns.get_loc('geometry')
@@ -156,27 +156,27 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     output_votes = df_blocks4[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     output_people = df_blocks4.P0010001.sum()
 
-    assert input_votes == output_votes, \
+    assert round(input_votes) == round(output_votes), \
         '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
-    assert input_people == output_people, \
+    assert round(input_people) == round(output_people), \
         '{} people unnaccounted for'.format(abs(output_people - input_people))
     
     return df_blocks4
     
 
 if __name__ == '__main__':
-    df_blocks = geopandas.read_file('null-island-blocks.geojson')
+    df_blocks1 = geopandas.read_file('null-island-blocks.geojson')
     df_votes1 = geopandas.read_file('null-island-precincts-normal.geojson')
     
-    assemble.print_df(df_blocks, 'df_blocks')
+    assemble.print_df(df_blocks1, 'df_blocks1')
     assemble.print_df(df_votes1, 'df_votes1')
     
     joined1 = join_blocks_votes(
-        df_blocks, df_votes1, 'US President 2020 - DEM', 'US President 2020 - REP',
+        df_blocks1, df_votes1, 'US President 2020 - DEM', 'US President 2020 - REP',
     )
 
     assemble.print_df(joined1, 'joined1')
-    geocodes = sorted(list(df_blocks.GEOCODE))
+    geocodes = sorted(list(df_blocks1.GEOCODE))
     geocodes1 = sorted(list(joined1.GEOCODE))
     
     assert geocodes1 == geocodes, f"Should not have {', '.join(geocodes1)} GEOCODE column"
@@ -192,10 +192,20 @@ if __name__ == '__main__':
     assemble.print_df(df_votes2, 'df_votes2')
     
     joined2 = join_blocks_votes(
-        df_blocks, df_votes2, 'US President 2020 - DEM', 'US President 2020 - REP',
+        df_blocks1, df_votes2, 'US President 2020 - DEM', 'US President 2020 - REP',
     )
 
     assemble.print_df(joined2, 'joined2')
+    joined2b = joined2.merge(
+        df_votes2[['Name']],
+        how='left',
+        left_on=joined2.index_votes,
+        right_on=df_votes2.index,
+        suffixes=('_block', '_precinct'),
+    )
+    assemble.print_df(joined2b, 'joined2b')
+    print(joined2b.columns)
+    joined2b.to_csv('/tmp/joined-NULL.csv')
     geocodes2 = sorted(list(joined2.GEOCODE))
     
     assert geocodes2 == geocodes, f"Should not have {', '.join(geocodes2)} GEOCODE column"
@@ -205,3 +215,28 @@ if __name__ == '__main__':
         f"Should not have {joined2['US President 2020 - DEM'].sum()} democratic votes"
     assert joined2['P0010001'].sum() == 63, \
         f"Should not have {joined2['P0010001'].sum()} total population"
+    
+    #exit()
+    
+    df_blocks2 = assemble.load_blocks('Census/or2020.pl.zip')
+    df_votes3 = geopandas.read_file('/vsizip/VEST/or_2020.zip').to_crs(df_blocks2.crs)
+    
+    print('/' * 80)
+    assemble.print_df(df_blocks2, 'df_blocks2')
+    assemble.print_df(df_votes3, 'df_votes3')
+
+    joined3 = join_blocks_votes(
+        df_blocks2, df_votes3, 'G20PREDBID', 'G20PRERTRU',
+    )
+
+    assemble.print_df(joined3, 'joined3')
+    joined3b = joined3.merge(
+        df_votes3[['STATE', 'COUNTY', 'PRECINCT', 'NAME']],
+        how='left',
+        left_on=joined3.index_votes,
+        right_on=df_votes3.index,
+        suffixes=('_block', '_precinct'),
+    )
+    assemble.print_df(joined3b, 'joined3b')
+    print(joined3b.columns)
+    joined3b.to_csv('/tmp/joined-OR.csv')
