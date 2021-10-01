@@ -80,11 +80,28 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         starting_people = df_blocks.P0010001.sum() + df_blocks.P0010001.sum()
     
         # Join precinct votes to any land block spatially contained within
-        df_blocks2 = geopandas.sjoin(
-            df_blocks,
-            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
-            op='within', how='left', rsuffix='votes')
-        #assemble.print_df(df_blocks2, 'df_blocks2')
+        # Progressively buffer census blocks by larger amounts to intersect
+        for r in [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
+            df_blocks2 = geopandas.sjoin(
+                df_blocks,
+                df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+                op='intersects', how='left', rsuffix='votes')
+            #assemble.print_df(df_blocks2, 'df_blocks2')
+        
+            # Note any unmatched blocks
+            df_blocks2_unmatched = get_unmatched_blocks(df_blocks2)
+            #assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+            
+            # Stop if no unmatched blocks are found
+            if df_blocks2_unmatched.empty:
+                print('* ' * 40)
+                break
+            #assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+            
+            # Buffer unmatched blocks so they'll match
+            geom_index = df_blocks.columns.get_loc('geometry')
+            for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
+                df_blocks.iat[bad_index, geom_index] = bad_row.geometry.centroid.buffer(r, 2)
 
         # Note any missing precincts and their vote counts
         df_votes_matched, df_votes_unmatched \
@@ -114,6 +131,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
         assert starting_people == ending_people, \
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
+
+    # Un-buffer blocks now that they are all matched
+    df_blocks2.geometry = df_blocks2.geometry.centroid
 
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
