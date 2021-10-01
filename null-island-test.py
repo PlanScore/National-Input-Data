@@ -7,6 +7,37 @@ import geopandas
 
 assemble = __import__('assemble-state')
 
+def get_unmatched_votes(df_votes, df_joined, VOTES_DEM, VOTES_REP):
+    ''' Get partial df_votes where no block matches but votes exist
+    '''
+    matched_vote_indexes = set(df_joined.index_votes.dropna())
+    missing_vote_indexes = set(df_votes.index) - matched_vote_indexes
+    df_votes_unmatched = df_votes.iloc[list(missing_vote_indexes),:]
+
+    df_votes_unmatched_with_votes = df_votes_unmatched[
+        (df_votes_unmatched[VOTES_DEM] > 0) | (df_votes_unmatched[VOTES_REP] > 0)
+    ]
+
+    return df_votes_unmatched_with_votes
+
+def get_unmatched_blocks(df_blocks):
+    ''' Get partial df_blocks where no df_votes index has been matched
+    '''
+    unmatched_block_flags = df_blocks.index_votes.isna()
+    df_blocks_unmatched = df_blocks[unmatched_block_flags]
+    
+    return df_blocks_unmatched
+
+def get_unique_blocks(df_blocks):
+    ''' Get partial df_blocks with unique matching df_votes
+    '''
+    matched_block_flags = ~df_blocks.index_votes.isna()
+    df_blocks_matched = df_blocks[matched_block_flags]
+    unique_block_flags = ~df_blocks_matched.index.duplicated()
+    df_blocks_matched_unique = df_blocks_matched[unique_block_flags]
+    
+    return df_blocks_matched_unique
+
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
@@ -29,21 +60,15 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         assemble.print_df(df_blocks2, 'df_blocks2')
 
         # Note any missing precincts and their vote counts
-        matched_vote_indexes = set(df_blocks2.index_votes.dropna())
-        missing_vote_indexes = set(df_votes.index) - matched_vote_indexes
-        df_votes_unmatched = df_votes.iloc[list(missing_vote_indexes),:]
+        df_votes_unmatched = get_unmatched_votes(df_votes, df_blocks2, VOTES_DEM, VOTES_REP)
         assemble.print_df(df_votes_unmatched, 'df_votes_unmatched')
         
         # Note any unmatched blocks and their vote counts
-        unmatched_block_flags = df_blocks2.index_votes.isna()
-        df_blocks2_unmatched = df_blocks2[unmatched_block_flags]
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2)
         assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
     
         # Note any duplicate blocks
-        matched_block_flags = ~df_blocks2.index_votes.isna()
-        df_blocks2_matched = df_blocks2[matched_block_flags]
-        unique_block_flags = ~df_blocks2_matched.index.duplicated()
-        df_blocks2_matched_unique = df_blocks2_matched[unique_block_flags]
+        df_blocks2_matched_unique = get_unique_blocks(df_blocks2)
         assemble.print_df(df_blocks2_matched_unique, 'df_blocks2_matched_unique')
         
         raise NotImplementedError()
