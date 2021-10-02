@@ -163,7 +163,7 @@ def sum_over_vote_columns(df1):
     
     return df6
 
-#@memoize
+@memoize
 def load_votes(votes_source):
     ''' Return dataframe with vote columns and geometry only
     '''

@@ -73,36 +73,17 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     '''
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     input_people = df_blocks.P0010001.sum()
-    stop_moving = False
     
+    # Progressively move votes from unmatched voting precincts
     while True:
         starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
-        starting_people = df_blocks.P0010001.sum() + df_blocks.P0010001.sum()
-    
-        # Join precinct votes to any land block spatially contained within
-        # Progressively buffer census blocks by larger amounts to intersect
-        for r in [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
-            df_blocks2 = geopandas.sjoin(
-                df_blocks,
-                df_votes[['geometry', VOTES_DEM, VOTES_REP]],
-                op='intersects', how='left', rsuffix='votes')
-            #assemble.print_df(df_blocks2, 'df_blocks2')
-        
-            # Note any unmatched blocks
-            df_blocks2_unmatched = get_unmatched_blocks(df_blocks2)
-            #assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
-            
-            # Stop if no unmatched blocks are found
-            if df_blocks2_unmatched.empty:
-                print('* ' * 40)
-                break
-            assemble.print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r:.5f}')
-            
-            # Buffer unmatched blocks so they'll match
-            geom_index = df_blocks.columns.get_loc('geometry')
-            for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
-                df_blocks.iat[bad_index, geom_index] = bad_row.geometry.centroid.buffer(r, 2)
 
+        df_blocks2 = geopandas.sjoin(
+            df_blocks,
+            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+            op='within', how='left', rsuffix='votes')
+        #assemble.print_df(df_blocks2, 'df_blocks2')
+    
         # Note any missing precincts and their vote counts
         df_votes_matched, df_votes_unmatched \
             = get_unmatched_votes(df_votes, df_blocks2, VOTES_DEM, VOTES_REP)
@@ -111,10 +92,8 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         
         # If everything matched, break out of this loop
         if df_votes_unmatched.empty:
-            print('*' * 80)
             break
-        else:
-            assemble.print_df(df_votes_unmatched, 'df_votes_unmatched')
+        assemble.print_df(df_votes_unmatched, 'df_votes_unmatched')
         
         # Reproject to a CONUS Albers equal-area
         df_votes_matched_5070 = df_votes_matched.to_crs(5070)
@@ -126,11 +105,41 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
                 assemble.move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP)
         
         ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
-        ending_people = df_blocks.P0010001.sum() + df_blocks.P0010001.sum()
-        assert starting_votes == ending_votes, \
+        assert round(starting_votes) == round(ending_votes), \
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
-        assert starting_people == ending_people, \
+
+    print('* ' * 40)
+
+    # Progressively buffer census blocks by larger amounts to intersect
+    for r in [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
+        starting_people = df_blocks.P0010001.sum()
+
+        # Join precinct votes to any land block spatially contained within
+        df_blocks2 = geopandas.sjoin(
+            df_blocks,
+            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+            op='intersects', how='left', rsuffix='votes')
+        #assemble.print_df(df_blocks2, 'df_blocks2')
+    
+        # Note any unmatched blocks
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2)
+        #assemble.print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+        
+        # Stop if no unmatched blocks are found
+        if df_blocks2_unmatched.empty:
+            break
+        assemble.print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r:.5f}')
+        
+        # Buffer unmatched blocks so they'll match
+        geom_index = df_blocks.columns.get_loc('geometry')
+        for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
+            df_blocks.iat[bad_index, geom_index] = bad_row.geometry.centroid.buffer(r, 2)
+        
+        ending_people = df_blocks.P0010001.sum()
+        assert round(starting_people) == round(ending_people), \
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
+
+    print('*' * 80)
 
     # Un-buffer blocks now that they are all matched
     df_blocks2.geometry = df_blocks2.geometry.centroid
@@ -217,11 +226,11 @@ if __name__ == '__main__':
         f"Should not have {joined2['P0010001'].sum()} total population"
     
     #exit()
+    print('/' * 80)
     
     df_blocks2 = assemble.load_blocks('Census/or2020.pl.zip')
     df_votes3 = geopandas.read_file('/vsizip/VEST/or_2020.zip').to_crs(df_blocks2.crs)
     
-    print('/' * 80)
     assemble.print_df(df_blocks2, 'df_blocks2')
     assemble.print_df(df_votes3, 'df_votes3')
 
