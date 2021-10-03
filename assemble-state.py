@@ -130,7 +130,7 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
 def load_votes(votes_source):
     ''' Return dataframe with vote columns and geometry only
     '''
-    vote_pattern = re.compile(r'^G(16|18|20)(PRE|USS)(D|R)', re.I)
+    vote_pattern = re.compile(r'^(G|R)(16|18|20)(PRE|USS)(D|R)', re.I)
     column_mapping = {
         'G16PRED': VOTES_DEM_P16,
         'G16PRER': VOTES_REP_P16,
@@ -142,6 +142,12 @@ def load_votes(votes_source):
         'G18USSR': VOTES_REP_S18,
         'G20USSD': VOTES_DEM_S20,
         'G20USSR': VOTES_REP_S20,
+        'R16USSD': VOTES_DEM_S16,
+        'R16USSR': VOTES_REP_S16,
+        'R18USSD': VOTES_DEM_S18,
+        'R18USSR': VOTES_REP_S18,
+        'R20USSD': VOTES_DEM_S20,
+        'R20USSR': VOTES_REP_S20,
     }
 
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)

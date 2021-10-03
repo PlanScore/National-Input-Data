@@ -255,7 +255,7 @@ assembled-state-KY.geojson: VEST/ky_2016.zip Census/ky2020.pl.zip Census/tl_2019
 
 assembled-state-LA.geojson: VEST/la_2020.zip VEST/la_2018.zip VEST/la_2016.zip Census/la2020.pl.zip Census/tl_2019_22_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/la_2020.zip /vsizip/VEST/la_2018.zip /vsizip/VEST/la_2016.zip \
+		/vsizip/VEST/la_2020.zip /vsizip/VEST/la_2018.zip /vsizip/VEST/la_2016-runoff.zip \
 		Census/la2020.pl.zip /vsizip/Census/tl_2019_22_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
 
 assembled-state-MD.geojson: VEST/md_2020.zip VEST/md_2018.zip VEST/md_2016.zip Census/md2020.pl.zip Census/tl_2019_24_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip
