@@ -71,11 +71,14 @@ def get_first_good_index(df_votes_matched, bad_index, bad_row):
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
+    assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
+    assert df_votes.crs == 5070, f'Should not see {df_votes.crs} df_votes.crs'
+    
     input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
     input_people = df_blocks.P0010001.sum()
     
-    # Progressively move votes from unmatched voting precincts
-    while True:
+    # Progressively buffer voting precincts by larger amounts to intersect
+    for r in [1, 10, 100, 1e3, 1e4, 1e5, 1e6]:
         starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
 
         df_blocks2 = geopandas.sjoin(
@@ -93,14 +96,13 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # If everything matched, break out of this loop
         if df_votes_unmatched.empty:
             break
-        assemble.print_df(df_votes_unmatched, 'df_votes_unmatched')
+        assemble.print_df(df_votes_unmatched, f'df_votes_unmatched, r={r}')
         
-        # Reproject to a CONUS Albers equal-area
-        df_votes_matched_5070 = df_votes_matched.to_crs(5070)
-        df_votes_unmatched_5070 = df_votes_unmatched.to_crs(5070)
+        # Buffer unmatched precincts so they'll match
+        df_votes_unmatched.geometry = df_votes_unmatched.geometry.buffer(r, 2)
         
-        for (bad_index, bad_row) in df_votes_unmatched_5070.iterrows():
-            good_index = get_first_good_index(df_votes_matched_5070, bad_index, bad_row)
+        for (bad_index, bad_row) in df_votes_unmatched.iterrows():
+            good_index = get_first_good_index(df_votes_matched, bad_index, bad_row)
             if good_index is not None:
                 assemble.move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP)
         
@@ -111,7 +113,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     print('* ' * 40)
 
     # Progressively buffer census blocks by larger amounts to intersect
-    for r in [1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1, 1e2]:
+    for r in [1, 10, 100, 1e3, 1e4, 1e5, 1e6]:
         starting_people = df_blocks.P0010001.sum()
 
         # Join precinct votes to any land block spatially contained within
@@ -128,7 +130,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # Stop if no unmatched blocks are found
         if df_blocks2_unmatched.empty:
             break
-        assemble.print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r:.5f}')
+        assemble.print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r}')
         
         # Buffer unmatched blocks so they'll match
         geom_index = df_blocks.columns.get_loc('geometry')
@@ -181,19 +183,22 @@ if __name__ == '__main__':
     assemble.print_df(df_votes1, 'df_votes1')
     
     joined1 = join_blocks_votes(
-        df_blocks1, df_votes1, 'US President 2020 - DEM', 'US President 2020 - REP',
-    )
+        df_blocks1.to_crs(5070),
+        df_votes1.to_crs(5070),
+        'US President 2020 - DEM',
+        'US President 2020 - REP',
+    ).to_crs(4326)
 
     assemble.print_df(joined1, 'joined1')
     geocodes = sorted(list(df_blocks1.GEOCODE))
     geocodes1 = sorted(list(joined1.GEOCODE))
     
     assert geocodes1 == geocodes, f"Should not have {', '.join(geocodes1)} GEOCODE column"
-    assert joined1['US President 2020 - REP'].sum() == 160, \
+    assert round(joined1['US President 2020 - REP'].sum()) == 160, \
         f"Should not have {joined1['US President 2020 - REP'].sum()} republican votes"
-    assert joined1['US President 2020 - DEM'].sum() == 171, \
+    assert round(joined1['US President 2020 - DEM'].sum()) == 171, \
         f"Should not have {joined1['US President 2020 - DEM'].sum()} democratic votes"
-    assert joined1['P0010001'].sum() == 63, \
+    assert round(joined1['P0010001'].sum()) == 63, \
         f"Should not have {joined1['P0010001'].sum()} total population"
 
     df_votes2 = geopandas.read_file('null-island-precincts-weird.geojson')
@@ -201,8 +206,11 @@ if __name__ == '__main__':
     assemble.print_df(df_votes2, 'df_votes2')
     
     joined2 = join_blocks_votes(
-        df_blocks1, df_votes2, 'US President 2020 - DEM', 'US President 2020 - REP',
-    )
+        df_blocks1.to_crs(5070),
+        df_votes2.to_crs(5070),
+        'US President 2020 - DEM',
+        'US President 2020 - REP',
+    ).to_crs(4326)
 
     assemble.print_df(joined2, 'joined2')
     joined2b = joined2.merge(
@@ -218,11 +226,11 @@ if __name__ == '__main__':
     geocodes2 = sorted(list(joined2.GEOCODE))
     
     assert geocodes2 == geocodes, f"Should not have {', '.join(geocodes2)} GEOCODE column"
-    assert joined2['US President 2020 - REP'].sum() == 160, \
+    assert round(joined2['US President 2020 - REP'].sum()) == 160, \
         f"Should not have {joined2['US President 2020 - REP'].sum()} republican votes"
-    assert joined2['US President 2020 - DEM'].sum() == 171, \
+    assert round(joined2['US President 2020 - DEM'].sum()) == 171, \
         f"Should not have {joined2['US President 2020 - DEM'].sum()} democratic votes"
-    assert joined2['P0010001'].sum() == 63, \
+    assert round(joined2['P0010001'].sum()) == 63, \
         f"Should not have {joined2['P0010001'].sum()} total population"
     
     #exit()
@@ -235,8 +243,11 @@ if __name__ == '__main__':
     assemble.print_df(df_votes3, 'df_votes3')
 
     joined3 = join_blocks_votes(
-        df_blocks2, df_votes3, 'G20PREDBID', 'G20PRERTRU',
-    )
+        df_blocks2.to_crs(5070),
+        df_votes3.to_crs(5070),
+        'G20PREDBID',
+        'G20PRERTRU',
+    ).to_crs(4326)
 
     assemble.print_df(joined3, 'joined3')
     joined3b = joined3.merge(
