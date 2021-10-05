@@ -564,7 +564,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # If everything matched, break out of this loop
         if df_votes_unmatched.empty:
             break
-        print_df(df_votes_unmatched, f'df_votes_unmatched, r={r:d}')
+        print_df(df_votes_unmatched, f'df_votes_unmatched, r={r}')
         
         # Buffer unmatched precincts so they'll match
         df_votes_unmatched.geometry = df_votes_unmatched.geometry.buffer(r, 2)
@@ -598,7 +598,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # Stop if no unmatched blocks are found
         if df_blocks2_unmatched.empty:
             break
-        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r:d}')
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r}')
         
         # Buffer unmatched blocks so they'll match
         geom_index = df_blocks.columns.get_loc('geometry')
@@ -611,8 +611,8 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
 
     print('*' * 80)
 
-    # Un-buffer blocks now that they are all matched
-    df_blocks2.geometry = df_blocks2.geometry.centroid
+    ## Un-buffer blocks now that they are all matched
+    #df_blocks2.geometry = df_blocks2.geometry.centroid
 
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
@@ -674,7 +674,17 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
         if VOTES_DEM_S16 in df_votes.columns:
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16)
-    
+        
+    # Un-buffer blocks now that they are all matched
+    df_blocksV.geometry = df_blocksV.geometry.centroid
+
+    # Note vote counts to compare later
+    df_blocksV_votecounts = {
+        column: df_blocksV[column].sum()
+        for column in VOTE_COLUMNS
+        if column in df_blocksV.columns
+    }
+
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
     
@@ -684,6 +694,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     df_blocks2 = df_blocksV.merge(df_blocksB, how='inner', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
     print(df_blocks2.columns)
+    for (column, expected_count) in df_blocksV_votecounts.items():
+        assert round(df_blocks2[column].sum()) == round(expected_count), f'Expected same {column} votes at 2'
     
     # Final output column mapping
     df_blocks3 = df_blocks2[[
@@ -719,6 +731,9 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     if VOTES_DEM_S16 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S16] = df_blocks2[VOTES_DEM_S16].round(5)
         df_blocks3[VOTES_REP_S16] = df_blocks2[VOTES_REP_S16].round(5)
+
+    for (column, expected_count) in df_blocksV_votecounts.items():
+        assert round(df_blocks3[column].sum()) == round(expected_count), f'Expected same {column} votes at 3'
 
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     #df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
