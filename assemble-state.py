@@ -605,23 +605,26 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
 
     print('*' * 80, VOTES_DEM)
+    
+    # Use VAP + 1 for weighting to avoid divide-by-zero loss
+    df_blocks2['VAPish'] = df_blocks2.P0030001 + 1
 
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
     #print_df(df_blocks3, 'df_blocks3')
 
-    # Sum land area for each voting precinct
-    df_blocks3_area_sums = df_blocks3\
-        .groupby('index_votes', as_index=False).AREALAND.sum()\
-        .rename(columns={'AREALAND': 'AREALAND_precinct'})
-    #print_df(df_blocks3_area_sums, 'df_blocks3_area_sums')
+    # Sum 2020 VAP for each voting precinct
+    df_blocks3_vap_sums = df_blocks3\
+        .groupby('index_votes', as_index=False).VAPish.sum()\
+        .rename(columns={'VAPish': 'VAPish_precinct'})
+    #print_df(df_blocks3_vap_sums, 'df_blocks3_vap_sums')
     
-    # Join complete blocks with votes to precinct-summed land area
-    df_blocks4 = df_blocks3.merge(df_blocks3_area_sums, on='index_votes', how='left')
+    # Join complete blocks with votes to precinct-summed 2020 VAP
+    df_blocks4 = df_blocks3.merge(df_blocks3_vap_sums, on='index_votes', how='left')
     
-    # Scale presidential votes by land area block/precinct fraction
-    df_blocks4[VOTES_DEM] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
-    df_blocks4[VOTES_REP] *= (df_blocks4.AREALAND / df_blocks4.AREALAND_precinct)
+    # Scale presidential votes by 2020 VAP block/precinct fraction
+    df_blocks4[VOTES_DEM] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
+    df_blocks4[VOTES_REP] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     #print_df(df_blocks4, 'df_blocks4')
 
     # Select just a few columns
