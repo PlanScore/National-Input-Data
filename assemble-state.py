@@ -449,33 +449,76 @@ def get_acs(df_bgs, acs_year):
 
 def join_blocks_blockgroups(df_blocks, df_bgs):
     
+    assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
+    assert df_bgs.crs == 5070, f'Should not see {df_bgs.crs} df_bgs.crs'
     input_population = df_blocks['P0010001'].sum()
     
-    df_blocks2 = geopandas.sjoin(df_blocks, df_bgs.to_crs(df_blocks.crs), op='within')
+    df_blocks_original_geometry = df_blocks.geometry.copy()
+
+    # Progressively buffer census blocks by larger amounts to intersect
+    for r in [100, 1e3, 1e4, 1e5, 1e6]:
+        starting_cvap = df_bgs.cvap_1_est.sum()
+
+        # Join bg votes to any land block spatially contained within
+        df_blocks2 = geopandas.sjoin(
+            df_blocks,
+            df_bgs,
+            op='intersects',
+            how='left',
+            rsuffix='bg',
+        )
+        #print_df(df_blocks2, 'df_blocks2')
     
+        # Note any unmatched blocks
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_bg')
+        #print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+        
+        # Stop if no unmatched blocks are found
+        if df_blocks2_unmatched.empty:
+            break
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
+        
+        # Buffer unmatched blocks so they'll match
+        geom_index = df_blocks.columns.get_loc('geometry')
+        for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
+            df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
+        
+        ending_cvap = df_bgs.cvap_1_est.sum()
+        assert round(starting_cvap) == round(ending_cvap), \
+            '{} CVAP unnaccounted for'.format(abs(ending_cvap - starting_cvap))
+
+    print('*' * 80, 'Block groups')
+    
+    # Note any duplicate blocks
+    df_blocks3 = get_unique_blocks(df_blocks2)
+    #print_df(df_blocks3, 'df_blocks3')
+
+    # Restore original geometry
+    df_blocks3.geometry = df_blocks_original_geometry
+
     # Sum P0030001 (VAP) for each block group
-    df_bg3 = df_blocks2[['GEOID', 'P0030001']]\
+    df_bg4 = df_blocks3[['GEOID', 'P0030001']]\
         .groupby('GEOID', as_index=False).P0030001.sum()\
         .rename(columns={'P0030001': 'P0030001_bg'})
     
     # Join land area data to any block with matching block group GEOID
-    df_blocks4 = df_blocks2.merge(df_bg3, on='GEOID', how='right')
+    df_blocks5 = df_blocks3.merge(df_bg4, on='GEOID', how='right')
     
     # Scale survey data by land area block/group fraction
     for variable in (ACS_VARIABLES + CVAP_VARIABLES):
         if variable.startswith('B19013'):
             # Do not scale household income
             continue
-        df_blocks4[variable] *= (df_blocks4.P0030001 / df_blocks4.P0030001_bg)
+        df_blocks5[variable] *= (df_blocks5.P0030001 / df_blocks5.P0030001_bg)
     
     # Select just a few columns
-    df_blocks5 = df_blocks4[BLOCK_FIELDS + ACS_VARIABLES + CVAP_VARIABLES]
+    df_blocks6 = df_blocks5[BLOCK_FIELDS + ACS_VARIABLES + CVAP_VARIABLES]
     
-    output_population = df_blocks5['P0010001'].sum()
+    output_population = df_blocks6['P0010001'].sum()
     assert round(output_population) == round(input_population), \
         '{} people unnaccounted for'.format(abs(input_population - output_population))
     
-    return df_blocks5
+    return df_blocks6
 
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
@@ -499,10 +542,10 @@ def get_unmatched_votes(df_votes, df_joined, VOTES_DEM, VOTES_REP):
 
     return df_votes_matched, df_votes_unmatched_with_votes
 
-def get_unmatched_blocks(df_blocks):
+def get_unmatched_blocks(df_blocks, index_name):
     ''' Get partial df_blocks where no df_votes index has been matched
     '''
-    unmatched_block_flags = df_blocks.index_votes.isna()
+    unmatched_block_flags = df_blocks[index_name].isna()
     df_blocks_unmatched = df_blocks[unmatched_block_flags]
     
     return df_blocks_unmatched
@@ -559,7 +602,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # If everything matched, break out of this loop
         if df_votes_unmatched.empty:
             break
-        print_df(df_votes_unmatched, f'df_votes_unmatched, r={r}')
+        print_df(df_votes_unmatched, f'df_votes_unmatched, r={r/1000:.1f}km')
         
         # Buffer unmatched precincts so they'll match
         df_votes_unmatched.geometry = df_votes_unmatched.geometry.buffer(r, 2)
@@ -587,13 +630,13 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         #print_df(df_blocks2, 'df_blocks2')
     
         # Note any unmatched blocks
-        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2)
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_votes')
         #print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
         
         # Stop if no unmatched blocks are found
         if df_blocks2_unmatched.empty:
             break
-        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r}')
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
         
         # Buffer unmatched blocks so they'll match
         geom_index = df_blocks.columns.get_loc('geometry')
@@ -711,11 +754,11 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     df_blocksB = join_blocks_blockgroups(df_blocks, df_bgs)
     print_df(df_blocksB, 'df_blocksB')
     
-    df_blocks2 = df_blocksV.merge(df_blocksB, how='inner', on=BLOCK_FIELDS)
+    df_blocks2 = df_blocksV.merge(df_blocksB, how='left', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert round(df_blocks2[column].sum()) == round(expected_count), \
-            f'Expected same {column} votes at 2'
+            f'{df_blocks2[column].sum() - expected_count} {column} votes unaccounted for at 2'
     
     # Final output column mapping
     df_blocks3 = df_blocks2[[
@@ -754,7 +797,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
 
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert round(df_blocks3[column].sum()) == round(expected_count), \
-            f'Expected same {column} votes at 3'
+            f'{df_blocks3[column].sum() - expected_count} {column} votes unaccounted for at 3'
 
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     #df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
