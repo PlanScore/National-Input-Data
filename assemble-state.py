@@ -649,6 +649,27 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     
     return df_blocks6
     
+def output_crosswalk(df_blocksV, votes_source):
+    '''
+    '''
+    vote_pattern = re.compile(r'^G(16|18|20)', re.I)
+    raw_votes = geopandas.read_file(votes_source)
+    vote_index = 'index_votes2020' if 'index_votes2020' in df_blocksV.columns else 'index_votes2016'
+
+    crossed = df_blocksV.merge(
+        raw_votes[[
+            column for column in raw_votes.columns
+            if not vote_pattern.match(column)
+            and not column == 'geometry'
+        ]],
+        how='left',
+        left_on=df_blocksV[vote_index],
+        right_on=raw_votes.index,
+        suffixes=('', '_precinct'),
+    )
+
+    crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{crossed.loc[0].STATE}.csv')
+
 def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2019').to_crs(5070)
     df_blocks = load_blocks(blocks_source).to_crs(5070)
@@ -669,7 +690,10 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
         if VOTES_DEM_S16 in df_votes.columns:
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16)
-        
+    
+    # Write out a block/precinct crosswalk file for optional use
+    output_crosswalk(df_blocksV, votes_source)
+    
     # Note vote counts to compare later
     df_blocksV_votecounts = {
         column: df_blocksV[column].sum()
