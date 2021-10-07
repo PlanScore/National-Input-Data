@@ -509,7 +509,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     df_blocks_original_geometry = df_blocks.geometry.copy()
 
     # Progressively buffer census blocks by larger amounts to intersect
-    for r in [100, 1e3, 1e4, 1e5, 1e6]:
+    for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
         starting_cvap = df_bgs.cvap_1_est.sum()
 
         # Join bg votes to any land block spatially contained within
@@ -637,7 +637,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     input_people = df_blocks.P0010001.sum()
     
     # Progressively buffer voting precincts by larger amounts to intersect
-    for r in [100, 1e3, 1e4, 1e5, 1e6]:
+    for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
         starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
 
         df_blocks2 = geopandas.sjoin(
@@ -672,7 +672,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     print('* ' * 40, VOTES_DEM)
 
     # Progressively buffer census blocks by larger amounts to intersect
-    for r in [100, 1e3, 1e4, 1e5, 1e6]:
+    for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
         starting_people = df_blocks.P0010001.sum()
 
         # Join precinct votes to any land block spatially contained within
