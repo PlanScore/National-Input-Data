@@ -17,10 +17,10 @@ if __name__ == '__main__':
     df2b = assemble.load_votes('test/ga_2020.gpkg')
     assert df2b['US President 2020 - REP'].sum() == 17359
     assert df2b['US President 2020 - DEM'].sum() == 5468
-    assert df2b['US Senate 2020 - REP'].sum() == 15556 + 15461
-    assert df2b['US Senate 2020 - DEM'].sum() == 4863 + 4953
+    assert df2b['US Senate 2020 - REP'].sum() == 17223
+    assert df2b['US Senate 2020 - DEM'].sum() == 5216
     assert df2b['US President 2020 - Other'].sum() == 325
-    assert df2b['US Senate 2020 - Other'].sum() == 0
+    assert df2b['US Senate 2020 - Other'].sum() == 531
 
     df3a = geopandas.read_file('test/ca_2020.gpkg')
     df3b = assemble.load_votes('test/ca_2020.gpkg')

@@ -207,12 +207,10 @@ def load_votes(votes_source):
                 df2.C20PRERTRU,
                 df2.C20PREDBID,
                 df2.C20PRELJOR,
-                # Ossof and Warnock runoffs + zeros for 3rd party
-                df2.R21USSRPER,
-                df2.R21USSRLOE,
-                df2.R21USSDOSS,
-                df2.R21USSDWAR,
-                pandas.Series(name='R21USSxxxx', data=[0.] * len(df2)),
+                # Ossoff general
+                df2.G20USSRPER,
+                df2.G20USSDOSS,
+                df2.G20USSLHAZ,
             ), axis=1),
             geometry='geometry',
             crs=df2.crs,
