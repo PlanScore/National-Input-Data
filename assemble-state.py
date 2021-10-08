@@ -140,6 +140,20 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
     df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
     df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
 
+def sum_over_columns(df1):
+    ''' http://thomas-cokelaer.info/blog/2014/01/pandas-dataframe-grouping-column-by-name/
+    '''
+    if len(list(df1.columns)) == len(set(df1.columns)):
+        # Do nothing if all column names are unique
+        return df1
+    
+    df2 = df1.transpose()
+    df3 = df2.reset_index()
+    df4 = df3.groupby("index").sum()
+    df5 = df4.transpose()
+    
+    return df5
+
 #@memoize
 def load_votes(votes_source):
     ''' Return dataframe with vote columns and geometry only
@@ -153,7 +167,7 @@ def load_votes(votes_source):
                 (?P<year>16|18|20|21)
                 (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
             )
-            (?P<party>D|R|L|G|C|U|O) # D = Democrat, R = Republican, etc.
+            (?P<party>D|R|[A-Z]) # D = Democrat, R = Republican, etc.
         )
         ''',
         re.I | re.VERBOSE,
@@ -181,19 +195,19 @@ def load_votes(votes_source):
         df3 = geopandas.GeoDataFrame(
             pandas.concat((
                 df2.geometry,
+                # Trump/Biden recounts
                 df2.C20PRERTRU,
                 df2.C20PREDBID,
                 df2.C20PRELJOR,
+                # Ossof and Warnock runoffs + zeros for 3rd party
+                df2.R21USSRPER,
+                df2.R21USSRLOE,
+                df2.R21USSDOSS,
+                df2.R21USSDWAR,
+                pandas.Series(name='R21USSxxxx', data=[0] * len(df2)),
             ), axis=1),
             geometry='geometry',
         )
-        
-        # Combine Ossof and Warnock runoffs
-        df3['R21USSR'] = df2.R21USSRPER + df2.R21USSRLOE
-        df3['R21USSD'] = df2.R21USSDOSS + df2.R21USSDWAR
-        
-        # Zero out 3rd party votes
-        df3['R21USSO'] = pandas.Series([0] * 10, name='R21USSO')
     else:
         df3 = df2
 
@@ -206,8 +220,10 @@ def load_votes(votes_source):
         if vote_pattern.match(column)
     })
     
-    print_df(df4, votes_source)
-    return df4
+    df5 = sum_over_columns(df4)
+    print_df(df5, votes_source)
+
+    return df5
 
 @memoize
 def load_blocks(blocks_source):

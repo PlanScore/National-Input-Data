@@ -25,3 +25,11 @@ if __name__ == '__main__':
     assert df2b['US Senate 2020 - DEM'].sum() == 4863 + 4953
     assert df2b['US President 2020 - Other'].sum() == 325
     assert df2b['US Senate 2020 - Other'].sum() == 0
+
+    df3a = geopandas.read_file('test/ca_2020.gpkg')
+    print(df3a.sum())
+    
+    df3b = assemble.load_votes('test/ca_2020.gpkg')
+    assert df3b['US President 2020 - REP'].sum() == 496
+    assert df3b['US President 2020 - DEM'].sum() == 4869
+    assert df3b['US President 2020 - Other'].sum() == 45 + 42 + 9 + 29
