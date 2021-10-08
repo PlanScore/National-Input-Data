@@ -12,3 +12,5 @@ if __name__ == '__main__':
     assert df1b['US President 2016 - DEM'].sum() == 4265
     assert df1b['US Senate 2016 - REP'].sum() == 3276
     assert df1b['US Senate 2016 - DEM'].sum() == 3433
+    assert df1b['US President 2016 - Other'].sum() == 243
+    assert df1b['US Senate 2016 - Other'].sum() == 221

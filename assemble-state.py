@@ -72,26 +72,36 @@ CVAP_VARIABLES = [
 
 VOTES_DEM_P16 = 'US President 2016 - DEM'
 VOTES_REP_P16 = 'US President 2016 - REP'
+VOTES_OTHER_P16 = 'US President 2016 - Other'
 VOTES_DEM_P20 = 'US President 2020 - DEM'
 VOTES_REP_P20 = 'US President 2020 - REP'
+VOTES_OTHER_P20 = 'US President 2020 - Other'
 VOTES_DEM_S16 = 'US Senate 2016 - DEM'
 VOTES_REP_S16 = 'US Senate 2016 - REP'
+VOTES_OTHER_S16 = 'US Senate 2016 - Other'
 VOTES_DEM_S18 = 'US Senate 2018 - DEM'
 VOTES_REP_S18 = 'US Senate 2018 - REP'
+VOTES_OTHER_S18 = 'US Senate 2018 - Other'
 VOTES_DEM_S20 = 'US Senate 2020 - DEM'
 VOTES_REP_S20 = 'US Senate 2020 - REP'
+VOTES_OTHER_S20 = 'US Senate 2020 - Other'
 
 VOTE_COLUMNS = (
     VOTES_DEM_P16,
     VOTES_REP_P16,
+    VOTES_OTHER_P16,
     VOTES_DEM_P20,
     VOTES_REP_P20,
+    VOTES_OTHER_P20,
     VOTES_DEM_S16,
     VOTES_REP_S16,
+    VOTES_OTHER_S16,
     VOTES_DEM_S18,
     VOTES_REP_S18,
+    VOTES_OTHER_S18,
     VOTES_DEM_S20,
     VOTES_REP_S20,
+    VOTES_OTHER_S20,
 )
 
 def memoize(func):
@@ -134,18 +144,34 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
 def load_votes(votes_source):
     ''' Return dataframe with vote columns and geometry only
     '''
-    vote_pattern = re.compile(r'^G(16|18|20)(PRE|USS)(D|R)', re.I)
+    vote_pattern = re.compile(
+        r'''
+        ^(?P<noparty>
+            (?P<type>G|P|S|R|C) # General, Primary, Special, Runoff, reCount
+            (?P<year>16|18|20)
+            (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
+        )
+        (?P<party>D|R|L|G|C|U|O) # D = Democrat, R = Republican, etc.
+        ''',
+        re.I | re.VERBOSE,
+    )
+
     column_mapping = {
         'G16PRED': VOTES_DEM_P16,
         'G16PRER': VOTES_REP_P16,
+        'G16PRE': VOTES_OTHER_P16,
         'G20PRED': VOTES_DEM_P20,
         'G20PRER': VOTES_REP_P20,
+        'G20PRE': VOTES_OTHER_P20,
         'G16USSD': VOTES_DEM_S16,
         'G16USSR': VOTES_REP_S16,
+        'G16USS': VOTES_OTHER_S16,
         'G18USSD': VOTES_DEM_S18,
         'G18USSR': VOTES_REP_S18,
+        'G18USS': VOTES_OTHER_S18,
         'G20USSD': VOTES_DEM_S20,
         'G20USSR': VOTES_REP_S20,
+        'G20USS': VOTES_OTHER_S20,
     }
 
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
@@ -157,7 +183,10 @@ def load_votes(votes_source):
     ]]
 
     df3 = df2.rename(columns={
-        column: column_mapping[vote_pattern.match(column).group(0).upper()]
+        column: column_mapping.get(
+            vote_pattern.match(column).group(0).upper(),
+            column_mapping[vote_pattern.match(column).group('noparty').upper()]
+        )
         for column in df2.columns
         if vote_pattern.match(column)
     })
