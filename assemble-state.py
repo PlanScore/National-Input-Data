@@ -53,14 +53,18 @@ ACS_VARIABLES = [
 
 CVAP_VARIABLES = [
     'cvap_1_est',
+    'cvap_3_est',
     'cvap_4_est',
     'cvap_5_est',
+    'cvap_8_est',
     'cvap_9_est',
     'cvap_10_est',
     'cvap_13_est',
     'cvap_1_moe',
+    'cvap_3_moe',
     'cvap_4_moe',
     'cvap_5_moe',
+    'cvap_8_moe',
     'cvap_9_moe',
     'cvap_10_moe',
     'cvap_13_moe',
@@ -229,7 +233,7 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
     
     df5 = df2
     
-    for lnnumber in (1, 4, 5, 9, 10, 13):
+    for lnnumber in (1, 3, 4, 5, 8, 9, 10, 13):
         df4_partial = df4[df4.lnnumber == lnnumber][[
             'geoid', 'cvap_est', 'cvap_moe'
         ]].rename(columns={
@@ -573,9 +577,11 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['cvap_1_est'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_1_moe'].round(5)
     df_blocks3['Black Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_5_est'] + df_blocks2['cvap_10_est']).round(5)
-    df_blocks3['Black Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_4_moe'] + df_blocks2['cvap_9_moe']).round(5)
+    df_blocks3['Black Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_5_moe'] + df_blocks2['cvap_10_moe']).round(5)
     df_blocks3['Asian Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_4_est'] + df_blocks2['cvap_9_est']).round(5)
-    df_blocks3['Asian Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_5_moe'] + df_blocks2['cvap_10_moe']).round(5)
+    df_blocks3['Asian Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_4_moe'] + df_blocks2['cvap_9_moe']).round(5)
+    df_blocks3['American Indian or Alaska Native Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_3_est'] + df_blocks2['cvap_8_est']).round(5)
+    df_blocks3['American Indian or Alaska Native Citizen Voting-Age Population 2019, Margin'] = (df_blocks2['cvap_3_moe'] + df_blocks2['cvap_8_moe']).round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2019'] = df_blocks2['cvap_13_est'].round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_13_moe'].round(5)
     df_blocks3['Voting-Age Population 2020'] = df_blocks2['P0030001'].round(5)
