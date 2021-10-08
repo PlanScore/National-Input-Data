@@ -191,7 +191,6 @@ def load_votes(votes_source):
     ]]
     
     if 'ga_2020' in votes_source:
-        # Take presidential recount votes
         df3 = geopandas.GeoDataFrame(
             pandas.concat((
                 df2.geometry,
@@ -205,6 +204,25 @@ def load_votes(votes_source):
                 df2.R21USSDOSS,
                 df2.R21USSDWAR,
                 pandas.Series(name='R21USSxxxx', data=[0] * len(df2)),
+            ), axis=1),
+            geometry='geometry',
+        )
+    elif 'la_2016' in votes_source:
+        df3 = geopandas.GeoDataFrame(
+            pandas.concat((
+                df2.geometry,
+                # Trump/Biden recounts
+                df2.G16PRERTRU,
+                df2.G16PREDCLI,
+                df2.G16PRELJOH,
+                df2.G16PREGSTE,
+                df2.G16PREOMCM,
+                df2.G16PRECCAS,
+                df2.G16PREOOTH,
+                # Senate runoff + zeros for 3rd party
+                df2.R16USSRKEN,
+                df2.R16USSDCAM,
+                pandas.Series(name='R16USSxxxx', data=[0] * len(df2)),
             ), axis=1),
             geometry='geometry',
         )
