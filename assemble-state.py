@@ -140,7 +140,7 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
     df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
     df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
 
-def sum_over_columns(df1):
+def sum_over_vote_columns(df1):
     ''' http://thomas-cokelaer.info/blog/2014/01/pandas-dataframe-grouping-column-by-name/
     '''
     if len(list(df1.columns)) == len(set(df1.columns)):
@@ -151,8 +151,17 @@ def sum_over_columns(df1):
     df3 = df2.reset_index()
     df4 = df3.groupby("index").sum()
     df5 = df4.transpose()
+    df6 = geopandas.GeoDataFrame(
+        pandas.concat([
+            # All columns except geometry are integer vote counts
+            df5[c] if c == 'geometry' else df5[c].astype(int)
+            for c in df5
+        ], axis=1),
+        geometry='geometry',
+        crs=df1.crs,
+    )
     
-    return df5
+    return df6
 
 #@memoize
 def load_votes(votes_source):
@@ -203,9 +212,10 @@ def load_votes(votes_source):
                 df2.R21USSRLOE,
                 df2.R21USSDOSS,
                 df2.R21USSDWAR,
-                pandas.Series(name='R21USSxxxx', data=[0] * len(df2)),
+                pandas.Series(name='R21USSxxxx', data=[0.] * len(df2)),
             ), axis=1),
             geometry='geometry',
+            crs=df2.crs,
         )
     elif 'la_2016' in votes_source:
         df3 = geopandas.GeoDataFrame(
@@ -225,6 +235,7 @@ def load_votes(votes_source):
                 pandas.Series(name='R16USSxxxx', data=[0] * len(df2)),
             ), axis=1),
             geometry='geometry',
+            crs=df2.crs,
         )
     else:
         df3 = df2
@@ -238,7 +249,7 @@ def load_votes(votes_source):
         if vote_pattern.match(column)
     })
     
-    df5 = sum_over_columns(df4)
+    df5 = sum_over_vote_columns(df4)
     print_df(df5, votes_source)
 
     return df5
@@ -666,6 +677,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
+    print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].astype(int).sum())
     
     df_blocks3.to_file(output_dest, driver='GeoJSON')
 
