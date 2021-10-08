@@ -146,32 +146,26 @@ def load_votes(votes_source):
     '''
     vote_pattern = re.compile(
         r'''
-        ^(?P<noparty>
-            (?P<type>G|P|S|R|C) # General, Primary, Special, Runoff, reCount
-            (?P<year>16|18|20)
-            (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
+        ^
+        (?P<type>G|P|S|R|C) # General, Primary, Special, Runoff, reCount
+        (?P<core>
+            (?P<yo>
+                (?P<year>16|18|20|21)
+                (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
+            )
+            (?P<party>D|R|L|G|C|U|O) # D = Democrat, R = Republican, etc.
         )
-        (?P<party>D|R|L|G|C|U|O) # D = Democrat, R = Republican, etc.
         ''',
         re.I | re.VERBOSE,
     )
 
     column_mapping = {
-        'G16PRED': VOTES_DEM_P16,
-        'G16PRER': VOTES_REP_P16,
-        'G16PRE': VOTES_OTHER_P16,
-        'G20PRED': VOTES_DEM_P20,
-        'G20PRER': VOTES_REP_P20,
-        'G20PRE': VOTES_OTHER_P20,
-        'G16USSD': VOTES_DEM_S16,
-        'G16USSR': VOTES_REP_S16,
-        'G16USS': VOTES_OTHER_S16,
-        'G18USSD': VOTES_DEM_S18,
-        'G18USSR': VOTES_REP_S18,
-        'G18USS': VOTES_OTHER_S18,
-        'G20USSD': VOTES_DEM_S20,
-        'G20USSR': VOTES_REP_S20,
-        'G20USS': VOTES_OTHER_S20,
+        '16PRED': VOTES_DEM_P16, '16PRER': VOTES_REP_P16, '16PRE': VOTES_OTHER_P16,
+        '20PRED': VOTES_DEM_P20, '20PRER': VOTES_REP_P20, '20PRE': VOTES_OTHER_P20,
+        '16USSD': VOTES_DEM_S16, '16USSR': VOTES_REP_S16, '16USS': VOTES_OTHER_S16,
+        '18USSD': VOTES_DEM_S18, '18USSR': VOTES_REP_S18, '18USS': VOTES_OTHER_S18,
+        '20USSD': VOTES_DEM_S20, '20USSR': VOTES_REP_S20, '20USS': VOTES_OTHER_S20,
+        '21USSD': VOTES_DEM_S20, '21USSR': VOTES_REP_S20, '21USS': VOTES_OTHER_S20,
     }
 
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
@@ -181,18 +175,39 @@ def load_votes(votes_source):
         if vote_pattern.match(column)
         or column == 'geometry'
     ]]
-
-    df3 = df2.rename(columns={
-        column: column_mapping.get(
-            vote_pattern.match(column).group(0).upper(),
-            column_mapping[vote_pattern.match(column).group('noparty').upper()]
+    
+    if 'ga_2020' in votes_source:
+        # Take presidential recount votes
+        df3 = geopandas.GeoDataFrame(
+            pandas.concat((
+                df2.geometry,
+                df2.C20PRERTRU,
+                df2.C20PREDBID,
+                df2.C20PRELJOR,
+            ), axis=1),
+            geometry='geometry',
         )
-        for column in df2.columns
+        
+        # Combine Ossof and Warnock runoffs
+        df3['R21USSR'] = df2.R21USSRPER + df2.R21USSRLOE
+        df3['R21USSD'] = df2.R21USSDOSS + df2.R21USSDWAR
+        
+        # Zero out 3rd party votes
+        df3['R21USSO'] = pandas.Series([0] * 10, name='R21USSO')
+    else:
+        df3 = df2
+
+    df4 = df3.rename(columns={
+        column: column_mapping.get(
+            vote_pattern.match(column).group('core').upper(),
+            column_mapping[vote_pattern.match(column).group('yo').upper()]
+        )
+        for column in df3.columns
         if vote_pattern.match(column)
     })
     
-    print_df(df3, votes_source)
-    return df3
+    print_df(df4, votes_source)
+    return df4
 
 @memoize
 def load_blocks(blocks_source):
