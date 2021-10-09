@@ -8,8 +8,8 @@ import geopandas
 assemble = __import__('assemble-state')
 
 if __name__ == '__main__':
-    df_blocks1 = geopandas.read_file('null-island-blocks.geojson')
-    df_votes1 = geopandas.read_file('null-island-precincts-normal.geojson')
+    df_blocks1 = geopandas.read_file('test/null-island-blocks.geojson')
+    df_votes1 = geopandas.read_file('test/null-island-precincts-normal.geojson')
     
     assemble.print_df(df_blocks1, 'df_blocks1')
     assemble.print_df(df_votes1, 'df_votes1')
@@ -33,7 +33,7 @@ if __name__ == '__main__':
     assert round(joined1['P0010001'].sum()) == 63, \
         f"Should not have {joined1['P0010001'].sum()} total population"
 
-    df_votes2 = geopandas.read_file('null-island-precincts-weird.geojson')
+    df_votes2 = geopandas.read_file('test/null-island-precincts-weird.geojson')
     
     assemble.print_df(df_votes2, 'df_votes2')
     
