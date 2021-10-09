@@ -72,26 +72,36 @@ CVAP_VARIABLES = [
 
 VOTES_DEM_P16 = 'US President 2016 - DEM'
 VOTES_REP_P16 = 'US President 2016 - REP'
+VOTES_OTHER_P16 = 'US President 2016 - Other'
 VOTES_DEM_P20 = 'US President 2020 - DEM'
 VOTES_REP_P20 = 'US President 2020 - REP'
+VOTES_OTHER_P20 = 'US President 2020 - Other'
 VOTES_DEM_S16 = 'US Senate 2016 - DEM'
 VOTES_REP_S16 = 'US Senate 2016 - REP'
+VOTES_OTHER_S16 = 'US Senate 2016 - Other'
 VOTES_DEM_S18 = 'US Senate 2018 - DEM'
 VOTES_REP_S18 = 'US Senate 2018 - REP'
+VOTES_OTHER_S18 = 'US Senate 2018 - Other'
 VOTES_DEM_S20 = 'US Senate 2020 - DEM'
 VOTES_REP_S20 = 'US Senate 2020 - REP'
+VOTES_OTHER_S20 = 'US Senate 2020 - Other'
 
 VOTE_COLUMNS = (
     VOTES_DEM_P16,
     VOTES_REP_P16,
+    VOTES_OTHER_P16,
     VOTES_DEM_P20,
     VOTES_REP_P20,
+    VOTES_OTHER_P20,
     VOTES_DEM_S16,
     VOTES_REP_S16,
+    VOTES_OTHER_S16,
     VOTES_DEM_S18,
     VOTES_REP_S18,
+    VOTES_OTHER_S18,
     VOTES_DEM_S20,
     VOTES_REP_S20,
+    VOTES_OTHER_S20,
 )
 
 def memoize(func):
@@ -130,22 +140,55 @@ def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
     df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
     df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
 
+def sum_over_vote_columns(df1):
+    ''' http://thomas-cokelaer.info/blog/2014/01/pandas-dataframe-grouping-column-by-name/
+    '''
+    if len(list(df1.columns)) == len(set(df1.columns)):
+        # Do nothing if all column names are unique
+        return df1
+    
+    df2 = df1.transpose()
+    df3 = df2.reset_index()
+    df4 = df3.groupby("index").sum()
+    df5 = df4.transpose()
+    df6 = geopandas.GeoDataFrame(
+        pandas.concat([
+            # All columns except geometry are integer vote counts
+            df5[c] if c == 'geometry' else df5[c].astype(int)
+            for c in df5
+        ], axis=1),
+        geometry='geometry',
+        crs=df1.crs,
+    )
+    
+    return df6
+
 #@memoize
 def load_votes(votes_source):
     ''' Return dataframe with vote columns and geometry only
     '''
-    vote_pattern = re.compile(r'^G(16|18|20)(PRE|USS)(D|R)', re.I)
+    vote_pattern = re.compile(
+        r'''
+        ^
+        (?P<type>G|P|S|R|C) # General, Primary, Special, Runoff, reCount
+        (?P<core>
+            (?P<yo>
+                (?P<year>16|18|20|21)
+                (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
+            )
+            (?P<party>D|R|[A-Z]) # D = Democrat, R = Republican, etc.
+        )
+        ''',
+        re.I | re.VERBOSE,
+    )
+
     column_mapping = {
-        'G16PRED': VOTES_DEM_P16,
-        'G16PRER': VOTES_REP_P16,
-        'G20PRED': VOTES_DEM_P20,
-        'G20PRER': VOTES_REP_P20,
-        'G16USSD': VOTES_DEM_S16,
-        'G16USSR': VOTES_REP_S16,
-        'G18USSD': VOTES_DEM_S18,
-        'G18USSR': VOTES_REP_S18,
-        'G20USSD': VOTES_DEM_S20,
-        'G20USSR': VOTES_REP_S20,
+        '16PRED': VOTES_DEM_P16, '16PRER': VOTES_REP_P16, '16PRE': VOTES_OTHER_P16,
+        '20PRED': VOTES_DEM_P20, '20PRER': VOTES_REP_P20, '20PRE': VOTES_OTHER_P20,
+        '16USSD': VOTES_DEM_S16, '16USSR': VOTES_REP_S16, '16USS': VOTES_OTHER_S16,
+        '18USSD': VOTES_DEM_S18, '18USSR': VOTES_REP_S18, '18USS': VOTES_OTHER_S18,
+        '20USSD': VOTES_DEM_S20, '20USSR': VOTES_REP_S20, '20USS': VOTES_OTHER_S20,
+        '21USSD': VOTES_DEM_S20, '21USSR': VOTES_REP_S20, '21USS': VOTES_OTHER_S20,
     }
 
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
@@ -155,15 +198,59 @@ def load_votes(votes_source):
         if vote_pattern.match(column)
         or column == 'geometry'
     ]]
+    
+    if 'ga_2020' in votes_source:
+        df3 = geopandas.GeoDataFrame(
+            pandas.concat((
+                df2.geometry,
+                # Trump/Biden recounts
+                df2.C20PRERTRU,
+                df2.C20PREDBID,
+                df2.C20PRELJOR,
+                # Ossoff general
+                df2.G20USSRPER,
+                df2.G20USSDOSS,
+                df2.G20USSLHAZ,
+            ), axis=1),
+            geometry='geometry',
+            crs=df2.crs,
+        )
+    elif 'la_2016' in votes_source:
+        df3 = geopandas.GeoDataFrame(
+            pandas.concat((
+                df2.geometry,
+                # Trump/Biden recounts
+                df2.G16PRERTRU,
+                df2.G16PREDCLI,
+                df2.G16PRELJOH,
+                df2.G16PREGSTE,
+                df2.G16PREOMCM,
+                df2.G16PRECCAS,
+                df2.G16PREOOTH,
+                # Senate runoff + zeros for 3rd party
+                df2.R16USSRKEN,
+                df2.R16USSDCAM,
+                pandas.Series(name='R16USSxxxx', data=[0] * len(df2)),
+            ), axis=1),
+            geometry='geometry',
+            crs=df2.crs,
+        )
+    else:
+        df3 = df2
 
-    df3 = df2.rename(columns={
-        column: column_mapping[vote_pattern.match(column).group(0).upper()]
-        for column in df2.columns
+    df4 = df3.rename(columns={
+        column: column_mapping.get(
+            vote_pattern.match(column).group('core').upper(),
+            column_mapping[vote_pattern.match(column).group('yo').upper()]
+        )
+        for column in df3.columns
         if vote_pattern.match(column)
     })
     
-    print_df(df3, votes_source)
-    return df3
+    df5 = sum_over_vote_columns(df4)
+    print_df(df5, votes_source)
+
+    return df5
 
 @memoize
 def load_blocks(blocks_source):
@@ -588,6 +675,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
+    print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].astype(int).sum())
     
     df_blocks3.to_file(output_dest, driver='GeoJSON')
 
