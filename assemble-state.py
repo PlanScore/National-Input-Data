@@ -570,6 +570,8 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     output_population = df_blocks6['P0010001'].sum()
     assert round(output_population) == round(input_population), \
         '{} people unnaccounted for'.format(abs(input_population - output_population))
+    assert len(df_blocks6) == len(df_blocks), \
+        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
     
     return df_blocks6
 
@@ -742,6 +744,8 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
     assert round(input_people) == round(output_people), \
         '{} people unnaccounted for'.format(abs(output_people - input_people))
+    assert len(df_blocks6) == len(df_blocks), \
+        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
     
     return df_blocks6
     
@@ -813,6 +817,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert round(df_blocks2[column].sum()) == round(expected_count), \
             f'{df_blocks2[column].sum() - expected_count} {column} votes unaccounted for at 2'
+    assert len(df_blocks2) == len(df_blocks), \
+        '{} blocks unaccounted for'.format(abs(len(df_blocks2) == len(df_blocks)))
     
     # Final output column mapping
     df_blocks3 = df_blocks2[[
@@ -852,6 +858,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert round(df_blocks3[column].sum()) == round(expected_count), \
             f'{df_blocks3[column].sum() - expected_count} {column} votes unaccounted for at 3'
+    assert len(df_blocks3) == len(df_blocks), \
+        '{} blocks unaccounted for'.format(abs(len(df_blocks2) == len(df_blocks)))
 
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     #df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
