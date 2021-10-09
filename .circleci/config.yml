@@ -22,6 +22,7 @@ jobs:
           paths:
             - /opt/circleci/.pyenv/versions/3.6.5
       - run: ./load-vest-excerpts.py
+      - run: ./null-island-test.py
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows

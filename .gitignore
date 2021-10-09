@@ -1,6 +1,8 @@
 .venv
 memoized/*.pickle
+assembled-state-??.csv
 assembled-state-??.geojson
+assembled-crosswalk-??.csv
 Census/tl_201?_*.zip
 Census/tl_201?_*.zip
 Census/??2020.pl.zip
