@@ -881,7 +881,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
-    print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].astype(int).sum())
+    print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].sum().round())
     
     df_blocks3.to_crs(4326).to_file(output_dest, driver='GeoJSON')
 
