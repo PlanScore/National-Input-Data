@@ -179,19 +179,22 @@ def memoize(func):
     
     return new_func
 
-def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP):
+def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     print('Move votes from', bad_index, 'to', good_index)
 
     dem_votes = df.columns.get_loc(VOTES_DEM)
     rep_votes = df.columns.get_loc(VOTES_REP)
+    other_votes = df.columns.get_loc(VOTES_OTHER)
 
     good_row = df.index.get_loc(good_index)
     bad_row = df.index.get_loc(bad_index)
 
     df.iat[good_row, dem_votes] += df.iat[bad_row, dem_votes]
     df.iat[good_row, rep_votes] += df.iat[bad_row, rep_votes]
+    df.iat[good_row, other_votes] += df.iat[bad_row, other_votes]
     df.iat[bad_row, dem_votes] -= df.iat[bad_row, dem_votes]
     df.iat[bad_row, rep_votes] -= df.iat[bad_row, rep_votes]
+    df.iat[bad_row, other_votes] -= df.iat[bad_row, other_votes]
 
 def sum_over_vote_columns(df1):
     ''' http://thomas-cokelaer.info/blog/2014/01/pandas-dataframe-grouping-column-by-name/
@@ -578,21 +581,21 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
 
-def get_unmatched_votes(df_votes, df_joined, VOTES_DEM, VOTES_REP):
+def get_unmatched_votes(df_votes, df_joined, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     ''' Get partial df_votes where no block matches but votes exist
     '''
     matched_vote_indexes = set(df_joined.index_votes.dropna())
     df_votes_matched = df_votes.iloc[list(matched_vote_indexes),:]
 
     df_votes_matched_with_votes = df_votes_matched[
-        (df_votes_matched[VOTES_DEM] > 0) | (df_votes_matched[VOTES_REP] > 0)
+        (df_votes_matched[VOTES_DEM] > 0) | (df_votes_matched[VOTES_REP] > 0) | (df_votes_matched[VOTES_OTHER] > 0)
     ]
 
     missing_vote_indexes = set(df_votes.index) - matched_vote_indexes
     df_votes_unmatched = df_votes.iloc[list(missing_vote_indexes),:]
 
     df_votes_unmatched_with_votes = df_votes_unmatched[
-        (df_votes_unmatched[VOTES_DEM] > 0) | (df_votes_unmatched[VOTES_REP] > 0)
+        (df_votes_unmatched[VOTES_DEM] > 0) | (df_votes_unmatched[VOTES_REP] > 0) | (df_votes_unmatched[VOTES_OTHER] > 0)
     ]
 
     return df_votes_matched, df_votes_unmatched_with_votes
@@ -629,28 +632,28 @@ def get_first_good_index(df_votes_matched, bad_index, bad_row):
     else:
         return good_index
 
-def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
+def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
     assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
     assert df_votes.crs == 5070, f'Should not see {df_votes.crs} df_votes.crs'
     
-    input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+    input_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum() + df_votes[VOTES_OTHER].sum()
     input_people = df_blocks.P0010001.sum()
     
     # Progressively buffer voting precincts by larger amounts to intersect
     for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
-        starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+        starting_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum() + df_votes[VOTES_OTHER].sum()
 
         df_blocks2 = geopandas.sjoin(
             df_blocks,
-            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+            df_votes[['geometry', VOTES_DEM, VOTES_REP, VOTES_OTHER]],
             op='within', how='left', rsuffix='votes')
         #print_df(df_blocks2, 'df_blocks2')
     
         # Note any missing precincts and their vote counts
         df_votes_matched, df_votes_unmatched \
-            = get_unmatched_votes(df_votes, df_blocks2, VOTES_DEM, VOTES_REP)
+            = get_unmatched_votes(df_votes, df_blocks2, VOTES_DEM, VOTES_REP, VOTES_OTHER)
         #print_df(df_votes_matched, 'df_votes_matched')
         #print_df(df_votes_unmatched, 'df_votes_unmatched')
         
@@ -665,9 +668,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         for (bad_index, bad_row) in df_votes_unmatched.iterrows():
             good_index = get_first_good_index(df_votes_matched, bad_index, bad_row)
             if good_index is not None:
-                move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP)
+                move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP, VOTES_OTHER)
         
-        ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum()
+        ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum() + df_votes[VOTES_OTHER].sum()
         assert round(starting_votes) == round(ending_votes), \
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
 
@@ -680,7 +683,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
         # Join precinct votes to any land block spatially contained within
         df_blocks2 = geopandas.sjoin(
             df_blocks,
-            df_votes[['geometry', VOTES_DEM, VOTES_REP]],
+            df_votes[['geometry', VOTES_DEM, VOTES_REP, VOTES_OTHER]],
             op='intersects', how='left', rsuffix='votes')
         #print_df(df_blocks2, 'df_blocks2')
     
@@ -723,6 +726,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     # Scale presidential votes by 2020 VAP block/precinct fraction
     df_blocks4[VOTES_DEM] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     df_blocks4[VOTES_REP] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
+    df_blocks4[VOTES_OTHER] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     #print_df(df_blocks4, 'df_blocks4')
 
     # Select just a few columns
@@ -737,7 +741,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP):
     elif VOTES_DEM in (VOTES_DEM_P16, VOTES_DEM_S16):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2016'})
     
-    output_votes = df_blocks6[VOTES_DEM].sum() + df_blocks6[VOTES_REP].sum()
+    output_votes = df_blocks6[VOTES_DEM].sum() + df_blocks6[VOTES_REP].sum() + df_blocks6[VOTES_OTHER].sum()
     output_people = df_blocks6.P0010001.sum()
 
     assert round(input_votes) == round(output_votes), \
