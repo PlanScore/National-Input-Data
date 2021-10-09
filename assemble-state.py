@@ -786,15 +786,15 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
         print_df(df_votes, votes_source)
         
         if VOTES_DEM_P20 in df_votes.columns:
-            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20)
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20, VOTES_OTHER_P20)
         if VOTES_DEM_S20 in df_votes.columns:
-            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S20, VOTES_REP_S20)
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S20, VOTES_REP_S20, VOTES_OTHER_S20)
         if VOTES_DEM_S18 in df_votes.columns:
-            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S18, VOTES_REP_S18)
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S18, VOTES_REP_S18, VOTES_OTHER_S18)
         if VOTES_DEM_P16 in df_votes.columns:
-            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16)
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P16, VOTES_REP_P16, VOTES_OTHER_P16)
         if VOTES_DEM_S16 in df_votes.columns:
-            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16)
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16, VOTES_OTHER_S16)
     
     # Write out a block/precinct crosswalk file for optional use
     output_crosswalk(df_blocksV, votes_source)
@@ -846,18 +846,23 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
     if VOTES_DEM_P20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_P20] = df_blocks2[VOTES_DEM_P20].round(5)
         df_blocks3[VOTES_REP_P20] = df_blocks2[VOTES_REP_P20].round(5)
+        df_blocks3[VOTES_OTHER_P20] = df_blocks2[VOTES_OTHER_P20].round(5)
     if VOTES_DEM_P16 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_P16] = df_blocks2[VOTES_DEM_P16].round(5)
         df_blocks3[VOTES_REP_P16] = df_blocks2[VOTES_REP_P16].round(5)
+        df_blocks3[VOTES_OTHER_P16] = df_blocks2[VOTES_OTHER_P16].round(5)
     if VOTES_DEM_S20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S20] = df_blocks2[VOTES_DEM_S20].round(5)
         df_blocks3[VOTES_REP_S20] = df_blocks2[VOTES_REP_S20].round(5)
+        df_blocks3[VOTES_OTHER_S20] = df_blocks2[VOTES_OTHER_S20].round(5)
     if VOTES_DEM_S18 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S18] = df_blocks2[VOTES_DEM_S18].round(5)
         df_blocks3[VOTES_REP_S18] = df_blocks2[VOTES_REP_S18].round(5)
+        df_blocks3[VOTES_OTHER_S18] = df_blocks2[VOTES_OTHER_S18].round(5)
     if VOTES_DEM_S16 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S16] = df_blocks2[VOTES_DEM_S16].round(5)
         df_blocks3[VOTES_REP_S16] = df_blocks2[VOTES_REP_S16].round(5)
+        df_blocks3[VOTES_OTHER_S16] = df_blocks2[VOTES_OTHER_S16].round(5)
 
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert round(df_blocks3[column].sum()) == round(expected_count), \
