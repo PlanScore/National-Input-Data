@@ -19,6 +19,7 @@ if __name__ == '__main__':
         df_votes1.to_crs(5070),
         'US President 2020 - DEM',
         'US President 2020 - REP',
+        'US President 2020 - Other',
     ).to_crs(4326)
 
     assemble.print_df(joined1, 'joined1')
@@ -30,6 +31,8 @@ if __name__ == '__main__':
         f"Should not have {joined1['US President 2020 - REP'].sum()} republican votes"
     assert round(joined1['US President 2020 - DEM'].sum()) == 171, \
         f"Should not have {joined1['US President 2020 - DEM'].sum()} democratic votes"
+    assert round(joined1['US President 2020 - Other'].sum()) == 16, \
+        f"Should not have {joined1['US President 2020 - Other'].sum()} 3rd party votes"
     assert round(joined1['P0010001'].sum()) == 63, \
         f"Should not have {joined1['P0010001'].sum()} total population"
 
@@ -42,6 +45,7 @@ if __name__ == '__main__':
         df_votes2.to_crs(5070),
         'US President 2020 - DEM',
         'US President 2020 - REP',
+        'US President 2020 - Other',
     ).to_crs(4326)
 
     assemble.print_df(joined2, 'joined2')
@@ -62,6 +66,8 @@ if __name__ == '__main__':
         f"Should not have {joined2['US President 2020 - REP'].sum()} republican votes"
     assert round(joined2['US President 2020 - DEM'].sum()) == 171, \
         f"Should not have {joined2['US President 2020 - DEM'].sum()} democratic votes"
+    assert round(joined2['US President 2020 - Other'].sum()) == 16, \
+        f"Should not have {joined2['US President 2020 - Other'].sum()} 3rd party votes"
     assert round(joined2['P0010001'].sum()) == 63, \
         f"Should not have {joined2['P0010001'].sum()} total population"
     
