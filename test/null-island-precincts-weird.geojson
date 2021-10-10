@@ -6,7 +6,8 @@
       "properties": {
         "Name": "West",
         "US President 2020 - REP": 40,
-        "US President 2020 - DEM": 41
+        "US President 2020 - DEM": 41,
+        "US President 2020 - Other": 4
       },
       "geometry": {
         "type": "Polygon",
@@ -49,7 +50,8 @@
       "properties": {
         "Name": "Northeast Weird",
         "US President 2020 - REP": 62,
-        "US President 2020 - DEM": 44
+        "US President 2020 - DEM": 44,
+        "US President 2020 - Other": 4
       },
       "geometry": {
         "type": "Polygon",
@@ -88,7 +90,8 @@
       "properties": {
         "Name": "Southeast",
         "US President 2020 - REP": 48,
-        "US President 2020 - DEM": 76
+        "US President 2020 - DEM": 76,
+        "US President 2020 - Other": 7
       },
       "geometry": {
         "type": "Polygon",
@@ -127,7 +130,8 @@
       "properties": {
         "Name": "Island",
         "US President 2020 - REP": 10,
-        "US President 2020 - DEM": 10
+        "US President 2020 - DEM": 10,
+        "US President 2020 - Other": 1
       },
       "geometry": {
         "type": "Polygon",
