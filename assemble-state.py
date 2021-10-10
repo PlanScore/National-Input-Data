@@ -25,6 +25,7 @@ STATE_LOOKUP = {
     '08': 'CO',
     '09': 'CT',
     '10': 'DE',
+    '11': 'DC',
     '12': 'FL',
     '13': 'GA',
     '15': 'HI',
@@ -286,7 +287,6 @@ def load_votes(votes_source):
                 # Senate runoff + zeros for 3rd party
                 df2.R16USSRKEN,
                 df2.R16USSDCAM,
-                pandas.Series(name='R16USSxxxx', data=[0] * len(df2)),
             ), axis=1),
             geometry='geometry',
             crs=df2.crs,
@@ -302,6 +302,18 @@ def load_votes(votes_source):
         for column in df3.columns
         if vote_pattern.match(column)
     })
+    
+    # Add 3rd party votes as zeros if missing
+    if VOTES_DEM_P16 in df4.columns and VOTES_OTHER_P16 not in df4.columns:
+        df4[VOTES_OTHER_P16] = pandas.Series(name=VOTES_OTHER_P16, data=[0] * len(df4))
+    elif VOTES_DEM_P20 in df4.columns and VOTES_OTHER_P20 not in df4.columns:
+        df4[VOTES_OTHER_P20] = pandas.Series(name=VOTES_OTHER_P20, data=[0] * len(df4))
+    elif VOTES_DEM_S16 in df4.columns and VOTES_OTHER_S16 not in df4.columns:
+        df4[VOTES_OTHER_S16] = pandas.Series(name=VOTES_OTHER_S16, data=[0] * len(df4))
+    elif VOTES_DEM_S18 in df4.columns and VOTES_OTHER_S18 not in df4.columns:
+        df4[VOTES_OTHER_S18] = pandas.Series(name=VOTES_OTHER_S18, data=[0] * len(df4))
+    elif VOTES_DEM_S20 in df4.columns and VOTES_OTHER_S20 not in df4.columns:
+        df4[VOTES_OTHER_S20] = pandas.Series(name=VOTES_OTHER_S20, data=[0] * len(df4))
     
     df5 = sum_over_vote_columns(df4)
     print_df(df5, votes_source)
