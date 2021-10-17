@@ -23,6 +23,15 @@ jobs:
             - /opt/circleci/.pyenv/versions/3.6.5
       - run: ./load-vest-excerpts.py
       - run: ./null-island-test.py
+      - restore_cache:
+          keys:
+            - test-makefile-{{ checksum "Makefile" }}
+      - run: make assembled-state-RI.geojson
+      - save_cache:
+          key: test-makefile-{{ checksum "Makefile" }}
+          paths:
+            - Census
+            - memoized
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
