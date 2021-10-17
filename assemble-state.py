@@ -328,7 +328,12 @@ def load_blocks(blocks_source):
         for name in sorted(zf.namelist())
     ]
     pls = [csv.reader(file, delimiter='|') for file in fs]
-    rows = (plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls))
+    rows = [plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls)]
+    
+    state = STATE_LOOKUP[rows[0][12]]
+    url = f'https://dra-us-west-datafiles.s3.us-west-2.amazonaws.com/_{state}_2020_VD_tabblock.centroid.json'
+    centroids = requests.get(url).json()
+
     blocks = [
         {
             'STATE': row[12],
@@ -340,7 +345,7 @@ def load_blocks(blocks_source):
             'GEOCODE': row[9],
             'AREALAND': int(row[84]),
             'AREAWATER': int(row[85]),
-            'geometry': shapely.geometry.Point(float(row[93]), float(row[92])),
+            'geometry': shapely.geometry.Point(centroids[row[9]]['x'], centroids[row[9]]['y']),
             'P0010001': int(row[96+1]), # Total Population
             'P0020002': int(row[167+2]), # Hispanic or Latino
             'P0020006': int(row[167+6]), # Non-Hispanic Black
