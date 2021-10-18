@@ -15,6 +15,7 @@ import csv
 import io
 import zipfile
 import re
+import json
 
 STATE_LOOKUP = {
     '01': 'AL',
@@ -321,14 +322,18 @@ def load_votes(votes_source):
     return df5
 
 @memoize
-def load_blocks(blocks_source):
+def load_blocks(blocks_source, centroid_path):
     zf = zipfile.ZipFile(blocks_source)
     fs = [
         io.TextIOWrapper(zf.open(name), encoding='Latin-1')
         for name in sorted(zf.namelist())
     ]
     pls = [csv.reader(file, delimiter='|') for file in fs]
-    rows = (plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls))
+    rows = [plgeo+pl1[5:]+pl2[5:]+pl3[5:] for (pl1, pl2, pl3, plgeo) in zip(*pls)]
+    
+    with open(centroid_path) as file:
+        centroids = json.load(file)
+
     blocks = [
         {
             'STATE': row[12],
@@ -340,7 +345,7 @@ def load_blocks(blocks_source):
             'GEOCODE': row[9],
             'AREALAND': int(row[84]),
             'AREAWATER': int(row[85]),
-            'geometry': shapely.geometry.Point(float(row[93]), float(row[92])),
+            'geometry': shapely.geometry.Point(centroids[row[9]]['x'], centroids[row[9]]['y']),
             'P0010001': int(row[96+1]), # Total Population
             'P0020002': int(row[167+2]), # Hispanic or Latino
             'P0020006': int(row[167+6]), # Non-Hispanic Black
@@ -787,9 +792,9 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source):
+def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, centroid_path):
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2019').to_crs(5070)
-    df_blocks = load_blocks(blocks_source).to_crs(5070)
+    df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
 
     df_blocksV, df_blocks_original_geometry = df_blocks, df_blocks.geometry.copy()
@@ -920,6 +925,7 @@ parser.add_argument('votes_sources', nargs='*')
 parser.add_argument('blocks_source')
 parser.add_argument('bgs_source')
 parser.add_argument('cvap_source')
+parser.add_argument('centroid_path')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -929,4 +935,5 @@ if __name__ == '__main__':
         args.blocks_source,
         args.bgs_source,
         args.cvap_source,
+        args.centroid_path,
     ))
