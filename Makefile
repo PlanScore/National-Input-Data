@@ -50,6 +50,7 @@ all: assembled-state-TX.geojson \
      assembled-state-NJ.geojson \
      assembled-state-NM.geojson \
      assembled-state-NV.geojson \
+     assembled-state-NY.geojson \
      assembled-state-OH.geojson \
      assembled-state-OK.geojson \
      assembled-state-OR.geojson \
@@ -99,6 +100,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln blocks_NJ -nlt Point -overwrite $@ assembled-state-NJ.geojson
 	ogr2ogr -f GPKG -nln blocks_NM -nlt Point -overwrite $@ assembled-state-NM.geojson
 	ogr2ogr -f GPKG -nln blocks_NV -nlt Point -overwrite $@ assembled-state-NV.geojson
+	ogr2ogr -f GPKG -nln blocks_NY -nlt Point -overwrite $@ assembled-state-NY.geojson
 	ogr2ogr -f GPKG -nln blocks_OH -nlt Point -overwrite $@ assembled-state-OH.geojson
 	ogr2ogr -f GPKG -nln blocks_OK -nlt Point -overwrite $@ assembled-state-OK.geojson
 	ogr2ogr -f GPKG -nln blocks_OR -nlt Point -overwrite $@ assembled-state-OR.geojson
@@ -147,6 +149,7 @@ Nation.gpkg: all
 	ogr2ogr -f GPKG -nln votes_NJ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nj_2016.zip
 	ogr2ogr -f GPKG -nln votes_NM -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nm_2016.zip
 	ogr2ogr -f GPKG -nln votes_NV -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nv_2020.zip
+	ogr2ogr -f GPKG -nln votes_NY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ny_2020.zip
 	ogr2ogr -f GPKG -nln votes_OH -nlt MultiPolygon -overwrite $@ /vsizip/VEST/oh_2020.zip
 	ogr2ogr -f GPKG -nln votes_OK -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ok_2020.zip
 	ogr2ogr -f GPKG -nln votes_OR -nlt MultiPolygon -overwrite $@ /vsizip/VEST/or_2016.zip
@@ -360,6 +363,12 @@ assembled-state-NV.geojson: VEST/nv_2020.zip VEST/nv_2018.zip VEST/nv_2016.zip C
 		/vsizip/VEST/nv_2020.zip /vsizip/VEST/nv_2018.zip /vsizip/VEST/nv_2016.zip \
 		Census/nv2020.pl.zip /vsizip/Census/tl_2019_32_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NV_2020_VD_tabblock.centroid.json
+
+assembled-state-NY.geojson: VEST/ny_2020.zip VEST/ny_2018.zip VEST/ny_2016.zip Census/ny2020.pl.zip Census/tl_2019_36_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NY_2020_VD_tabblock.centroid.json
+	./assemble-state.py $@ \
+		/vsizip/VEST/ny_2020.zip /vsizip/VEST/ny_2018.zip /vsizip/VEST/ny_2016.zip \
+		Census/ny2020.pl.zip /vsizip/Census/tl_2019_36_bg.zip \
+		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NY_2020_VD_tabblock.centroid.json
 
 assembled-state-OH.geojson: VEST/oh_2020.zip VEST/oh_2018.zip VEST/oh_2016.zip Census/oh2020.pl.zip Census/tl_2019_39_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_OH_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
