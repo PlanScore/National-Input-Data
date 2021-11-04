@@ -64,6 +64,7 @@ all: assembled-state-TX.geojson \
      assembled-state-VT.geojson \
      assembled-state-WA.geojson \
      assembled-state-WI.geojson \
+     assembled-state-WV.geojson \
      assembled-state-WY.geojson
 
 Nation.gpkg: all
@@ -453,6 +454,12 @@ assembled-state-WI.geojson: VEST/wi_2020.zip VEST/wi_2018.zip VEST/wi_2016.zip C
 		/vsizip/VEST/wi_2020.zip /vsizip/VEST/wi_2018.zip /vsizip/VEST/wi_2016.zip \
 		Census/wi2020.pl.zip /vsizip/Census/tl_2019_55_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
+
+assembled-state-WV.geojson: NYT/wv_2020.gpkg Census/wv2020.pl.zip Census/tl_2019_54_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
+	./assemble-state.py $@ \
+		NYT/wv_2020.gpkg \
+		Census/wv2020.pl.zip /vsizip/Census/tl_2019_54_bg.zip \
+		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
 
 assembled-state-WY.geojson: VEST/wy_2020.zip VEST/wy_2018.zip VEST/wy_2016.zip Census/wy2020.pl.zip Census/tl_2019_56_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WY_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
