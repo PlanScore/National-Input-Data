@@ -332,9 +332,9 @@ assembled-state-UT.geojson: VEST/ut_2020.zip VEST/ut_2018.zip VEST/ut_2016.zip C
 		Census/ut2020.pl.zip /vsizip/Census/tl_2019_49_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_UT_2020_VD_tabblock.centroid.json
 
-assembled-state-VA.geojson: VEST/va_2016.zip Census/va2020.pl.zip Census/tl_2019_51_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_VA_2020_VD_tabblock.centroid.json
+assembled-state-VA.geojson: VEST/va_2020.zip VEST/va_2018.zip VEST/va_2016.zip Census/va2020.pl.zip Census/tl_2019_51_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_VA_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/va_2016.zip \
+		/vsizip/VEST/va_2020.zip /vsizip/VEST/va_2018.zip /vsizip/VEST/va_2016.zip \
 		Census/va2020.pl.zip /vsizip/Census/tl_2019_51_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_VA_2020_VD_tabblock.centroid.json
 
