@@ -42,6 +42,7 @@ all: assembled-state-TX.geojson \
      assembled-state-MI.geojson \
      assembled-state-MN.geojson \
      assembled-state-MO.geojson \
+     assembled-state-MS.geojson \
      assembled-state-MT.geojson \
      assembled-state-NC.geojson \
      assembled-state-ND.geojson \
@@ -64,107 +65,8 @@ all: assembled-state-TX.geojson \
      assembled-state-VT.geojson \
      assembled-state-WA.geojson \
      assembled-state-WI.geojson \
+     assembled-state-WV.geojson \
      assembled-state-WY.geojson
-
-Nation.gpkg: all
-	ogr2ogr -f GPKG -nln blocks_AK -nlt Point -overwrite $@ assembled-state-AK.geojson
-	ogr2ogr -f GPKG -nln blocks_AL -nlt Point -overwrite $@ assembled-state-AL.geojson
-	ogr2ogr -f GPKG -nln blocks_AR -nlt Point -overwrite $@ assembled-state-AR.geojson
-	ogr2ogr -f GPKG -nln blocks_AZ -nlt Point -overwrite $@ assembled-state-AZ.geojson
-	ogr2ogr -f GPKG -nln blocks_CA -nlt Point -overwrite $@ assembled-state-CA.geojson
-	ogr2ogr -f GPKG -nln blocks_CO -nlt Point -overwrite $@ assembled-state-CO.geojson
-	ogr2ogr -f GPKG -nln blocks_CT -nlt Point -overwrite $@ assembled-state-CT.geojson
-	ogr2ogr -f GPKG -nln blocks_DC -nlt Point -overwrite $@ assembled-state-DC.geojson
-	ogr2ogr -f GPKG -nln blocks_DE -nlt Point -overwrite $@ assembled-state-DE.geojson
-	ogr2ogr -f GPKG -nln blocks_FL -nlt Point -overwrite $@ assembled-state-FL.geojson
-	ogr2ogr -f GPKG -nln blocks_GA -nlt Point -overwrite $@ assembled-state-GA.geojson
-	ogr2ogr -f GPKG -nln blocks_HI -nlt Point -overwrite $@ assembled-state-HI.geojson
-	ogr2ogr -f GPKG -nln blocks_IA -nlt Point -overwrite $@ assembled-state-IA.geojson
-	ogr2ogr -f GPKG -nln blocks_ID -nlt Point -overwrite $@ assembled-state-ID.geojson
-	ogr2ogr -f GPKG -nln blocks_IL -nlt Point -overwrite $@ assembled-state-IL.geojson
-	ogr2ogr -f GPKG -nln blocks_IN -nlt Point -overwrite $@ assembled-state-IN.geojson
-	ogr2ogr -f GPKG -nln blocks_KS -nlt Point -overwrite $@ assembled-state-KS.geojson
-	ogr2ogr -f GPKG -nln blocks_KY -nlt Point -overwrite $@ assembled-state-KY.geojson
-	ogr2ogr -f GPKG -nln blocks_LA -nlt Point -overwrite $@ assembled-state-LA.geojson
-	ogr2ogr -f GPKG -nln blocks_MA -nlt Point -overwrite $@ assembled-state-MA.geojson
-	ogr2ogr -f GPKG -nln blocks_MD -nlt Point -overwrite $@ assembled-state-MD.geojson
-	ogr2ogr -f GPKG -nln blocks_ME -nlt Point -overwrite $@ assembled-state-ME.geojson
-	ogr2ogr -f GPKG -nln blocks_MI -nlt Point -overwrite $@ assembled-state-MI.geojson
-	ogr2ogr -f GPKG -nln blocks_MN -nlt Point -overwrite $@ assembled-state-MN.geojson
-	ogr2ogr -f GPKG -nln blocks_MO -nlt Point -overwrite $@ assembled-state-MO.geojson
-	ogr2ogr -f GPKG -nln blocks_MT -nlt Point -overwrite $@ assembled-state-MT.geojson
-	ogr2ogr -f GPKG -nln blocks_NC -nlt Point -overwrite $@ assembled-state-NC.geojson
-	ogr2ogr -f GPKG -nln blocks_ND -nlt Point -overwrite $@ assembled-state-ND.geojson
-	ogr2ogr -f GPKG -nln blocks_NE -nlt Point -overwrite $@ assembled-state-NE.geojson
-	ogr2ogr -f GPKG -nln blocks_NH -nlt Point -overwrite $@ assembled-state-NH.geojson
-	ogr2ogr -f GPKG -nln blocks_NJ -nlt Point -overwrite $@ assembled-state-NJ.geojson
-	ogr2ogr -f GPKG -nln blocks_NM -nlt Point -overwrite $@ assembled-state-NM.geojson
-	ogr2ogr -f GPKG -nln blocks_NV -nlt Point -overwrite $@ assembled-state-NV.geojson
-	ogr2ogr -f GPKG -nln blocks_NY -nlt Point -overwrite $@ assembled-state-NY.geojson
-	ogr2ogr -f GPKG -nln blocks_OH -nlt Point -overwrite $@ assembled-state-OH.geojson
-	ogr2ogr -f GPKG -nln blocks_OK -nlt Point -overwrite $@ assembled-state-OK.geojson
-	ogr2ogr -f GPKG -nln blocks_OR -nlt Point -overwrite $@ assembled-state-OR.geojson
-	ogr2ogr -f GPKG -nln blocks_PA -nlt Point -overwrite $@ assembled-state-PA.geojson
-	ogr2ogr -f GPKG -nln blocks_RI -nlt Point -overwrite $@ assembled-state-RI.geojson
-	ogr2ogr -f GPKG -nln blocks_SC -nlt Point -overwrite $@ assembled-state-SC.geojson
-	ogr2ogr -f GPKG -nln blocks_SD -nlt Point -overwrite $@ assembled-state-SD.geojson
-	ogr2ogr -f GPKG -nln blocks_TN -nlt Point -overwrite $@ assembled-state-TN.geojson
-	ogr2ogr -f GPKG -nln blocks_UT -nlt Point -overwrite $@ assembled-state-UT.geojson
-	ogr2ogr -f GPKG -nln blocks_VA -nlt Point -overwrite $@ assembled-state-VA.geojson
-	ogr2ogr -f GPKG -nln blocks_TX -nlt Point -overwrite $@ assembled-state-TX.geojson
-	ogr2ogr -f GPKG -nln blocks_VT -nlt Point -overwrite $@ assembled-state-VT.geojson
-	ogr2ogr -f GPKG -nln blocks_WA -nlt Point -overwrite $@ assembled-state-WA.geojson
-	ogr2ogr -f GPKG -nln blocks_WI -nlt Point -overwrite $@ assembled-state-WI.geojson
-	ogr2ogr -f GPKG -nln blocks_WY -nlt Point -overwrite $@ assembled-state-WY.geojson
-	ogr2ogr -f GPKG -nln votes_AK -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ak_2020.zip
-	ogr2ogr -f GPKG -nln votes_AL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/al_2020.zip
-	ogr2ogr -f GPKG -nln votes_AR -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ar_2020.zip
-	ogr2ogr -f GPKG -nln votes_AZ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/az_2020.zip
-	ogr2ogr -f GPKG -nln votes_CA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ca_2020.zip
-	ogr2ogr -f GPKG -nln votes_CO -nlt MultiPolygon -overwrite $@ /vsizip/VEST/co_2020.zip
-	ogr2ogr -f GPKG -nln votes_CT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/tc_2020.zip
-	ogr2ogr -f GPKG -nln votes_DC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/dc_2020.zip
-	ogr2ogr -f GPKG -nln votes_DE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/de_2020.zip
-	ogr2ogr -f GPKG -nln votes_FL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/fl_2020.zip
-	ogr2ogr -f GPKG -nln votes_GA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ga_2020.zip
-	ogr2ogr -f GPKG -nln votes_HI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/hi_2020.zip
-	ogr2ogr -f GPKG -nln votes_IA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ia_2020.zip
-	ogr2ogr -f GPKG -nln votes_ID -nlt MultiPolygon -overwrite $@ /vsizip/VEST/id_2020.zip
-	ogr2ogr -f GPKG -nln votes_IL -nlt MultiPolygon -overwrite $@ /vsizip/VEST/il_2020.zip
-	ogr2ogr -f GPKG -nln votes_IN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/in_2020.zip
-	ogr2ogr -f GPKG -nln votes_KS -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ks_2020.zip
-	ogr2ogr -f GPKG -nln votes_KY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ky_2016.zip
-	ogr2ogr -f GPKG -nln votes_LA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/la_2020.zip
-	ogr2ogr -f GPKG -nln votes_MA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ma_2020.zip
-	ogr2ogr -f GPKG -nln votes_MD -nlt MultiPolygon -overwrite $@ /vsizip/VEST/md_2020.zip
-	ogr2ogr -f GPKG -nln votes_ME -nlt MultiPolygon -overwrite $@ /vsizip/VEST/me_2020.zip
-	ogr2ogr -f GPKG -nln votes_MI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mi_2020.zip
-	ogr2ogr -f GPKG -nln votes_MN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mn_2020.zip
-	ogr2ogr -f GPKG -nln votes_MO -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mo_2020.zip
-	ogr2ogr -f GPKG -nln votes_MT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/mt_2020.zip
-	ogr2ogr -f GPKG -nln votes_NC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nc_2020.zip
-	ogr2ogr -f GPKG -nln votes_ND -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nd_2020.zip
-	ogr2ogr -f GPKG -nln votes_NE -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ne_2020.zip
-	ogr2ogr -f GPKG -nln votes_NH -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nh_2020.zip
-	ogr2ogr -f GPKG -nln votes_NJ -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nj_2016.zip
-	ogr2ogr -f GPKG -nln votes_NM -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nm_2016.zip
-	ogr2ogr -f GPKG -nln votes_NV -nlt MultiPolygon -overwrite $@ /vsizip/VEST/nv_2020.zip
-	ogr2ogr -f GPKG -nln votes_NY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ny_2020.zip
-	ogr2ogr -f GPKG -nln votes_OH -nlt MultiPolygon -overwrite $@ /vsizip/VEST/oh_2020.zip
-	ogr2ogr -f GPKG -nln votes_OK -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ok_2020.zip
-	ogr2ogr -f GPKG -nln votes_OR -nlt MultiPolygon -overwrite $@ /vsizip/VEST/or_2016.zip
-	ogr2ogr -f GPKG -nln votes_PA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/pa_2016.zip
-	ogr2ogr -f GPKG -nln votes_RI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ri_2020.zip
-	ogr2ogr -f GPKG -nln votes_SC -nlt MultiPolygon -overwrite $@ /vsizip/VEST/sc_2020.zip
-	ogr2ogr -f GPKG -nln votes_SD -nlt MultiPolygon -overwrite $@ /vsizip/VEST/sd_2016.zip
-	ogr2ogr -f GPKG -nln votes_TN -nlt MultiPolygon -overwrite $@ /vsizip/VEST/tn_2020.zip
-	ogr2ogr -f GPKG -nln votes_UT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/ut_2020.zip
-	ogr2ogr -f GPKG -nln votes_VA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/va_2016.zip
-	ogr2ogr -f GPKG -nln votes_TX -nlt MultiPolygon -overwrite $@ /vsizip/VEST/tx_2020.zip
-	ogr2ogr -f GPKG -nln votes_VT -nlt MultiPolygon -overwrite $@ /vsizip/VEST/vt_2020.zip
-	ogr2ogr -f GPKG -nln votes_WA -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wa_2020.zip
-	ogr2ogr -f GPKG -nln votes_WI -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wi_2020.zip
-	ogr2ogr -f GPKG -nln votes_WY -nlt MultiPolygon -overwrite $@ /vsizip/VEST/wy_2020.zip
 
 assembled-state-AK.geojson: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2019_02_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_AK_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
@@ -316,6 +218,12 @@ assembled-state-MO.geojson: VEST/mo_2020.zip VEST/mo_2018.zip VEST/mo_2016.zip C
 		Census/mo2020.pl.zip /vsizip/Census/tl_2019_29_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MO_2020_VD_tabblock.centroid.json
 
+assembled-state-MS.geojson: NYT/ms_2020.gpkg Census/ms2020.pl.zip Census/tl_2019_28_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MS_2020_VD_tabblock.centroid.json
+	./assemble-state.py $@ \
+		NYT/ms_2020.gpkg \
+		Census/ms2020.pl.zip /vsizip/Census/tl_2019_28_bg.zip \
+		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MS_2020_VD_tabblock.centroid.json
+
 assembled-state-MT.geojson: VEST/mt_2020.zip VEST/mt_2018.zip VEST/mt_2016.zip Census/mt2020.pl.zip Census/tl_2019_30_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MT_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
 		/vsizip/VEST/mt_2020.zip /vsizip/VEST/mt_2018.zip /vsizip/VEST/mt_2016.zip \
@@ -388,9 +296,9 @@ assembled-state-OR.geojson: VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip C
 		Census/or2020.pl.zip /vsizip/Census/tl_2019_41_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_OR_2020_VD_tabblock.centroid.json
 
-assembled-state-PA.geojson: VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
+assembled-state-PA.geojson: NYT/pa_2020.gpkg VEST/pa_2018.zip VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/pa_2016.zip \
+		NYT/pa_2020.gpkg /vsizip/VEST/pa_2018.zip /vsizip/VEST/pa_2016.zip \
 		Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 
@@ -453,6 +361,12 @@ assembled-state-WI.geojson: VEST/wi_2020.zip VEST/wi_2018.zip VEST/wi_2016.zip C
 		/vsizip/VEST/wi_2020.zip /vsizip/VEST/wi_2018.zip /vsizip/VEST/wi_2016.zip \
 		Census/wi2020.pl.zip /vsizip/Census/tl_2019_55_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
+
+assembled-state-WV.geojson: NYT/wv_2020.gpkg Census/wv2020.pl.zip Census/tl_2019_54_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
+	./assemble-state.py $@ \
+		NYT/wv_2020.gpkg \
+		Census/wv2020.pl.zip /vsizip/Census/tl_2019_54_bg.zip \
+		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
 
 assembled-state-WY.geojson: VEST/wy_2020.zip VEST/wy_2018.zip VEST/wy_2016.zip Census/wy2020.pl.zip Census/tl_2019_56_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WY_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
