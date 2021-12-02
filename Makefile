@@ -254,15 +254,15 @@ assembled-state-NH.geojson: VEST/nh_2020.zip VEST/nh_2018.zip VEST/nh_2016.zip C
 		Census/nh2020.pl.zip /vsizip/Census/tl_2019_33_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NH_2020_VD_tabblock.centroid.json
 
-assembled-state-NJ.geojson: VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2019_34_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NJ_2020_VD_tabblock.centroid.json
+assembled-state-NJ.geojson: VEST/nj_2020.zip VEST/nj_2018.zip VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2019_34_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NJ_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/nj_2016.zip \
+		/vsizip/VEST/nj_2020.zip /vsizip/VEST/nj_2018.zip /vsizip/VEST/nj_2016.zip \
 		Census/nj2020.pl.zip /vsizip/Census/tl_2019_34_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NJ_2020_VD_tabblock.centroid.json
 
-assembled-state-NM.geojson: VEST/nm_2016.zip Census/nm2020.pl.zip Census/tl_2019_35_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NM_2020_VD_tabblock.centroid.json
+assembled-state-NM.geojson: VEST/nm_2020.zip VEST/nm_2018.zip VEST/nm_2016.zip Census/nm2020.pl.zip Census/tl_2019_35_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NM_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/nm_2016.zip \
+		/vsizip/VEST/nm_2020.zip /vsizip/VEST/nm_2018.zip /vsizip/VEST/nm_2016.zip \
 		Census/nm2020.pl.zip /vsizip/Census/tl_2019_35_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_NM_2020_VD_tabblock.centroid.json
 
@@ -296,9 +296,9 @@ assembled-state-OR.geojson: VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip C
 		Census/or2020.pl.zip /vsizip/Census/tl_2019_41_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_OR_2020_VD_tabblock.centroid.json
 
-assembled-state-PA.geojson: Other/pa_2020.gpkg VEST/pa_2018.zip VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
+assembled-state-PA.geojson: VEST/pa_2020.zip VEST/pa_2018.zip VEST/pa_2016.zip Census/pa2020.pl.zip Census/tl_2019_42_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		Other/pa_2020.gpkg /vsizip/VEST/pa_2018.zip /vsizip/VEST/pa_2016.zip \
+		/vsizip/VEST/pa_2020.zip /vsizip/VEST/pa_2018.zip /vsizip/VEST/pa_2016.zip \
 		Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 
