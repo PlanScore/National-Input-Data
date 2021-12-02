@@ -122,9 +122,9 @@ assembled-state-DE.geojson: VEST/de_2020.zip VEST/de_2018.zip VEST/de_2016.zip C
 		Census/de2020.pl.zip /vsizip/Census/tl_2019_10_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_DE_2020_VD_tabblock.centroid.json
 
-assembled-state-FL.geojson: VEST/fl_2020.zip Census/fl2020.pl.zip Census/tl_2019_12_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
+assembled-state-FL.geojson: VEST/fl_2020.zip VEST/fl_2018.zip VEST/fl_2016.zip Census/fl2020.pl.zip Census/tl_2019_12_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/fl_2020.zip \
+		/vsizip/VEST/fl_2020.zip /vsizip/VEST/fl_2018.zip /vsizip/VEST/fl_2016.zip \
 		Census/fl2020.pl.zip /vsizip/Census/tl_2019_12_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
 
