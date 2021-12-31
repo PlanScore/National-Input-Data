@@ -218,9 +218,9 @@ assembled-state-MO.geojson: VEST/mo_2020.zip VEST/mo_2018.zip VEST/mo_2016.zip C
 		Census/mo2020.pl.zip /vsizip/Census/tl_2019_29_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MO_2020_VD_tabblock.centroid.json
 
-assembled-state-MS.geojson: NYT/ms_2020.gpkg Census/ms2020.pl.zip Census/tl_2019_28_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MS_2020_VD_tabblock.centroid.json
+assembled-state-MS.geojson: VEST/ms_2020.zip VEST/ms_2018.zip VEST/ms_2016.zip Census/ms2020.pl.zip Census/tl_2019_28_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MS_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		NYT/ms_2020.gpkg \
+		/vsizip/VEST/ms_2020.zip /vsizip/VEST/ms_2018.zip /vsizip/VEST/ms_2016.zip \
 		Census/ms2020.pl.zip /vsizip/Census/tl_2019_28_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_MS_2020_VD_tabblock.centroid.json
 
