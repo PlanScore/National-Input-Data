@@ -95,14 +95,14 @@ ACS_VARIABLES = [
     'B03002_012E',
     'B15003_017E',
     'B15003_018E',
-    #'B19013_001E',
+    'B19013_001E',
     'B29001_001E',
     'B01001_001M',
     'B02009_001M',
     'B03002_012M',
     'B15003_017M',
     'B15003_018M',
-    #'B19013_001M',
+    'B19013_001M',
     'B29001_001M',
 ]
 
@@ -580,6 +580,8 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     # Scale survey data by land area block/group fraction
     for variable in (ACS_VARIABLES + CVAP_VARIABLES):
         if variable.startswith('B19013'):
+            # Interpret negative incomes as null values
+            df_blocks5.loc[df_blocks5[variable] < 0, variable] = None
             # Do not scale household income
             continue
         df_blocks5[variable] *= (df_blocks5.P0030001 / df_blocks5.P0030001_bg)
@@ -899,8 +901,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, cen
     df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
     df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
-    #df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
-    #df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
+    df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
+    df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['cvap_1_est'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019, Margin'] = df_blocks2['cvap_1_moe'].round(5)
     df_blocks3['Black Citizen Voting-Age Population 2019'] = (df_blocks2['cvap_5_est'] + df_blocks2['cvap_10_est']).round(5)
