@@ -95,6 +95,7 @@ ACS_VARIABLES = [
     'B03002_012E',
     'B15003_017E',
     'B15003_018E',
+    'B11012_001E',
     'B19013_001E',
     'B29001_001E',
     'B01001_001M',
@@ -102,6 +103,7 @@ ACS_VARIABLES = [
     'B03002_012M',
     'B15003_017M',
     'B15003_018M',
+    'B11012_001M',
     'B19013_001M',
     'B29001_001M',
 ]
@@ -163,7 +165,10 @@ def memoize(func):
     def new_func(*args, **kwargs):
         filename = 'memoized/{}-{}.pickle'.format(
             func.__name__,
-            hashlib.md5(pickle.dumps((args, kwargs))).hexdigest()
+            hashlib.md5(
+                pickle.dumps((args, kwargs))
+                + (func.__doc__ or '').strip().encode('utf8')
+            ).hexdigest()
         )
         
         if os.path.exists(filename):
@@ -367,6 +372,10 @@ def load_blocks(blocks_source, centroid_path):
 
 @memoize
 def load_blockgroups(bgs_source, cvap_source, acs_year):
+    ''' Load blockgroup data.
+    
+        Include: population, CVAP, households, and income.
+    '''
     df = geopandas.read_file(bgs_source)
     
     df2 = df[[
@@ -451,7 +460,10 @@ def get_state_counties(state_fips, api_path):
 
 @memoize
 def get_county_acs(state_fips, county_fips, api_path):
-
+    ''' Get ACS data for one county
+    
+        Include: population, CVAP, households, and income.
+    '''
     query = urllib.parse.urlencode([
         ('get', ','.join(ACS_VARIABLES + ['NAME'])),
         ('for', 'block group:*'),
@@ -901,6 +913,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, cen
     df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
     df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    df_blocks3['Households 2019'] = df_blocks2['B11012_001E'].round(5)
+    df_blocks3['Households 2019, Margin'] = df_blocks2['B11012_001M'].round(5)
     df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
     df_blocks3['Household Income 2019, Margin'] = df_blocks2['B19013_001M'].round(5)
     df_blocks3['Citizen Voting-Age Population 2019'] = df_blocks2['cvap_1_est'].round(5)
