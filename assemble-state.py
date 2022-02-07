@@ -128,7 +128,9 @@ CVAP_VARIABLES = [
 ]
 
 TRACT_VARIABLES = [
+    'B05001_005E',
     'B05006_001E',
+    'B05001_005M',
     'B05006_001M',
 ]
 
@@ -428,7 +430,7 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
 def load_tracts(tracts_source, acs_year):
     ''' Load tract data.
     
-        Include: foreign-born.
+        Include: foreign-born and naturalized.
     '''
     df = geopandas.read_file(tracts_source)
     
@@ -528,7 +530,7 @@ def get_county_acs(state_fips, county_fips, api_path):
 def get_county_tract_acs(state_fips, county_fips, api_path):
     ''' Get ACS data for one county
     
-        Include: foreign-born.
+        Include: foreign-born and naturalized.
     '''
     query = urllib.parse.urlencode([
         ('get', ','.join(TRACT_VARIABLES + ['NAME'])),
@@ -1097,6 +1099,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
     df_blocks3['Foreign-born Population 2019'] = df_blocks2['B05006_001E'].round(5)
     df_blocks3['Foreign-born Population 2019, Margin'] = df_blocks2['B05006_001M'].round(5)
+    df_blocks3['Naturalized Population 2019'] = df_blocks2['B05001_005E'].round(5)
+    df_blocks3['Naturalized Population 2019, Margin'] = df_blocks2['B05001_005M'].round(5)
     df_blocks3['Households 2019'] = df_blocks2['B11012_001E'].round(5)
     df_blocks3['Households 2019, Margin'] = df_blocks2['B11012_001M'].round(5)
     df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
