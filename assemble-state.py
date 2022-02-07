@@ -93,16 +93,32 @@ ACS_VARIABLES = [
     'B01001_001E',
     'B02009_001E',
     'B03002_012E',
+    'B15003_001E',
     'B15003_017E',
     'B15003_018E',
+    'B15003_019E',
+    'B15003_020E',
+    'B15003_021E',
+    'B15003_022E',
+    'B15003_023E',
+    'B15003_024E',
+    'B15003_025E',
     'B11012_001E',
     'B19013_001E',
     'B29001_001E',
     'B01001_001M',
     'B02009_001M',
     'B03002_012M',
+    'B15003_001M',
     'B15003_017M',
     'B15003_018M',
+    'B15003_019M',
+    'B15003_020M',
+    'B15003_021M',
+    'B15003_022M',
+    'B15003_023M',
+    'B15003_024M',
+    'B15003_025M',
     'B11012_001M',
     'B19013_001M',
     'B29001_001M',
@@ -381,7 +397,7 @@ def load_blocks(blocks_source, centroid_path):
 def load_blockgroups(bgs_source, cvap_source, acs_year):
     ''' Load blockgroup data.
     
-        Include: population, CVAP, households, and income.
+        Include: population, CVAP, households, income, and education.
     '''
     df = geopandas.read_file(bgs_source)
     
@@ -492,7 +508,7 @@ def get_state_counties(state_fips, api_path):
 def get_county_acs(state_fips, county_fips, api_path):
     ''' Get ACS data for one county
     
-        Include: population, CVAP, households, and income.
+        Include: population, CVAP, households, income, and education.
     '''
     query = urllib.parse.urlencode([
         ('get', ','.join(ACS_VARIABLES + ['NAME'])),
@@ -1095,8 +1111,14 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocks3['Hispanic Population 2019, Margin'] = df_blocks2['B03002_012M'].round(5)
     df_blocks3['Hispanic Population 2020'] = df_blocks2['P0020002'].round(5)
     df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
-    df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
-    df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    df_blocks3['Population 25+ 2019'] = df_blocks2['B15003_001E'].round(5)
+    df_blocks3['Population 25+ 2019, Margin'] = df_blocks2['B15003_001M'].round(5)
+    df_blocks3['High School or GED (25+) 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
+    df_blocks3['High School or GED (25+) 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    df_blocks3['Some College or AA (25+) 2019'] = (df_blocks2['B15003_019E'] + df_blocks2['B15003_020E'] + df_blocks2['B15003_020E']).round(5)
+    df_blocks3['Some College or AA (25+) 2019, Margin'] = (df_blocks2['B15003_019M'] + df_blocks2['B15003_020M'] + df_blocks2['B15003_020M']).round(5)
+    df_blocks3["Bachelor's or Higher (25+) 2019"] = (df_blocks2['B15003_022E'] + df_blocks2['B15003_023E'] + df_blocks2['B15003_024E'] + df_blocks2['B15003_025E']).round(5)
+    df_blocks3["Bachelor's or Higher (25+) 2019, Margin"] = (df_blocks2['B15003_022M'] + df_blocks2['B15003_023M'] + df_blocks2['B15003_024M'] + df_blocks2['B15003_025M']).round(5)
     df_blocks3['Foreign-born Population 2019'] = df_blocks2['B05006_001E'].round(5)
     df_blocks3['Foreign-born Population 2019, Margin'] = df_blocks2['B05006_001M'].round(5)
     df_blocks3['Naturalized Population 2019'] = df_blocks2['B05001_005E'].round(5)
