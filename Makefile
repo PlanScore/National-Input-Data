@@ -378,6 +378,9 @@ assembled-state-WY.geojson: VEST/wy_2020.zip VEST/wy_2018.zip VEST/wy_2016.zip C
 Census/CVAP_2015-2019_ACS_csv_files.zip:
 	curl -L https://www2.census.gov/programs-surveys/decennial/rdo/datasets/2019/2019-cvap/CVAP_2015-2019_ACS_csv_files.zip -o $@
 
+Census/tl_2019_%_tract.zip:
+	curl -L https://www2.census.gov/geo/tiger/TIGER2019/TRACT/tl_2019_$*_tract.zip -o $@
+
 Census/tl_2019_%_bg.zip:
 	curl -L https://www2.census.gov/geo/tiger/TIGER2019/BG/tl_2019_$*_bg.zip -o $@
 

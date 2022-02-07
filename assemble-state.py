@@ -127,6 +127,11 @@ CVAP_VARIABLES = [
     'cvap_13_moe',
 ]
 
+TRACT_VARIABLES = [
+    'B05006_001E',
+    'B05006_001M',
+]
+
 VOTES_DEM_P16 = 'US President 2016 - DEM'
 VOTES_REP_P16 = 'US President 2016 - REP'
 VOTES_OTHER_P16 = 'US President 2016 - Other'
@@ -420,6 +425,29 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
     return get_acs(df5, acs_year)
 
 @memoize
+def load_tracts(tracts_source, acs_year):
+    ''' Load tract data.
+    
+        Include: foreign-born.
+    '''
+    df = geopandas.read_file(tracts_source)
+    
+    df2 = df[[
+        'GEOID',
+        'NAMELSAD',
+        'ALAND',
+        'AWATER',
+        'STATEFP',
+        'COUNTYFP',
+        'TRACTCE',
+        'geometry',
+        ]]
+    
+    print_df(df2, 'df2')
+    
+    return get_tract_acs(df2, acs_year)
+
+@memoize
 def load_cvap(cvap_source):
     zf = zipfile.ZipFile(cvap_source)
     file = io.TextIOWrapper(zf.open('BlockGr.csv'), encoding='Latin-1')
@@ -496,6 +524,43 @@ def get_county_acs(state_fips, county_fips, api_path):
     
     return df_acs
 
+@memoize
+def get_county_tract_acs(state_fips, county_fips, api_path):
+    ''' Get ACS data for one county
+    
+        Include: foreign-born.
+    '''
+    query = urllib.parse.urlencode([
+        ('get', ','.join(TRACT_VARIABLES + ['NAME'])),
+        ('for', 'tract:*'),
+        ('in', f'state:{state_fips}'),
+        ('in', f'county:{county_fips}'),
+    ])
+    
+    print(f'https://api.census.gov/data/{api_path}?{query}')
+    
+    got = requests.get(f'https://api.census.gov/data/{api_path}?{query}')
+    head, tail = got.json()[0], got.json()[1:]
+    data = {
+        key: [row[i] for row in tail]
+        for (i, key) in enumerate(head)
+    }
+    
+    df_acs = pandas.DataFrame(data)
+    
+    if (state_fips, county_fips) == ('46', '102'):
+        # In 2015, Shannon County, SD (FIPS 46113) was renamed to
+        # Oglala Lakota County (FIPS 46101). We use the old FIPS code
+        # to match cleanly with 2010 census blocks.
+        df_acs.county = ['113' for _ in range(len(df_acs))]
+        print(df_acs.columns)
+        #raise NotImplementedError()
+    
+    for variable in TRACT_VARIABLES:
+        df_acs[variable] = df_acs[variable].astype(int)
+    
+    return df_acs
+
 def get_acs(df_bgs, acs_year):
 
     (state_fips, ) = df_bgs.STATEFP.unique()
@@ -531,6 +596,118 @@ def get_acs(df_bgs, acs_year):
     print(df_bgs3)
     
     return df_bgs3
+
+def get_tract_acs(df_tracts, acs_year):
+
+    (state_fips, ) = df_tracts.STATEFP.unique()
+    
+    print('state_fips:', state_fips)
+    
+    counties = get_state_counties(state_fips, f'{acs_year}/acs/acs5')
+    
+    df_acs = pandas.concat([
+        get_county_tract_acs(state_fips, county_fips, f'{acs_year}/acs/acs5')
+        for county_fips in sorted(counties)
+    ])
+    
+    print(df_acs)
+    
+    df_tracts2 = df_tracts.merge(df_acs, how='left',
+        left_on=('STATEFP', 'COUNTYFP', 'TRACTCE'),
+        right_on=('state', 'county', 'tract'),
+        )
+    
+    df_tracts3 = df_tracts2[[
+        'GEOID',
+        'NAMELSAD',
+        'ALAND',
+        'AWATER',
+        'STATEFP',
+        'COUNTYFP',
+        'TRACTCE',
+        'geometry',
+        ] + TRACT_VARIABLES]
+    
+    print(df_tracts3)
+    
+    return df_tracts3
+
+def join_blocks_tracts(df_blocks, df_tracts):
+    
+    assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
+    assert df_tracts.crs == 5070, f'Should not see {df_tracts.crs} df_tracts.crs'
+    input_population = df_blocks['P0010001'].sum()
+    
+    df_blocks_original_geometry = df_blocks.geometry.copy()
+
+    # Progressively buffer census blocks by larger amounts to intersect
+    for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
+        starting_foreignborn = df_tracts.B05006_001E.sum()
+
+        # Join tract votes to any land block spatially contained within
+        df_blocks2 = geopandas.sjoin(
+            df_blocks,
+            df_tracts,
+            op='intersects',
+            how='left',
+            rsuffix='tract',
+        )
+        #print_df(df_blocks2, 'df_blocks2')
+    
+        # Note any unmatched blocks
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_tract')
+        #print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+        
+        # Stop if no unmatched blocks are found
+        if df_blocks2_unmatched.empty:
+            break
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
+        
+        # Buffer unmatched blocks so they'll match
+        geom_index = df_blocks.columns.get_loc('geometry')
+        for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
+            df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
+        
+        ending_foreignborn = df_tracts.B05006_001E.sum()
+        assert round(starting_foreignborn) == round(ending_foreignborn), \
+            '{} foreign-born unnaccounted for'.format(abs(ending_foreignborn - starting_foreignborn))
+
+    print('*' * 80, 'Tracts')
+    
+    # Note any duplicate blocks
+    df_blocks3 = get_unique_blocks(df_blocks2)
+    #print_df(df_blocks3, 'df_blocks3')
+
+    # Restore original geometry
+    df_blocks3.geometry = df_blocks_original_geometry
+
+    # Sum P0010001 (population) for each block group
+    df_tract4 = df_blocks3[['GEOID', 'P0010001']]\
+        .groupby('GEOID', as_index=False).P0010001.sum()\
+        .rename(columns={'P0010001': 'P0010001_tract'})
+    
+    # Join land area data to any block with matching block group GEOID
+    df_blocks5 = df_blocks3.merge(df_tract4, on='GEOID', how='right')
+    
+    # Scale survey data by land area block/group fraction
+    for variable in TRACT_VARIABLES:
+        if variable.startswith('B19013'):
+            # Interpret negative incomes as null values
+            df_blocks5.loc[df_blocks5[variable] < 0, variable] = None
+            # Do not scale household income
+            continue
+        df_blocks5[variable] *= (df_blocks5.P0010001 / df_blocks5.P0010001_tract)
+    
+    # Select just a few columns
+    df_blocks6 = df_blocks5[BLOCK_FIELDS + TRACT_VARIABLES]
+    
+    output_population = df_blocks6['P0010001'].sum()
+    assert round(output_population) == round(input_population), \
+        '{} people unnaccounted for'.format(abs(input_population - output_population))
+    assert len(df_blocks6) == len(df_blocks), \
+        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
+    
+    return df_blocks6
 
 def join_blocks_blockgroups(df_blocks, df_bgs):
     
@@ -599,7 +776,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
         df_blocks5[variable] *= (df_blocks5.P0030001 / df_blocks5.P0030001_bg)
     
     # Select just a few columns
-    df_blocks6 = df_blocks5[BLOCK_FIELDS + ACS_VARIABLES + CVAP_VARIABLES]
+    df_blocks6 = df_blocks5[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES]
     
     output_population = df_blocks6['P0010001'].sum()
     assert round(output_population) == round(input_population), \
@@ -806,7 +983,8 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, centroid_path):
+def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path):
+    df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2019').to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
@@ -843,8 +1021,12 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, cen
 
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
+    print_df(df_tracts, 'df_tracts')
     
-    df_blocksB = join_blocks_blockgroups(df_blocks, df_bgs)
+    df_blocksBT = join_blocks_tracts(df_blocks, df_tracts)
+    print_df(df_blocksBT, 'df_blocksBT')
+    
+    df_blocksB = join_blocks_blockgroups(df_blocksBT, df_bgs)
     print_df(df_blocksB, 'df_blocksB')
     
     df_blocks2 = df_blocksV.merge(df_blocksB, how='left', on=BLOCK_FIELDS)
@@ -913,6 +1095,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, cvap_source, cen
     df_blocks3['Asian Population 2020'] = (df_blocks2['P0020008'] + df_blocks2['P0020015']).round(5)
     df_blocks3['High School or GED 2019'] = (df_blocks2['B15003_017E'] + df_blocks2['B15003_018E']).round(5)
     df_blocks3['High School or GED 2019, Margin'] = (df_blocks2['B15003_017M'] + df_blocks2['B15003_018M']).round(5)
+    df_blocks3['Foreign-born Population 2019'] = df_blocks2['B05006_001E'].round(5)
+    df_blocks3['Foreign-born Population 2019, Margin'] = df_blocks2['B05006_001M'].round(5)
     df_blocks3['Households 2019'] = df_blocks2['B11012_001E'].round(5)
     df_blocks3['Households 2019, Margin'] = df_blocks2['B11012_001M'].round(5)
     df_blocks3['Household Income 2019'] = df_blocks2['B19013_001E'].round(5)
@@ -940,6 +1124,7 @@ parser.add_argument('output_dest')
 parser.add_argument('votes_sources', nargs='*')
 parser.add_argument('blocks_source')
 parser.add_argument('bgs_source')
+parser.add_argument('tracts_source')
 parser.add_argument('cvap_source')
 parser.add_argument('centroid_path')
 
@@ -950,6 +1135,7 @@ if __name__ == '__main__':
         args.votes_sources,
         args.blocks_source,
         args.bgs_source,
+        args.tracts_source,
         args.cvap_source,
         args.centroid_path,
     ))
