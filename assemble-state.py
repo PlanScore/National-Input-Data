@@ -1102,8 +1102,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
         '{} blocks unaccounted for'.format(abs(len(df_blocks2) == len(df_blocks)))
 
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
-    #df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
-    #df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
+    df_blocks3['Population 2019'] = df_blocks2['B01001_001E'].round(5)
+    df_blocks3['Population 2019, Margin'] = df_blocks2['B01001_001M'].round(5)
     df_blocks3['Black Population 2019'] = df_blocks2['B02009_001E'].round(5)
     df_blocks3['Black Population 2019, Margin'] = df_blocks2['B02009_001M'].round(5)
     df_blocks3['Black Population 2020'] = (df_blocks2['P0020006'] + df_blocks2['P0020013']).round(5)
