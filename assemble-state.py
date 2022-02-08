@@ -440,7 +440,7 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
 
     print_df(df5, 'df5')
     
-    return get_acs(df5, acs_year)
+    return get_bg_acs(df5, acs_year)
 
 @memoize
 def load_tracts(tracts_source, acs_year):
@@ -505,7 +505,7 @@ def get_state_counties(state_fips, api_path):
     return [row['county'] for row in rows]
 
 @memoize
-def get_county_acs(state_fips, county_fips, api_path):
+def get_county_bg_acs(state_fips, county_fips, api_path):
     ''' Get ACS data for one county
     
         Include: population, CVAP, households, income, and education.
@@ -579,7 +579,7 @@ def get_county_tract_acs(state_fips, county_fips, api_path):
     
     return df_acs
 
-def get_acs(df_bgs, acs_year):
+def get_bg_acs(df_bgs, acs_year):
 
     (state_fips, ) = df_bgs.STATEFP.unique()
     
@@ -588,7 +588,7 @@ def get_acs(df_bgs, acs_year):
     counties = get_state_counties(state_fips, f'{acs_year}/acs/acs5')
     
     df_acs = pandas.concat([
-        get_county_acs(state_fips, county_fips, f'{acs_year}/acs/acs5')
+        get_county_bg_acs(state_fips, county_fips, f'{acs_year}/acs/acs5')
         for county_fips in sorted(counties)
     ])
     

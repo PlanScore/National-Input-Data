@@ -302,10 +302,10 @@ assembled-state-PA.geojson: VEST/pa_2020.zip VEST/pa_2018.zip VEST/pa_2016.zip C
 		Census/pa2020.pl.zip /vsizip/Census/tl_2019_42_bg.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 
-assembled-state-RI.geojson: VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
+assembled-state-RI.geojson: VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2019_44_bg.zip Census/tl_2019_44_tract.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
 		/vsizip/VEST/ri_2020.zip /vsizip/VEST/ri_2018.zip /vsizip/VEST/ri_2016.zip \
-		Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip \
+		Census/ri2020.pl.zip /vsizip/Census/tl_2019_44_bg.zip /vsizip/Census/tl_2019_44_tract.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
 
 assembled-state-SC.geojson: VEST/sc_2020.zip VEST/sc_2018.zip VEST/sc_2016.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_SC_2020_VD_tabblock.centroid.json
