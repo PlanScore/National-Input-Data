@@ -374,6 +374,9 @@ assembled-state-WY.geojson: VEST/wy_2020.zip VEST/wy_2018.zip VEST/wy_2016.zip C
 		Census/wy2020.pl.zip /vsizip/Census/tl_2019_56_bg.zip /vsizip/Census/tl_2019_56_tract.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_WY_2020_VD_tabblock.centroid.json
 
+assembled-state-%.parquet: assembled-state-%.geojson
+	./convert-state.py $^ $@
+
 # Linked from https://www.census.gov/programs-surveys/decennial-census/about/voting-rights/cvap.2019.html
 Census/CVAP_2015-2019_ACS_csv_files.zip:
 	curl -L https://www2.census.gov/programs-surveys/decennial/rdo/datasets/2019/2019-cvap/CVAP_2015-2019_ACS_csv_files.zip -o $@
