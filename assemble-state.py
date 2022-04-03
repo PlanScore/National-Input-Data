@@ -418,8 +418,10 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
     df3 = load_cvap(cvap_source)
     print_df(df3, 'df3')
 
-    df4 = df3[df3.geoid.str.slice(7, 9) == df2.iloc[0].STATEFP]
-    df4.geoid = df4.geoid.str.slice(7, 19)
+    print(f'df2.iloc[0].STATEFP: {df2.iloc[0].STATEFP}')
+    print(df3.geoid.str.slice(9, 11))
+    df4 = df3[df3.geoid.str.slice(9, 11) == df2.iloc[0].STATEFP]
+    df4.geoid = df4.geoid.str.slice(9, 21)
 
     print_df(df4, 'df4')
     
@@ -435,7 +437,7 @@ def load_blockgroups(bgs_source, cvap_source, acs_year):
         })
         df5 = df5.merge(df4_partial, how='left', on='GEOID')
 
-        assert len(df4_partial) == len(df5)
+        assert len(df4_partial) == len(df5), f'{len(df4_partial)} should equal {len(df5)}'
         assert df4_partial[f'cvap_{lnnumber}_est'].sum() == df5[f'cvap_{lnnumber}_est'].sum()
 
     print_df(df5, 'df5')
@@ -1003,7 +1005,7 @@ def output_crosswalk(df_blocksV, votes_source):
 
 def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path):
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
-    df_bgs = load_blockgroups(bgs_source, cvap_source, '2019').to_crs(5070)
+    df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
 
