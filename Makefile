@@ -314,9 +314,9 @@ assembled-state-SC.parquet: VEST/sc_2020.zip VEST/sc_2018.zip VEST/sc_2016.zip C
 		Census/sc2020.pl.zip /vsizip/Census/tl_2011_45_bg.zip /vsizip/Census/tl_2011_45_tract.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_SC_2020_VD_tabblock.centroid.json
 
-assembled-state-SD.parquet: VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2019_46_bg.zip Census/tl_2019_46_tract.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_SD_2020_VD_tabblock.centroid.json
+assembled-state-SD.parquet: VEST/sd_2020.zip VEST/sd_2018.zip VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2019_46_bg.zip Census/tl_2019_46_tract.zip Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_SD_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/sd_2016.zip \
+		/vsizip/VEST/sd_2020.zip /vsizip/VEST/sd_2018.zip /vsizip/VEST/sd_2016.zip \
 		Census/sd2020.pl.zip /vsizip/Census/tl_2019_46_bg.zip /vsizip/Census/tl_2019_46_tract.zip \
 		Census/CVAP_2015-2019_ACS_csv_files.zip Census/DRA_SD_2020_VD_tabblock.centroid.json
 
