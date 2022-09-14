@@ -170,9 +170,9 @@ assembled-state-KS.geojson: VEST/ks_2020.zip VEST/ks_2018.zip VEST/ks_2016.zip C
 		Census/ks2020.pl.zip /vsizip/Census/tl_2020_20_bg.zip /vsizip/Census/tl_2020_20_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_KS_2020_VD_tabblock.centroid.json
 
-assembled-state-KY.geojson: VEST/ky_2016.zip Census/ky2020.pl.zip Census/tl_2020_21_bg.zip Census/tl_2020_21_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_KY_2020_VD_tabblock.centroid.json
+assembled-state-KY.geojson: VEST/ky_2020.zip VEST/ky_2016.zip Census/ky2020.pl.zip Census/tl_2020_21_bg.zip Census/tl_2020_21_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_KY_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/ky_2016.zip \
+		/vsizip/VEST/ky_2020.zip /vsizip/VEST/ky_2016.zip \
 		Census/ky2020.pl.zip /vsizip/Census/tl_2020_21_bg.zip /vsizip/Census/tl_2020_21_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_KY_2020_VD_tabblock.centroid.json
 
@@ -362,9 +362,9 @@ assembled-state-WI.geojson: VEST/wi_2020.zip VEST/wi_2018.zip VEST/wi_2016.zip C
 		Census/wi2020.pl.zip /vsizip/Census/tl_2020_55_bg.zip /vsizip/Census/tl_2020_55_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
 
-assembled-state-WV.geojson: NYT/wv_2020.gpkg Census/wv2020.pl.zip Census/tl_2020_54_bg.zip Census/tl_2020_54_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
+assembled-state-WV.geojson: VEST/wv_2020.zip VEST/wv_2018.zip VEST/wv_2016.zip Census/wv2020.pl.zip Census/tl_2020_54_bg.zip Census/tl_2020_54_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		NYT/wv_2020.gpkg \
+		/vsizip/VEST/wv_2020.zip /vsizip/VEST/wv_2018.zip /vsizip/VEST/wv_2016.zip \
 		Census/wv2020.pl.zip /vsizip/Census/tl_2020_54_bg.zip /vsizip/Census/tl_2020_54_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WV_2020_VD_tabblock.centroid.json
 
