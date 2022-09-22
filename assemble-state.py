@@ -1143,7 +1143,10 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     print(df_blocks3.columns)
     print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].sum().round())
     
-    df_blocks3.to_crs(4326).to_file(output_dest, driver='GeoJSON')
+    df_blocks4 = df_blocks3.to_crs(4326)
+    df_blocks4['Point'] = df_blocks4.geometry.astype(str)
+    del df_blocks4['geometry']
+    pandas.DataFrame(df_blocks4).to_parquet(output_dest)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('output_dest')
