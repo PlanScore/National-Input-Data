@@ -74,16 +74,16 @@ assembled-state-AK.parquet: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2020
 		Census/ak2020.pl.zip /vsizip/Census/tl_2020_02_bg.zip /vsizip/Census/tl_2020_02_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AK_2020_VD_tabblock.centroid.json
 
-assembled-state-AL.parquet: VEST/al_2020.zip VEST/al_2018.zip VEST/al_2016.zip Census/al2020.pl.zip Census/tl_2011_01_bg.zip Census/tl_2011_01_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
+assembled-state-AL.parquet: VEST/al_2020.zip VEST/al_2018.zip VEST/al_2016.zip Census/al2020.pl.zip Census/tl_2020_01_bg.zip Census/tl_2020_01_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
 		/vsizip/VEST/al_2020.zip /vsizip/VEST/al_2018.zip /vsizip/VEST/al_2016.zip \
-		Census/al2020.pl.zip /vsizip/Census/tl_2011_01_bg.zip /vsizip/Census/tl_2011_01_tract.zip \
+		Census/al2020.pl.zip /vsizip/Census/tl_2020_01_bg.zip /vsizip/Census/tl_2020_01_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
 
-assembled-state-AR.parquet: VEST/ar_2020.zip VEST/ar_2018.zip VEST/ar_2016.zip Census/ar2020.pl.zip Census/tl_2011_05_bg.zip Census/tl_2011_05_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AR_2020_VD_tabblock.centroid.json
+assembled-state-AR.parquet: VEST/ar_2020.zip VEST/ar_2018.zip VEST/ar_2016.zip Census/ar2020.pl.zip Census/tl_2020_05_bg.zip Census/tl_2020_05_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AR_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
 		/vsizip/VEST/ar_2020.zip /vsizip/VEST/ar_2018.zip /vsizip/VEST/ar_2016.zip \
-		Census/ar2020.pl.zip /vsizip/Census/tl_2011_05_bg.zip /vsizip/Census/tl_2011_05_tract.zip \
+		Census/ar2020.pl.zip /vsizip/Census/tl_2020_05_bg.zip /vsizip/Census/tl_2020_05_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AR_2020_VD_tabblock.centroid.json
 
 assembled-state-AZ.parquet: VEST/az_2020.zip VEST/az_2018.zip VEST/az_2016.zip Census/az2020.pl.zip Census/tl_2020_04_bg.zip Census/tl_2020_04_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AZ_2020_VD_tabblock.centroid.json
@@ -308,10 +308,10 @@ assembled-state-RI.parquet: VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip C
 		Census/ri2020.pl.zip /vsizip/Census/tl_2020_44_bg.zip /vsizip/Census/tl_2020_44_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
 
-assembled-state-SC.parquet: VEST/sc_2020.zip VEST/sc_2018.zip VEST/sc_2016.zip Census/sc2020.pl.zip Census/tl_2011_45_bg.zip Census/tl_2011_45_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_SC_2020_VD_tabblock.centroid.json
+assembled-state-SC.parquet: VEST/sc_2020.zip VEST/sc_2018.zip VEST/sc_2016.zip Census/sc2020.pl.zip Census/tl_2020_45_bg.zip Census/tl_2020_45_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_SC_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
 		/vsizip/VEST/sc_2020.zip /vsizip/VEST/sc_2018.zip /vsizip/VEST/sc_2016.zip \
-		Census/sc2020.pl.zip /vsizip/Census/tl_2011_45_bg.zip /vsizip/Census/tl_2011_45_tract.zip \
+		Census/sc2020.pl.zip /vsizip/Census/tl_2020_45_bg.zip /vsizip/Census/tl_2020_45_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_SC_2020_VD_tabblock.centroid.json
 
 assembled-state-SD.parquet: VEST/sd_2020.zip VEST/sd_2018.zip VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2020_46_bg.zip Census/tl_2020_46_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_SD_2020_VD_tabblock.centroid.json
@@ -374,10 +374,6 @@ assembled-state-WY.parquet: VEST/wy_2020.zip VEST/wy_2018.zip VEST/wy_2016.zip C
 		Census/wy2020.pl.zip /vsizip/Census/tl_2020_56_bg.zip /vsizip/Census/tl_2020_56_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WY_2020_VD_tabblock.centroid.json
 
-# Linked from https://www.census.gov/programs-surveys/decennial-census/about/voting-rights/cvap.2019.html
-Census/CVAP_2015-2019_ACS_csv_files.zip:
-	curl -L https://www2.census.gov/programs-surveys/decennial/rdo/datasets/2019/2019-cvap/CVAP_2015-2019_ACS_csv_files.zip -o $@
-
 # Linked from https://www.census.gov/programs-surveys/decennial-census/about/voting-rights/cvap.2020.html
 Census/CVAP_2016-2020_ACS_csv_files.zip:
 	curl -L https://www2.census.gov/programs-surveys/decennial/rdo/datasets/2020/2020-cvap/CVAP_2016-2020_ACS_csv_files.zip -o $@
@@ -387,18 +383,6 @@ Census/tl_2020_%_tract.zip:
 
 Census/tl_2020_%_bg.zip:
 	curl -L https://www2.census.gov/geo/tiger/TIGER2020/BG/tl_2020_$*_bg.zip -o $@
-
-Census/tl_2019_%_tract.zip:
-	curl -L https://www2.census.gov/geo/tiger/TIGER2019/TRACT/tl_2019_$*_tract.zip -o $@
-
-Census/tl_2019_%_bg.zip:
-	curl -L https://www2.census.gov/geo/tiger/TIGER2019/BG/tl_2019_$*_bg.zip -o $@
-
-Census/tl_2011_%_tract.zip:
-	curl -L https://www2.census.gov/geo/tiger/TIGER2011/TRACT/tl_2011_$*_tract.zip -o $@
-
-Census/tl_2011_%_bg.zip:
-	curl -L https://www2.census.gov/geo/tiger/TIGER2011/BG/tl_2011_$*_bg.zip -o $@
 
 Census/DRA_%_2020_VD_tabblock.centroid.json:
 	curl -L https://dra-us-west-datafiles.s3.us-west-2.amazonaws.com/_$*_2020_VD_tabblock.centroid.json -o $@ --compressed
