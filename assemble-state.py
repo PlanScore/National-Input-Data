@@ -17,6 +17,9 @@ import zipfile
 import re
 import json
 
+with open('API_KEY.txt') as file:
+    API_KEY = next(file).strip()
+
 STATE_LOOKUP = {
     '01': 'AL',
     '02': 'AK',
@@ -495,7 +498,8 @@ def get_state_counties(state_fips, api_path):
     query = urllib.parse.urlencode({
         'get': 'NAME', # 'P001001,NAME,GEO_ID',
         'for': 'county:*',
-        'in': f'state:{state_fips}'
+        'in': f'state:{state_fips}',
+        'key': API_KEY,
     })
     
     print(f'https://api.census.gov/data/{api_path}?{query}')
@@ -518,6 +522,7 @@ def get_county_bg_acs(state_fips, county_fips, api_path):
         ('in', f'state:{state_fips}'),
         ('in', f'county:{county_fips}'),
         ('in', 'tract:*'),
+        ('key', API_KEY),
     ])
     
     print(f'https://api.census.gov/data/{api_path}?{query}')
@@ -555,6 +560,7 @@ def get_county_tract_acs(state_fips, county_fips, api_path):
         ('for', 'tract:*'),
         ('in', f'state:{state_fips}'),
         ('in', f'county:{county_fips}'),
+        ('key', API_KEY),
     ])
     
     print(f'https://api.census.gov/data/{api_path}?{query}')
