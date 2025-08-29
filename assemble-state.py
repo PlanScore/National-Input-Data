@@ -159,6 +159,9 @@ VOTES_OTHER_P16 = 'US President 2016 - Other'
 VOTES_DEM_P20 = 'US President 2020 - DEM'
 VOTES_REP_P20 = 'US President 2020 - REP'
 VOTES_OTHER_P20 = 'US President 2020 - Other'
+VOTES_DEM_P24 = 'US President 2024 - DEM'
+VOTES_REP_P24 = 'US President 2024 - REP'
+VOTES_OTHER_P24 = 'US President 2024 - Other'
 VOTES_DEM_S16 = 'US Senate 2016 - DEM'
 VOTES_REP_S16 = 'US Senate 2016 - REP'
 VOTES_OTHER_S16 = 'US Senate 2016 - Other'
@@ -168,6 +171,9 @@ VOTES_OTHER_S18 = 'US Senate 2018 - Other'
 VOTES_DEM_S20 = 'US Senate 2020 - DEM'
 VOTES_REP_S20 = 'US Senate 2020 - REP'
 VOTES_OTHER_S20 = 'US Senate 2020 - Other'
+VOTES_DEM_S24 = 'US Senate 2024 - DEM'
+VOTES_REP_S24 = 'US Senate 2024 - REP'
+VOTES_OTHER_S24 = 'US Senate 2024 - Other'
 
 VOTE_COLUMNS = (
     VOTES_DEM_P16,
@@ -176,6 +182,9 @@ VOTE_COLUMNS = (
     VOTES_DEM_P20,
     VOTES_REP_P20,
     VOTES_OTHER_P20,
+    VOTES_DEM_P24,
+    VOTES_REP_P24,
+    VOTES_OTHER_P24,
     VOTES_DEM_S16,
     VOTES_REP_S16,
     VOTES_OTHER_S16,
@@ -185,6 +194,9 @@ VOTE_COLUMNS = (
     VOTES_DEM_S20,
     VOTES_REP_S20,
     VOTES_OTHER_S20,
+    VOTES_DEM_S24,
+    VOTES_REP_S24,
+    VOTES_OTHER_S24,
 )
 
 def memoize(func):
@@ -262,7 +274,7 @@ def load_votes(votes_source):
         (?P<type>G|P|S|R|C) # General, Primary, Special, Runoff, reCount
         (?P<core>
             (?P<yo>
-                (?P<year>16|18|20|21)
+                (?P<year>16|18|20|21|22|24)
                 (?P<office>PRE|USS) # PRE = President, USS = U.S. Senate
             )
             (?P<party>D|R|[A-Z]) # D = Democrat, R = Republican, etc.
@@ -274,10 +286,12 @@ def load_votes(votes_source):
     column_mapping = {
         '16PRED': VOTES_DEM_P16, '16PRER': VOTES_REP_P16, '16PRE': VOTES_OTHER_P16,
         '20PRED': VOTES_DEM_P20, '20PRER': VOTES_REP_P20, '20PRE': VOTES_OTHER_P20,
+        '24PRED': VOTES_DEM_P24, '24PRER': VOTES_REP_P24, '24PRE': VOTES_OTHER_P24,
         '16USSD': VOTES_DEM_S16, '16USSR': VOTES_REP_S16, '16USS': VOTES_OTHER_S16,
         '18USSD': VOTES_DEM_S18, '18USSR': VOTES_REP_S18, '18USS': VOTES_OTHER_S18,
         '20USSD': VOTES_DEM_S20, '20USSR': VOTES_REP_S20, '20USS': VOTES_OTHER_S20,
         '21USSD': VOTES_DEM_S20, '21USSR': VOTES_REP_S20, '21USS': VOTES_OTHER_S20,
+        '24USSD': VOTES_DEM_S24, '24USSR': VOTES_REP_S24, '24USS': VOTES_OTHER_S24,
     }
 
     df = geopandas.read_file(votes_source).to_crs(epsg=4326)
@@ -340,12 +354,16 @@ def load_votes(votes_source):
         df4[VOTES_OTHER_P16] = pandas.Series(name=VOTES_OTHER_P16, data=[0] * len(df4))
     elif VOTES_DEM_P20 in df4.columns and VOTES_OTHER_P20 not in df4.columns:
         df4[VOTES_OTHER_P20] = pandas.Series(name=VOTES_OTHER_P20, data=[0] * len(df4))
+    elif VOTES_DEM_P24 in df4.columns and VOTES_OTHER_P24 not in df4.columns:
+        df4[VOTES_OTHER_P24] = pandas.Series(name=VOTES_OTHER_P24, data=[0] * len(df4))
     elif VOTES_DEM_S16 in df4.columns and VOTES_OTHER_S16 not in df4.columns:
         df4[VOTES_OTHER_S16] = pandas.Series(name=VOTES_OTHER_S16, data=[0] * len(df4))
     elif VOTES_DEM_S18 in df4.columns and VOTES_OTHER_S18 not in df4.columns:
         df4[VOTES_OTHER_S18] = pandas.Series(name=VOTES_OTHER_S18, data=[0] * len(df4))
     elif VOTES_DEM_S20 in df4.columns and VOTES_OTHER_S20 not in df4.columns:
         df4[VOTES_OTHER_S20] = pandas.Series(name=VOTES_OTHER_S20, data=[0] * len(df4))
+    elif VOTES_DEM_S24 in df4.columns and VOTES_OTHER_S24 not in df4.columns:
+        df4[VOTES_OTHER_S24] = pandas.Series(name=VOTES_OTHER_S24, data=[0] * len(df4))
     
     df5 = sum_over_vote_columns(df4)
     print_df(df5, votes_source)
@@ -968,7 +986,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         column for column in df_blocks4.columns
         if column in VOTE_COLUMNS
     ]]
-    if VOTES_DEM in (VOTES_DEM_P20, VOTES_DEM_S20):
+    if VOTES_DEM in (VOTES_DEM_P24, VOTES_DEM_S24):
+        df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2024'})
+    elif VOTES_DEM in (VOTES_DEM_P20, VOTES_DEM_S20):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2020'})
     elif VOTES_DEM in (VOTES_DEM_S18, ):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2018'})
@@ -992,7 +1012,12 @@ def output_crosswalk(df_blocksV, votes_source):
     '''
     vote_pattern = re.compile(r'^G(16|18|20)', re.I)
     raw_votes = geopandas.read_file(votes_source)
-    vote_index = 'index_votes2020' if 'index_votes2020' in df_blocksV.columns else 'index_votes2016'
+    if 'index_votes2024' in df_blocksV.columns:
+        vote_index = 'index_votes2024'
+    elif 'index_votes2020' in df_blocksV.columns:
+        vote_index = 'index_votes2020'
+    else:
+        vote_index = 'index_votes2016'
 
     crossed = df_blocksV.merge(
         raw_votes[[
@@ -1020,6 +1045,10 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
         df_votes = load_votes(votes_source).to_crs(5070)
         print_df(df_votes, votes_source)
         
+        if VOTES_DEM_P24 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P24, VOTES_REP_P24, VOTES_OTHER_P24)
+        if VOTES_DEM_S24 in df_votes.columns:
+            df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S24, VOTES_REP_S24, VOTES_OTHER_S24)
         if VOTES_DEM_P20 in df_votes.columns:
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_P20, VOTES_REP_P20, VOTES_OTHER_P20)
         if VOTES_DEM_S20 in df_votes.columns:
@@ -1071,17 +1100,23 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
             'index_votes2016',
             'index_votes2018',
             'index_votes2020',
+            'index_votes2024',
         )
         if column in df_blocks2.columns
     ]].rename(
         columns={
             'GEOCODE': 'GEOID20',
+            'index_votes2024': 'precinct2024',
             'index_votes2020': 'precinct2020',
             'index_votes2018': 'precinct2018',
             'index_votes2016': 'precinct2016',
         }
     )
     
+    if VOTES_DEM_P24 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_P24] = df_blocks2[VOTES_DEM_P24].round(5)
+        df_blocks3[VOTES_REP_P24] = df_blocks2[VOTES_REP_P24].round(5)
+        df_blocks3[VOTES_OTHER_P24] = df_blocks2[VOTES_OTHER_P24].round(5)
     if VOTES_DEM_P20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_P20] = df_blocks2[VOTES_DEM_P20].round(5)
         df_blocks3[VOTES_REP_P20] = df_blocks2[VOTES_REP_P20].round(5)
@@ -1090,6 +1125,12 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
         df_blocks3[VOTES_DEM_P16] = df_blocks2[VOTES_DEM_P16].round(5)
         df_blocks3[VOTES_REP_P16] = df_blocks2[VOTES_REP_P16].round(5)
         df_blocks3[VOTES_OTHER_P16] = df_blocks2[VOTES_OTHER_P16].round(5)
+    if VOTES_DEM_S24 in df_blocks2.columns:
+        df_blocks3[VOTES_DEM_S24] = df_blocks2[VOTES_DEM_S24].round(5)
+        df_blocks3[VOTES_REP_S24] = df_blocks2[VOTES_REP_S24].round(5)
+        if VOTES_OTHER_S24 in df_blocks2.columns:
+            # There are not always 3rd party US Senate candidates
+            df_blocks3[VOTES_OTHER_S24] = df_blocks2[VOTES_OTHER_S24].round(5)
     if VOTES_DEM_S20 in df_blocks2.columns:
         df_blocks3[VOTES_DEM_S20] = df_blocks2[VOTES_DEM_S20].round(5)
         df_blocks3[VOTES_REP_S20] = df_blocks2[VOTES_REP_S20].round(5)
