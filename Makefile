@@ -385,7 +385,7 @@ Census/tl_2020_%_bg.zip:
 	curl -L https://www2.census.gov/geo/tiger/TIGER2020/BG/tl_2020_$*_bg.zip -o $@
 
 Census/DRA_%_2020_VD_tabblock.centroid.json:
-	curl -L https://dra-us-west-datafiles.s3.us-west-2.amazonaws.com/_$*_2020_VD_tabblock.centroid.json -o $@ --compressed
+	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/$*/DRA_$*_2020_VD_tabblock.centroid.json -o $@ --compressed
 
 Census/dc2020.pl.zip:
 	curl -L https://www2.census.gov/programs-surveys/decennial/2020/data/01-Redistricting_File--PL_94-171/District_of_Columbia/dc2020.pl.zip -o $@
