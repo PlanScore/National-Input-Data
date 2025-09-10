@@ -47,7 +47,6 @@ if __name__ == '__main__':
     assert df5b['US Senate 2020 - Other'].sum() == 19 + 33 + 68 + 84 + 20 + 14 + 22 + 23
 
     df6a = geopandas.read_file('test/ar_2020.gpkg')
-    print(df6a.sum())
     df6b = assemble.load_votes('test/ar_2020.gpkg')
     assert df6b['US President 2020 - REP'].sum() == 2034
     assert df6b['US President 2020 - DEM'].sum() == 536
