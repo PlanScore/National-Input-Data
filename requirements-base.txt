@@ -1,0 +1,6 @@
+requests
+geopandas
+pandas
+Shapely
+Rtree
+pyarrow<18

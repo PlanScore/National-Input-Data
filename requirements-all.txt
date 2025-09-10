@@ -1,0 +1,3 @@
+GDAL
+numpy
+-r requirements-base.txt

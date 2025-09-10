@@ -692,7 +692,7 @@ def join_blocks_tracts(df_blocks, df_tracts):
         df_blocks2 = geopandas.sjoin(
             df_blocks,
             df_tracts,
-            op='intersects',
+            predicate='intersects',
             how='left',
             rsuffix='tract',
         )
@@ -769,7 +769,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
         df_blocks2 = geopandas.sjoin(
             df_blocks,
             df_bgs,
-            op='intersects',
+            predicate='intersects',
             how='left',
             rsuffix='bg',
         )
@@ -900,7 +900,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         df_blocks2 = geopandas.sjoin(
             df_blocks,
             df_votes[['geometry', VOTES_DEM, VOTES_REP, VOTES_OTHER]],
-            op='within', how='left', rsuffix='votes')
+            predicate='within', how='left', rsuffix='votes')
         #print_df(df_blocks2, 'df_blocks2')
     
         # Note any missing precincts and their vote counts
@@ -936,7 +936,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         df_blocks2 = geopandas.sjoin(
             df_blocks,
             df_votes[['geometry', VOTES_DEM, VOTES_REP, VOTES_OTHER]],
-            op='intersects', how='left', rsuffix='votes')
+            predicate='intersects', how='left', rsuffix='votes')
         #print_df(df_blocks2, 'df_blocks2')
     
         # Note any unmatched blocks
@@ -1027,7 +1027,7 @@ def output_crosswalk(df_blocksV, votes_source):
         ]],
         how='left',
         left_on=df_blocksV[vote_index],
-        right_on=raw_votes.index,
+        right_index=True,
         suffixes=('', '_precinct'),
     )
 
