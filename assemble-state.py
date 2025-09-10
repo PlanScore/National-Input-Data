@@ -1027,7 +1027,7 @@ def output_crosswalk(df_blocksV, votes_source):
         ]],
         how='left',
         left_on=df_blocksV[vote_index],
-        right_on=raw_votes.index,
+        right_index=True,
         suffixes=('', '_precinct'),
     )
 

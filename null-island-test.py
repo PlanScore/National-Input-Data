@@ -53,7 +53,7 @@ if __name__ == '__main__':
         df_votes2[['Name']],
         how='left',
         left_on=joined2.index_votes2020,
-        right_on=df_votes2.index,
+        right_index=True,
         suffixes=('_block', '_precinct'),
     )
     assemble.print_df(joined2b, 'joined2b')
