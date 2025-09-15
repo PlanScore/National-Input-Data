@@ -212,9 +212,9 @@ assembled-state-MN.parquet: VEST/mn_2020.zip VEST/mn_2018.zip VEST/mn_2016.zip C
 		Census/mn2020.pl.zip /vsizip/Census/tl_2020_27_bg.zip /vsizip/Census/tl_2020_27_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_MN_2020_VD_tabblock.centroid.json
 
-assembled-state-MO.parquet: VEST/mo_2020.zip VEST/mo_2018.zip VEST/mo_2016.zip Census/mo2020.pl.zip Census/tl_2020_29_bg.zip Census/tl_2020_29_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_MO_2020_VD_tabblock.centroid.json
+assembled-state-MO.parquet: Metcalf/mo_2024.zip VEST/mo_2020.zip VEST/mo_2018.zip VEST/mo_2016.zip Census/mo2020.pl.zip Census/tl_2020_29_bg.zip Census/tl_2020_29_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_MO_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/mo_2020.zip /vsizip/VEST/mo_2018.zip /vsizip/VEST/mo_2016.zip \
+		/vsizip/Metcalf/mo_2024.zip /vsizip/VEST/mo_2020.zip /vsizip/VEST/mo_2018.zip /vsizip/VEST/mo_2016.zip \
 		Census/mo2020.pl.zip /vsizip/Census/tl_2020_29_bg.zip /vsizip/Census/tl_2020_29_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_MO_2020_VD_tabblock.centroid.json
 
@@ -338,9 +338,9 @@ assembled-state-VA.parquet: VEST/va_2020.zip VEST/va_2018.zip VEST/va_2016.zip C
 		Census/va2020.pl.zip /vsizip/Census/tl_2020_51_bg.zip /vsizip/Census/tl_2020_51_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_VA_2020_VD_tabblock.centroid.json
 
-assembled-state-TX.parquet: VEST/tx_2020.zip VEST/tx_2018.zip VEST/tx_2016.zip Census/tx2020.pl.zip Census/tl_2020_48_bg.zip Census/tl_2020_48_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TX_2020_VD_tabblock.centroid.json
+assembled-state-TX.parquet: RDH/tx_2024.zip VEST/tx_2020.zip VEST/tx_2018.zip VEST/tx_2016.zip Census/tx2020.pl.zip Census/tl_2020_48_bg.zip Census/tl_2020_48_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TX_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/tx_2020.zip /vsizip/VEST/tx_2018.zip /vsizip/VEST/tx_2016.zip \
+		/vsizip/RDH/tx_2024.zip /vsizip/VEST/tx_2020.zip /vsizip/VEST/tx_2018.zip /vsizip/VEST/tx_2016.zip \
 		Census/tx2020.pl.zip /vsizip/Census/tl_2020_48_bg.zip /vsizip/Census/tl_2020_48_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TX_2020_VD_tabblock.centroid.json
 
