@@ -74,9 +74,9 @@ assembled-state-AK.parquet: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2020
 		Census/ak2020.pl.zip /vsizip/Census/tl_2020_02_bg.zip /vsizip/Census/tl_2020_02_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AK_2020_VD_tabblock.centroid.json
 
-assembled-state-AL.parquet: VEST/al_2020.zip VEST/al_2018.zip VEST/al_2016.zip Census/al2020.pl.zip Census/tl_2020_01_bg.zip Census/tl_2020_01_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
+assembled-state-AL.parquet: RDH/al_2024.zip VEST/al_2020.zip VEST/al_2018.zip VEST/al_2016.zip Census/al2020.pl.zip Census/tl_2020_01_bg.zip Census/tl_2020_01_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/al_2020.zip /vsizip/VEST/al_2018.zip /vsizip/VEST/al_2016.zip \
+		/vsizip/RDH/al_2024.zip /vsizip/VEST/al_2020.zip /vsizip/VEST/al_2018.zip /vsizip/VEST/al_2016.zip \
 		Census/al2020.pl.zip /vsizip/Census/tl_2020_01_bg.zip /vsizip/Census/tl_2020_01_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_AL_2020_VD_tabblock.centroid.json
 
