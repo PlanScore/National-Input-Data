@@ -927,7 +927,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         assert round(starting_votes) == round(ending_votes), \
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
 
-    print_df(df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
+    print_df(df_blocks2[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks2[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     print('* ' * 40, VOTES_DEM)
 
     # Progressively buffer census blocks by larger amounts to intersect
@@ -948,7 +948,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         # Stop if no unmatched blocks are found
         if df_blocks2_unmatched.empty:
             break
-        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
+        #print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
         
         # Buffer unmatched blocks so they'll match
         geom_index = df_blocks.columns.get_loc('geometry')
@@ -958,18 +958,22 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         ending_people = df_blocks.P0010001.sum()
         assert round(starting_people) == round(ending_people), \
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
-
-    print('*' * 80, VOTES_DEM)
-    
-    # Use VAP + 1 for weighting to avoid divide-by-zero loss
-    df_blocks2['VAPish'] = df_blocks2.P0030001 + 1
-    # output_votes = df_blocks2[VOTES_DEM].sum() + df_blocks2[VOTES_REP].sum() + df_blocks2[VOTES_OTHER].sum()
-    # assert round(input_votes) == round(output_votes), \
-    #     '{} votes unnaccounted for (2)'.format(abs(output_votes - input_votes))
+        print("df_blocks.shape:", df_blocks.shape, "df_blocks2.shape:", df_blocks2.shape)
 
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
+    print("df_blocks.shape:", df_blocks.shape, "df_blocks3.shape:", df_blocks3.shape)
     #print_df(df_blocks3, 'df_blocks3')
+    # output_votes = df_blocks3[VOTES_DEM].sum() + df_blocks3[VOTES_REP].sum() + df_blocks3[VOTES_OTHER].sum()
+    # assert round(input_votes) == round(output_votes), \
+    #     '{} votes unnaccounted for (2)'.format(abs(output_votes - input_votes))
+
+    print_df(df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
+    print('*' * 80, VOTES_DEM)
+    
+    # Use VAP + 1 for weighting to avoid divide-by-zero loss
+    df_blocks3['VAPish'] = df_blocks3.P0030001 + 1
+    print_df(df_blocks3[['VAPish']].sum(), "df_blocks3[['VAPish']].sum()")
     # output_votes = df_blocks3[VOTES_DEM].sum() + df_blocks3[VOTES_REP].sum() + df_blocks3[VOTES_OTHER].sum()
     # assert round(input_votes) == round(output_votes), \
     #     '{} votes unnaccounted for (3)'.format(abs(output_votes - input_votes))
@@ -983,6 +987,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     
     # Join complete blocks with votes to precinct-summed 2020 VAP
     df_blocks4 = df_blocks3.merge(df_blocks3_vap_sums, on='index_votes', how='left')
+    print_df(df_blocks4[['VAPish', 'VAPish_precinct']].sum(), "df_blocks4[['VAPish', 'VAPish_precinct']].sum()")
     
     # Scale presidential votes by 2020 VAP block/precinct fraction
     df_blocks4[VOTES_DEM] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
