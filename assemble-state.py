@@ -4,7 +4,10 @@ import argparse
 import urllib.parse
 import collections
 import hashlib
+import itertools
+import operator
 import pickle
+import random
 import inspect
 import os
 import requests
@@ -861,12 +864,23 @@ def get_unmatched_blocks(df_blocks, index_name):
     return df_blocks_unmatched
 
 def get_unique_blocks(df_blocks):
-    ''' Get partial df_blocks with unique df_votes
+    ''' Get partial df_blocks with guaranteed unique indexes
     '''
-    unique_block_flags = ~df_blocks.index.duplicated()
-    df_blocks_unique = df_blocks[unique_block_flags]
+    if not df_blocks.index.duplicated().any():
+        # Nothing expensive to do, simply return a copy
+        return df_blocks.copy()
     
-    return df_blocks_unique
+    def _catch_one_per_index(df):
+        ''' Generate list of rows picking one randomly among index dupes
+        '''
+        for i, rows in itertools.groupby(df.iterrows(), key=operator.itemgetter(0)):
+            yield random.choice([row for _, row in rows])
+    
+    return geopandas.GeoDataFrame(
+        _catch_one_per_index(df_blocks),
+        geometry=df_blocks.active_geometry_name,
+        crs=df_blocks.crs
+    )
 
 def get_first_good_index(df_votes_matched, bad_index, bad_row):
     ''' Select nearby voting precincts by overlapping envelopes
@@ -963,7 +977,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
         print("df_blocks.shape:", df_blocks.shape, "df_blocks2.shape:", df_blocks2.shape)
 
-    print_df(df_blocks2[df_blocks2.index_votes == 745], "df_blocks2[df_blocks2.index_votes == 745]")
+    print_df(df_blocks2[df_blocks2.index_votes == 527], "df_blocks2[df_blocks2.index_votes == 527]")
     print_df(df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))], "df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))]")
     
     # Note any duplicate blocks
@@ -974,8 +988,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     # assert round(input_votes) == round(output_votes), \
     #     '{} votes unnaccounted for (2)'.format(abs(output_votes - input_votes))
 
-    print_df(df_blocks3[df_blocks3.index_votes == 745], "df_blocks3[df_blocks3.index_votes == 745]")
-    raise NotImplementedError()
+    print_df(df_blocks3[df_blocks3.index_votes == 527], "df_blocks3[df_blocks3.index_votes == 527]")
+    print_df(df_blocks3[df_blocks3.index.isin((23674, 23675, 23687))], "df_blocks3[df_blocks3.index.isin((23674, 23675, 23687))]")
+    # raise NotImplementedError()
     
     print_df(df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     print('*' * 80, VOTES_DEM)
@@ -1081,6 +1096,7 @@ def output_crosswalk(df_blocksV, votes_source):
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
 def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path):
+    random.seed(0)
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
