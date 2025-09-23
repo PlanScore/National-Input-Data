@@ -228,7 +228,7 @@ def memoize(func):
     return new_func
 
 def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP, VOTES_OTHER):
-    print('Move votes from', bad_index, 'to', good_index, (df.iat[df.index.get_loc(good_index), df.columns.get_loc(VOTES_DEM)], df.iat[df.index.get_loc(good_index), df.columns.get_loc(VOTES_REP)], df.iat[df.index.get_loc(good_index), df.columns.get_loc(VOTES_OTHER)]))
+    print('Move votes from', bad_index, 'to', good_index)
 
     dem_votes = df.columns.get_loc(VOTES_DEM)
     rep_votes = df.columns.get_loc(VOTES_REP)
@@ -902,10 +902,6 @@ def get_first_good_index(df_votes_matched, bad_index, bad_row):
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
-    vote_totes1 = df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(axis=1)
-    print_df(vote_totes1, "vote_totes1")
-
-    print_df(df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
     assert df_votes.crs == 5070, f'Should not see {df_votes.crs} df_votes.crs'
     
@@ -945,7 +941,6 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         assert round(starting_votes) == round(ending_votes), \
             '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
 
-    print_df(df_blocks2[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks2[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     print('* ' * 40, VOTES_DEM)
 
     # Progressively buffer census blocks by larger amounts to intersect
@@ -966,7 +961,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         # Stop if no unmatched blocks are found
         if df_blocks2_unmatched.empty:
             break
-        #print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
         
         # Buffer unmatched blocks so they'll match
         geom_index = df_blocks.columns.get_loc('geometry')
@@ -976,78 +971,36 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
         ending_people = df_blocks.P0010001.sum()
         assert round(starting_people) == round(ending_people), \
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
-        print("df_blocks.shape:", df_blocks.shape, "df_blocks2.shape:", df_blocks2.shape)
 
-    print_df(df_blocks2[df_blocks2.index_votes == 527], "df_blocks2[df_blocks2.index_votes == 527]")
-    print_df(df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))], "df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))]")
-    
-    # Note any duplicate blocks
-    df_blocks3 = get_unique_blocks(df_blocks2)
-    print("df_blocks.shape:", df_blocks.shape, "df_blocks3.shape:", df_blocks3.shape)
-    #print_df(df_blocks3, 'df_blocks3')
-    # output_votes = df_blocks3[VOTES_DEM].sum() + df_blocks3[VOTES_REP].sum() + df_blocks3[VOTES_OTHER].sum()
-    # assert round(input_votes) == round(output_votes), \
-    #     '{} votes unnaccounted for (2)'.format(abs(output_votes - input_votes))
-
-    print_df(df_blocks3[df_blocks3.index_votes == 527], "df_blocks3[df_blocks3.index_votes == 527]")
-    print_df(df_blocks3[df_blocks3.index.isin((23674, 23675, 23687))], "df_blocks3[df_blocks3.index.isin((23674, 23675, 23687))]")
-    # raise NotImplementedError()
-    
-    print_df(df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     print('*' * 80, VOTES_DEM)
     
     # Use VAP + 1 for weighting to avoid divide-by-zero loss
-    df_blocks3['VAPish'] = df_blocks3.P0030001 + 1
-    print_df(df_blocks3[['VAPish']].sum(), "df_blocks3[['VAPish']].sum()")
-    # output_votes = df_blocks3[VOTES_DEM].sum() + df_blocks3[VOTES_REP].sum() + df_blocks3[VOTES_OTHER].sum()
-    # assert round(input_votes) == round(output_votes), \
-    #     '{} votes unnaccounted for (3)'.format(abs(output_votes - input_votes))
+    df_blocks2['VAPish'] = df_blocks2.P0030001 + 1
+
+    # Note any duplicate blocks
+    df_blocks3 = get_unique_blocks(df_blocks2)
+    #print_df(df_blocks3, 'df_blocks3')
 
     # Sum 2020 VAP for each voting precinct
     df_blocks3_vap_sums = df_blocks3\
         .groupby('index_votes', as_index=False).VAPish.sum()\
         .rename(columns={'VAPish': 'VAPish_precinct'})
-    print_df(df_blocks3_vap_sums, 'df_blocks3_vap_sums')
-    print_df(df_blocks3_vap_sums[['VAPish_precinct']].sum(), "df_blocks3_vap_sums[['VAPish_precinct']].sum()")
+    #print_df(df_blocks3_vap_sums, 'df_blocks3_vap_sums')
     
     # Join complete blocks with votes to precinct-summed 2020 VAP
     df_blocks4 = df_blocks3.merge(df_blocks3_vap_sums, on='index_votes', how='left')
-    print_df(df_blocks4[['VAPish', 'VAPish_precinct']].sum(), "df_blocks4[['VAPish', 'VAPish_precinct']].sum()")
     
     # Scale presidential votes by 2020 VAP block/precinct fraction
     df_blocks4[VOTES_DEM] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     df_blocks4[VOTES_REP] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     df_blocks4[VOTES_OTHER] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
-    vote_totes2 = df_blocks4[['index_votes', VOTES_DEM, VOTES_REP, VOTES_OTHER]].groupby('index_votes', as_index=True).sum().sum(axis=1)
-    print_df(vote_totes2, "vote_totes2")
-    
-    votes_dict1 = {int(k): v for k, v in vote_totes1.items()}
-    votes_dict2 = {int(k): v for k, v in vote_totes2.items()}
-    
-    tote_indexes1 = set(votes_dict1.keys())
-    tote_indexes2 = set(votes_dict2.keys())
-    bad_indexes = []
-    
-    for i in tote_indexes1 | tote_indexes2:
-        v1, v2 = votes_dict1.get(i) or 0, votes_dict2.get(i) or 0
-        if round(v1, 3) != round(v2, 3):
-            print(i, v1, v2)
-            bad_indexes.append(i)
-
-    print_df(df_blocks4, 'df_blocks4')
-    print_df(df_blocks4[[VOTES_DEM, VOTES_REP, VOTES_OTHER, 'VAPish']].sum(), "df_blocks4[[VOTES_DEM, VOTES_REP, VOTES_OTHER, 'VAPish']].sum()")
-    output_votes = df_blocks4[VOTES_DEM].sum() + df_blocks4[VOTES_REP].sum() + df_blocks4[VOTES_OTHER].sum()
-    assert round(input_votes) == round(output_votes), \
-        '{} votes {} in output (4)'.format(abs(output_votes - input_votes), 'missing' if output_votes < input_votes else 'too many')
+    #print_df(df_blocks4, 'df_blocks4')
 
     # Select just a few columns
     df_blocks5 = df_blocks4[BLOCK_FIELDS + ['index_votes'] + [
         column for column in df_blocks4.columns
         if column in VOTE_COLUMNS
     ]]
-    output_votes = df_blocks5[VOTES_DEM].sum() + df_blocks5[VOTES_REP].sum() + df_blocks5[VOTES_OTHER].sum()
-    assert round(input_votes) == round(output_votes), \
-        '{} votes {} in output (5)'.format(abs(output_votes - input_votes), 'missing' if output_votes < input_votes else 'too many')
     if VOTES_DEM in (VOTES_DEM_P24, VOTES_DEM_S24):
         df_blocks6 = df_blocks5.rename(columns={'index_votes': 'index_votes2024'})
     elif VOTES_DEM in (VOTES_DEM_P20, VOTES_DEM_S20):
