@@ -870,6 +870,9 @@ def get_unique_blocks(df_blocks):
         # Nothing expensive to do, simply return a copy
         return df_blocks.copy()
     
+    # Deterministic random seed
+    random.seed(int(df_blocks.index.duplicated().sum()))
+    
     # Generate sequence of block rows picking one randomly among index dupes
     selected_blocks = (
         random.choice([block for _, block in bs])
@@ -1094,7 +1097,6 @@ def output_crosswalk(df_blocksV, votes_source):
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
 def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path):
-    random.seed(0)
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
