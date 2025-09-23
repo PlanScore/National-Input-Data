@@ -887,6 +887,9 @@ def get_first_good_index(df_votes_matched, bad_index, bad_row):
 def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     ''' Return df_blocks[BLOCK_FIELDS + votes + precinct] for a single race
     '''
+    vote_totes1 = df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(axis=1)
+    print_df(vote_totes1, "vote_totes1")
+
     print_df(df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_votes[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
     assert df_votes.crs == 5070, f'Should not see {df_votes.crs} df_votes.crs'
@@ -960,6 +963,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
             '{} people unnaccounted for'.format(abs(ending_people - starting_people))
         print("df_blocks.shape:", df_blocks.shape, "df_blocks2.shape:", df_blocks2.shape)
 
+    print_df(df_blocks2[df_blocks2.index_votes == 745], "df_blocks2[df_blocks2.index_votes == 745]")
+    print_df(df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))], "df_blocks2[df_blocks2.index.isin((23674, 23675, 23687))]")
+    
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
     print("df_blocks.shape:", df_blocks.shape, "df_blocks3.shape:", df_blocks3.shape)
@@ -968,6 +974,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     # assert round(input_votes) == round(output_votes), \
     #     '{} votes unnaccounted for (2)'.format(abs(output_votes - input_votes))
 
+    print_df(df_blocks3[df_blocks3.index_votes == 745], "df_blocks3[df_blocks3.index_votes == 745]")
+    raise NotImplementedError()
+    
     print_df(df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum(), "df_blocks3[[VOTES_DEM, VOTES_REP, VOTES_OTHER]].sum()")
     print('*' * 80, VOTES_DEM)
     
@@ -993,6 +1002,22 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     df_blocks4[VOTES_DEM] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     df_blocks4[VOTES_REP] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
     df_blocks4[VOTES_OTHER] *= (df_blocks4.VAPish / df_blocks4.VAPish_precinct)
+    vote_totes2 = df_blocks4[['index_votes', VOTES_DEM, VOTES_REP, VOTES_OTHER]].groupby('index_votes', as_index=True).sum().sum(axis=1)
+    print_df(vote_totes2, "vote_totes2")
+    
+    votes_dict1 = {int(k): v for k, v in vote_totes1.items()}
+    votes_dict2 = {int(k): v for k, v in vote_totes2.items()}
+    
+    tote_indexes1 = set(votes_dict1.keys())
+    tote_indexes2 = set(votes_dict2.keys())
+    bad_indexes = []
+    
+    for i in tote_indexes1 | tote_indexes2:
+        v1, v2 = votes_dict1.get(i) or 0, votes_dict2.get(i) or 0
+        if round(v1, 3) != round(v2, 3):
+            print(i, v1, v2)
+            bad_indexes.append(i)
+
     print_df(df_blocks4, 'df_blocks4')
     print_df(df_blocks4[[VOTES_DEM, VOTES_REP, VOTES_OTHER, 'VAPish']].sum(), "df_blocks4[[VOTES_DEM, VOTES_REP, VOTES_OTHER, 'VAPish']].sum()")
     output_votes = df_blocks4[VOTES_DEM].sum() + df_blocks4[VOTES_REP].sum() + df_blocks4[VOTES_OTHER].sum()
