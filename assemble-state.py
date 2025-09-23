@@ -870,16 +870,14 @@ def get_unique_blocks(df_blocks):
         # Nothing expensive to do, simply return a copy
         return df_blocks.copy()
     
-    def _catch_one_per_index(df):
-        ''' Generate list of rows picking one randomly among index dupes
-        '''
-        for i, rows in itertools.groupby(df.iterrows(), key=operator.itemgetter(0)):
-            yield random.choice([row for _, row in rows])
+    # Generate sequence of block rows picking one randomly among index dupes
+    selected_blocks = (
+        random.choice([block for _, block in bs])
+        for _, bs in itertools.groupby(df_blocks.iterrows(), key=operator.itemgetter(0))
+    )
     
     return geopandas.GeoDataFrame(
-        _catch_one_per_index(df_blocks),
-        geometry=df_blocks.active_geometry_name,
-        crs=df_blocks.crs
+        selected_blocks, geometry=df_blocks.active_geometry_name, crs=df_blocks.crs
     )
 
 def get_first_good_index(df_votes_matched, bad_index, bad_row):
