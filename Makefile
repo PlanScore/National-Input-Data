@@ -320,9 +320,9 @@ assembled-state-SD.parquet: VEST/sd_2020.zip VEST/sd_2018.zip VEST/sd_2016.zip C
 		Census/sd2020.pl.zip /vsizip/Census/tl_2020_46_bg.zip /vsizip/Census/tl_2020_46_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_SD_2020_VD_tabblock.centroid.json
 
-assembled-state-TN.parquet: NYT/tn_2024.zip Census/tn2020.pl.zip Census/tl_2020_47_bg.zip Census/tl_2020_47_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TN_2020_VD_tabblock.centroid.json
+assembled-state-TN.parquet: NYT/tn_2024.zip VEST/tn_2020.zip Census/tn2020.pl.zip Census/tl_2020_47_bg.zip Census/tl_2020_47_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TN_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/NYT/tn_2024.zip \
+		/vsizip/NYT/tn_2024.zip /vsizip/VEST/tn_2020.zip \
 		Census/tn2020.pl.zip /vsizip/Census/tl_2020_47_bg.zip /vsizip/Census/tl_2020_47_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_TN_2020_VD_tabblock.centroid.json
 
@@ -356,9 +356,9 @@ assembled-state-WA.parquet: RDH/wa_2024.zip VEST/wa_2020.zip VEST/wa_2018.zip VE
 		Census/wa2020.pl.zip /vsizip/Census/tl_2020_53_bg.zip /vsizip/Census/tl_2020_53_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WA_2020_VD_tabblock.centroid.json
 
-assembled-state-WI.parquet: RDH/wi_2024.zip Census/wi2020.pl.zip Census/tl_2020_55_bg.zip Census/tl_2020_55_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
+assembled-state-WI.parquet: RDH/wi_2024.zip VEST/wi_2020.zip VEST/wi_2018.zip VEST/wi_2016.zip Census/wi2020.pl.zip Census/tl_2020_55_bg.zip Census/tl_2020_55_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/RDH/wi_2024.zip \
+		/vsizip/RDH/wi_2024.zip /vsizip/VEST/wi_2020.zip /vsizip/VEST/wi_2018.zip /vsizip/VEST/wi_2016.zip \
 		Census/wi2020.pl.zip /vsizip/Census/tl_2020_55_bg.zip /vsizip/Census/tl_2020_55_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_WI_2020_VD_tabblock.centroid.json
 
