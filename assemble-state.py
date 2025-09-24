@@ -4,7 +4,10 @@ import argparse
 import urllib.parse
 import collections
 import hashlib
+import itertools
+import operator
 import pickle
+import random
 import inspect
 import os
 import requests
@@ -223,6 +226,14 @@ def memoize(func):
         return response
     
     return new_func
+
+def assert_expected_number(plural_noun, actual_number, expected_number):
+    message = '{} {} {} in output'.format(
+        abs(actual_number - expected_number),
+        plural_noun,
+        'missing' if actual_number < expected_number else 'too many',
+    )
+    assert round(actual_number) == round(expected_number), message
 
 def move_votes(df, good_index, bad_index, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     print('Move votes from', bad_index, 'to', good_index)
@@ -746,10 +757,8 @@ def join_blocks_tracts(df_blocks, df_tracts):
     df_blocks6 = df_blocks5[BLOCK_FIELDS + TRACT_VARIABLES]
     
     output_population = df_blocks6['P0010001'].sum()
-    assert round(output_population) == round(input_population), \
-        '{} people unnaccounted for'.format(abs(input_population - output_population))
-    assert len(df_blocks6) == len(df_blocks), \
-        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
+    assert_expected_number('people', output_population, input_population)
+    assert_expected_number('blocks', len(df_blocks6), len(df_blocks))
     
     return df_blocks6
 
@@ -790,8 +799,7 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
             df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
         
         ending_cvap = df_bgs.cvap_1_est.sum()
-        assert round(starting_cvap) == round(ending_cvap), \
-            '{} CVAP unnaccounted for'.format(abs(ending_cvap - starting_cvap))
+        assert_expected_number('CVAP', ending_cvap, starting_cvap)
 
     print('*' * 80, 'Block groups')
     
@@ -823,10 +831,8 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     df_blocks6 = df_blocks5[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES]
     
     output_population = df_blocks6['P0010001'].sum()
-    assert round(output_population) == round(input_population), \
-        '{} people unnaccounted for'.format(abs(input_population - output_population))
-    assert len(df_blocks6) == len(df_blocks), \
-        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
+    assert_expected_number('people', output_population, input_population)
+    assert_expected_number('blocks', len(df_blocks6), len(df_blocks))
     
     return df_blocks6
 
@@ -861,12 +867,24 @@ def get_unmatched_blocks(df_blocks, index_name):
     return df_blocks_unmatched
 
 def get_unique_blocks(df_blocks):
-    ''' Get partial df_blocks with unique df_votes
+    ''' Get partial df_blocks with guaranteed unique indexes
     '''
-    unique_block_flags = ~df_blocks.index.duplicated()
-    df_blocks_unique = df_blocks[unique_block_flags]
+    if not df_blocks.index.duplicated().any():
+        # Nothing expensive to do, simply return a copy
+        return df_blocks.copy()
     
-    return df_blocks_unique
+    # Deterministic random seed
+    random.seed(int(df_blocks.index.duplicated().sum()))
+    
+    # Generate sequence of block rows picking one randomly among index dupes
+    selected_blocks = (
+        random.choice([block for _, block in bs])
+        for _, bs in itertools.groupby(df_blocks.iterrows(), key=operator.itemgetter(0))
+    )
+    
+    return geopandas.GeoDataFrame(
+        selected_blocks, geometry=df_blocks.active_geometry_name, crs=df_blocks.crs
+    )
 
 def get_first_good_index(df_votes_matched, bad_index, bad_row):
     ''' Select nearby voting precincts by overlapping envelopes
@@ -923,8 +941,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
                 move_votes(df_votes, good_index, bad_index, VOTES_DEM, VOTES_REP, VOTES_OTHER)
         
         ending_votes = df_votes[VOTES_DEM].sum() + df_votes[VOTES_REP].sum() + df_votes[VOTES_OTHER].sum()
-        assert round(starting_votes) == round(ending_votes), \
-            '{} votes unnaccounted for'.format(abs(ending_votes - starting_votes))
+        assert_expected_number('votes', ending_votes, starting_votes)
 
     print('* ' * 40, VOTES_DEM)
 
@@ -954,8 +971,7 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
             df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
         
         ending_people = df_blocks.P0010001.sum()
-        assert round(starting_people) == round(ending_people), \
-            '{} people unnaccounted for'.format(abs(ending_people - starting_people))
+        assert_expected_number('people', ending_people, starting_people)
 
     print('*' * 80, VOTES_DEM)
     
@@ -998,12 +1014,9 @@ def join_blocks_votes(df_blocks, df_votes, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     output_votes = df_blocks6[VOTES_DEM].sum() + df_blocks6[VOTES_REP].sum() + df_blocks6[VOTES_OTHER].sum()
     output_people = df_blocks6.P0010001.sum()
 
-    assert round(input_votes) == round(output_votes), \
-        '{} votes unnaccounted for'.format(abs(output_votes - input_votes))
-    assert round(input_people) == round(output_people), \
-        '{} people unnaccounted for'.format(abs(output_people - input_people))
-    assert len(df_blocks6) == len(df_blocks), \
-        '{} blocks unaccounted for'.format(abs(len(df_blocks6) == len(df_blocks)))
+    assert_expected_number('votes', output_votes, input_votes)
+    assert_expected_number('people', output_people, input_people)
+    assert_expected_number('blocks', len(df_blocks6), len(df_blocks))
     
     return df_blocks6
     
@@ -1087,10 +1100,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocks2 = df_blocksV.merge(df_blocksB, how='left', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
     for (column, expected_count) in df_blocksV_votecounts.items():
-        assert round(df_blocks2[column].sum()) == round(expected_count), \
-            f'{df_blocks2[column].sum() - expected_count} {column} votes unaccounted for at 2'
-    assert len(df_blocks2) == len(df_blocks), \
-        '{} blocks unaccounted for'.format(abs(len(df_blocks2) == len(df_blocks)))
+        assert_expected_number(f'{column} votes (2)', df_blocks2[column].sum(), expected_count)
+    assert_expected_number('blocks', len(df_blocks2), len(df_blocks))
     
     # Final output column mapping
     df_blocks3 = df_blocks2[[
@@ -1145,10 +1156,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
         df_blocks3[VOTES_OTHER_S16] = df_blocks2[VOTES_OTHER_S16].round(5)
 
     for (column, expected_count) in df_blocksV_votecounts.items():
-        assert round(df_blocks3[column].sum()) == round(expected_count), \
-            f'{df_blocks3[column].sum() - expected_count} {column} votes unaccounted for at 3'
-    assert len(df_blocks3) == len(df_blocks), \
-        '{} blocks unaccounted for'.format(abs(len(df_blocks2) == len(df_blocks)))
+        assert_expected_number(f'{column} votes (3)', df_blocks3[column].sum(), expected_count)
+    assert_expected_number('blocks', len(df_blocks2), len(df_blocks))
 
     df_blocks3['Population 2020'] = df_blocks2['P0010001'].round(5)
     df_blocks3['Population 2020 ACS'] = df_blocks2['B01001_001E'].round(5)
