@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import sys
 import argparse
 import urllib.parse
 import collections
@@ -845,7 +844,7 @@ def get_unmatched_votes(df_votes, df_joined, VOTES_DEM, VOTES_REP, VOTES_OTHER):
     matched_vote_indexes = set(df_joined.index_votes.dropna())
     df_votes_matched = df_votes.iloc[list(matched_vote_indexes),:]
 
-    df_votes_matched_with_votes = df_votes_matched[
+    df_votes_matched[
         (df_votes_matched[VOTES_DEM] > 0) | (df_votes_matched[VOTES_REP] > 0) | (df_votes_matched[VOTES_OTHER] > 0)
     ]
 
