@@ -4,3 +4,4 @@ pandas
 Shapely
 Rtree
 pyarrow<18
+ruff

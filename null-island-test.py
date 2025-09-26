@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-import io
-import sys
-import csv
-import zipfile
 import geopandas
 
 assemble = __import__('assemble-state')
