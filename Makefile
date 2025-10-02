@@ -104,9 +104,9 @@ assembled-state-CO.parquet: NYT/co_2024.zip VEST/co_2020.zip VEST/co_2018.zip VE
 		Census/co2020.pl.zip /vsizip/Census/tl_2020_08_bg.zip /vsizip/Census/tl_2020_08_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_CO_2020_VD_tabblock.centroid.json
 
-assembled-state-CT.parquet: VEST/ct_2020.zip VEST/ct_2018.zip VEST/ct_2016.zip Census/ct2020.pl.zip Census/tl_2020_09_bg.zip Census/tl_2020_09_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_CT_2020_VD_tabblock.centroid.json
+assembled-state-CT.parquet: NYT/ct_2024.zip VEST/ct_2020.zip VEST/ct_2018.zip VEST/ct_2016.zip Census/ct2020.pl.zip Census/tl_2020_09_bg.zip Census/tl_2020_09_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_CT_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/ct_2020.zip /vsizip/VEST/ct_2018.zip /vsizip/VEST/ct_2016.zip \
+		/vsizip/NYT/ct_2024.zip /vsizip/VEST/ct_2020.zip /vsizip/VEST/ct_2018.zip /vsizip/VEST/ct_2016.zip \
 		Census/ct2020.pl.zip /vsizip/Census/tl_2020_09_bg.zip /vsizip/Census/tl_2020_09_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_CT_2020_VD_tabblock.centroid.json
 
@@ -302,9 +302,9 @@ assembled-state-PA.parquet: NYT/pa_2024.zip VEST/pa_2020.zip VEST/pa_2018.zip VE
 		Census/pa2020.pl.zip /vsizip/Census/tl_2020_42_bg.zip /vsizip/Census/tl_2020_42_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_PA_2020_VD_tabblock.centroid.json
 
-assembled-state-RI.parquet: VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2020_44_bg.zip Census/tl_2020_44_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
+assembled-state-RI.parquet: NYT/ri_2024.zip VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2020_44_bg.zip Census/tl_2020_44_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/ri_2020.zip /vsizip/VEST/ri_2018.zip /vsizip/VEST/ri_2016.zip \
+		/vsizip/NYT/ri_2024.zip /vsizip/VEST/ri_2020.zip /vsizip/VEST/ri_2018.zip /vsizip/VEST/ri_2016.zip \
 		Census/ri2020.pl.zip /vsizip/Census/tl_2020_44_bg.zip /vsizip/Census/tl_2020_44_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json
 
