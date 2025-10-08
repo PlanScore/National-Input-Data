@@ -122,9 +122,9 @@ assembled-state-DE.parquet: NYT/de_2024.zip VEST/de_2020.zip VEST/de_2018.zip VE
 		Census/de2020.pl.zip /vsizip/Census/tl_2020_10_bg.zip /vsizip/Census/tl_2020_10_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_DE_2020_VD_tabblock.centroid.json
 
-assembled-state-FL.parquet: VEST/fl_2020.zip VEST/fl_2018.zip VEST/fl_2016.zip Census/fl2020.pl.zip Census/tl_2020_12_bg.zip Census/tl_2020_12_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
+assembled-state-FL.parquet: VEST/fl_2024.zip VEST/fl_2020.zip VEST/fl_2018.zip VEST/fl_2016.zip Census/fl2020.pl.zip Census/tl_2020_12_bg.zip Census/tl_2020_12_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/fl_2020.zip /vsizip/VEST/fl_2018.zip /vsizip/VEST/fl_2016.zip \
+		/vsizip/VEST/fl_2024.zip /vsizip/VEST/fl_2020.zip /vsizip/VEST/fl_2018.zip /vsizip/VEST/fl_2016.zip \
 		Census/fl2020.pl.zip /vsizip/Census/tl_2020_12_bg.zip /vsizip/Census/tl_2020_12_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_FL_2020_VD_tabblock.centroid.json
 
