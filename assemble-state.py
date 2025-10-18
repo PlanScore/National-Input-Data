@@ -1213,6 +1213,7 @@ parser.add_argument('bgs_source')
 parser.add_argument('tracts_source')
 parser.add_argument('cvap_source')
 parser.add_argument('centroid_path')
+parser.add_argument('rpvnearme_path')
 
 if __name__ == '__main__':
     args = parser.parse_args()
