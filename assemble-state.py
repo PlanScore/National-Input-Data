@@ -1121,7 +1121,7 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path, vtds_source, rpvnearme_source):
+def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, vtds_source, cvap_source, rpvnearme_source, centroid_path):
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
     df_vtds = load_vtds(vtds_source, rpvnearme_source).to_crs(5070)
@@ -1297,10 +1297,10 @@ parser.add_argument('votes_sources', nargs='*')
 parser.add_argument('blocks_source')
 parser.add_argument('bgs_source')
 parser.add_argument('tracts_source')
-parser.add_argument('cvap_source')
-parser.add_argument('centroid_path')
 parser.add_argument('vtds_source')
+parser.add_argument('cvap_source')
 parser.add_argument('rpvnearme_source')
+parser.add_argument('centroid_path')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -1310,8 +1310,8 @@ if __name__ == '__main__':
         args.blocks_source,
         args.bgs_source,
         args.tracts_source,
-        args.cvap_source,
-        args.centroid_path,
         args.vtds_source,
+        args.cvap_source,
         args.rpvnearme_source,
+        args.centroid_path,
     ))
