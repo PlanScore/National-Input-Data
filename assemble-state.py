@@ -530,8 +530,8 @@ def load_cvap(cvap_source):
     return df2
 
 @memoize
-def load_vtds(vtds_source, rpvnearme_source):
-    rpv_df1 = pandas.read_csv(rpvnearme_source, dtype={'GEOID': 'object'})
+def load_vtds(vtds_source, rpvnearme_path):
+    rpv_df1 = pandas.read_csv(rpvnearme_path, dtype={'GEOID': 'object'})
     rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES]]
     
     vtd_df = geopandas.read_file(vtds_source)[['GEOID20', 'geometry']]
@@ -1121,10 +1121,10 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, vtds_source, cvap_source, rpvnearme_source, centroid_path):
+def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, vtds_source, cvap_source, rpvnearme_path, centroid_path):
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
-    df_vtds = load_vtds(vtds_source, rpvnearme_source).to_crs(5070)
+    df_vtds = load_vtds(vtds_source, rpvnearme_path).to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
     
@@ -1299,7 +1299,7 @@ parser.add_argument('bgs_source')
 parser.add_argument('tracts_source')
 parser.add_argument('vtds_source')
 parser.add_argument('cvap_source')
-parser.add_argument('rpvnearme_source')
+parser.add_argument('rpvnearme_path')
 parser.add_argument('centroid_path')
 
 if __name__ == '__main__':
@@ -1312,6 +1312,6 @@ if __name__ == '__main__':
         args.tracts_source,
         args.vtds_source,
         args.cvap_source,
-        args.rpvnearme_source,
+        args.rpvnearme_path,
         args.centroid_path,
     ))
