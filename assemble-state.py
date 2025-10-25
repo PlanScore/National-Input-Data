@@ -148,6 +148,16 @@ CVAP_VARIABLES = [
     'cvap_13_moe',
 ]
 
+# Select only the Democratic variables, Republican variables are always (1 - dem)
+RPV_VARIABLES = [
+    'vap_white.pre_20_dem_bid',
+    'vap_black.pre_20_dem_bid',
+    'vap_hisp.pre_20_dem_bid',
+    'vap_asian.pre_20_dem_bid',
+    'vap_aian.pre_20_dem_bid',
+    'vap_oth_b.pre_20_dem_bid',
+]
+
 TRACT_VARIABLES = [
     'B05001_005E',
     'B05006_001E',
@@ -519,9 +529,10 @@ def load_cvap(cvap_source):
     
     return df2
 
+@memoize
 def load_vtds(vtds_source, rpvnearme_source):
     rpv_df1 = pandas.read_csv(rpvnearme_source, dtype={'GEOID': 'object'})
-    rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if '.pre_20_' in c]]
+    rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES]]
     
     vtd_df = geopandas.read_file(vtds_source)[['GEOID20', 'geometry']]
     
@@ -889,13 +900,15 @@ def join_blocks_vtds(df_blocks, df_vtds):
     df_blocks3.geometry = df_blocks_original_geometry
     
     print_df(df_blocks3, "df_blocks3")
-    print(df_blocks3.columns)
     
-    output_population = df_blocks3['P0010001'].sum()
+    # Select just a few columns
+    df_blocks4 = df_blocks3[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES + RPV_VARIABLES]
+    
+    output_population = df_blocks4['P0010001'].sum()
     assert_expected_number('people', output_population, input_population)
-    assert_expected_number('blocks', len(df_blocks3), len(df_blocks3))
-
-    raise NotImplementedError()
+    assert_expected_number('blocks', len(df_blocks4), len(df_blocks4))
+    
+    return df_blocks4
 
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
@@ -1115,8 +1128,6 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
     
-    join_blocks_vtds(join_blocks_blockgroups(join_blocks_tracts(df_blocks, df_tracts), df_bgs), df_vtds)
-
     df_blocksV, df_blocks_original_geometry = df_blocks, df_blocks.geometry.copy()
     for votes_source in reversed(votes_sources):
         df_votes = load_votes(votes_source).to_crs(5070)
@@ -1137,8 +1148,8 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
         if VOTES_DEM_S16 in df_votes.columns:
             df_blocksV = join_blocks_votes(df_blocksV, df_votes, VOTES_DEM_S16, VOTES_REP_S16, VOTES_OTHER_S16)
     
-    # Write out a block/precinct crosswalk file for optional use
-    output_crosswalk(df_blocksV, votes_source)
+    # # Write out a block/precinct crosswalk file for optional use
+    # output_crosswalk(df_blocksV, votes_source)
     
     # Note vote counts to compare later
     df_blocksV_votecounts = {
@@ -1154,6 +1165,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
     print_df(df_tracts, 'df_tracts')
+    print_df(df_vtds, 'df_vtds')
     
     df_blocksBT = join_blocks_tracts(df_blocks, df_tracts)
     print_df(df_blocksBT, 'df_blocksBT')
@@ -1161,10 +1173,10 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocksB = join_blocks_blockgroups(df_blocksBT, df_bgs)
     print_df(df_blocksB, 'df_blocksB')
     
-    _df_blocks = join_blocks_vtds(df_blocksB, df_vtds)
-    print_df(_df_blocks, '_df_blocks')
+    df_blocksR = join_blocks_vtds(df_blocksB, df_vtds)
+    print_df(df_blocksR, 'df_blocksR')
     
-    df_blocks2 = df_blocksV.merge(df_blocksB, how='left', on=BLOCK_FIELDS)
+    df_blocks2 = df_blocksV.merge(df_blocksR, how='left', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
     for (column, expected_count) in df_blocksV_votecounts.items():
         assert_expected_number(f'{column} votes (2)', df_blocks2[column].sum(), expected_count)
@@ -1262,10 +1274,16 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     df_blocks3['American Indian or Alaska Native Citizen Voting-Age Population 2023 ACS, Margin'] = (df_blocks2['cvap_3_moe'] + df_blocks2['cvap_8_moe']).round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2023 ACS'] = df_blocks2['cvap_13_est'].round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2023 ACS, Margin'] = df_blocks2['cvap_13_moe'].round(5)
+    df_blocks3['Expected White 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_white.pre_20_dem_bid']).round(5)
+    df_blocks3['Expected Black 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_black.pre_20_dem_bid']).round(5)
+    df_blocks3['Expected Hispanic 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_hisp.pre_20_dem_bid']).round(5)
+    df_blocks3['Expected Asian 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_asian.pre_20_dem_bid']).round(5)
+    df_blocks3['Expected American Indian or Alaska Native 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_aian.pre_20_dem_bid']).round(5)
     df_blocks3['Voting-Age Population 2020'] = df_blocks2['P0030001'].round(5)
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
+    print(df_blocks3[[c for c in df_blocks3.columns if 'RPV' in c]].mean().round(2))
     print(df_blocks3[[c for c in df_blocks3.columns if c in VOTE_COLUMNS]].sum().round())
     
     df_blocks4 = df_blocks3.to_crs(4326)
