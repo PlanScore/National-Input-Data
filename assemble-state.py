@@ -519,6 +519,16 @@ def load_cvap(cvap_source):
     
     return df2
 
+def load_vtds(vtds_source, rpvnearme_source):
+    rpv_df1 = pandas.read_csv(rpvnearme_source, dtype={'GEOID': 'object'})
+    rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if '.pre_20_' in c]]
+    
+    vtd_df = geopandas.read_file(vtds_source)[['GEOID20', 'geometry']]
+    
+    df = vtd_df.merge(rpv_df2, how='inner', left_on='GEOID20', right_on='GEOID')
+
+    return df
+
 @memoize
 def get_state_counties(state_fips, api_path):
     print('state_fips:', state_fips)
@@ -835,6 +845,58 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     return df_blocks6
 
+def join_blocks_vtds(df_blocks, df_vtds):
+    
+    assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
+    assert df_vtds.crs == 5070, f'Should not see {df_vtds.crs} df_vtds.crs'
+    input_population = df_blocks['P0010001'].sum()
+    
+    df_blocks_original_geometry = df_blocks.geometry.copy()
+
+    # Progressively buffer census blocks by larger amounts to intersect
+    for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
+        # Join VTD RPV to any land block spatially contained within
+        df_blocks2 = geopandas.sjoin(
+            df_blocks,
+            df_vtds,
+            predicate='intersects',
+            how='left',
+            rsuffix='vtd',
+        )
+        #print_df(df_blocks2, 'df_blocks2')
+    
+        # Note any unmatched blocks
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_vtd')
+        #print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
+        
+        # Stop if no unmatched blocks are found
+        if df_blocks2_unmatched.empty:
+            break
+        print_df(df_blocks2_unmatched, f'df_blocks2_unmatched, r={r/1000:.1f}km')
+        
+        # Buffer unmatched blocks so they'll match
+        geom_index = df_blocks.columns.get_loc('geometry')
+        for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
+            df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
+
+    print('*' * 80, 'VTDs')
+    
+    # Note any duplicate blocks
+    df_blocks3 = get_unique_blocks(df_blocks2)
+    #print_df(df_blocks3, 'df_blocks3')
+
+    # Restore original geometry
+    df_blocks3.geometry = df_blocks_original_geometry
+    
+    print_df(df_blocks3, "df_blocks3")
+    print(df_blocks3.columns)
+    
+    output_population = df_blocks3['P0010001'].sum()
+    assert_expected_number('people', output_population, input_population)
+    assert_expected_number('blocks', len(df_blocks3), len(df_blocks3))
+
+    raise NotImplementedError()
+
 def print_df(df, name):
     print('- ' * 20, name, 'at line', inspect.currentframe().f_back.f_lineno, '\n', df)
 
@@ -1046,11 +1108,14 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path):
+def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, cvap_source, centroid_path, vtds_source, rpvnearme_source):
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
+    df_vtds = load_vtds(vtds_source, rpvnearme_source).to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
+    
+    join_blocks_vtds(join_blocks_blockgroups(join_blocks_tracts(df_blocks, df_tracts), df_bgs), df_vtds)
 
     df_blocksV, df_blocks_original_geometry = df_blocks, df_blocks.geometry.copy()
     for votes_source in reversed(votes_sources):
@@ -1095,6 +1160,9 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, c
     
     df_blocksB = join_blocks_blockgroups(df_blocksBT, df_bgs)
     print_df(df_blocksB, 'df_blocksB')
+    
+    _df_blocks = join_blocks_vtds(df_blocksB, df_vtds)
+    print_df(_df_blocks, '_df_blocks')
     
     df_blocks2 = df_blocksV.merge(df_blocksB, how='left', on=BLOCK_FIELDS)
     print_df(df_blocks2, 'df_blocks2')
@@ -1213,7 +1281,8 @@ parser.add_argument('bgs_source')
 parser.add_argument('tracts_source')
 parser.add_argument('cvap_source')
 parser.add_argument('centroid_path')
-parser.add_argument('rpvnearme_path')
+parser.add_argument('vtds_source')
+parser.add_argument('rpvnearme_source')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -1225,4 +1294,6 @@ if __name__ == '__main__':
         args.tracts_source,
         args.cvap_source,
         args.centroid_path,
+        args.vtds_source,
+        args.rpvnearme_source,
     ))
