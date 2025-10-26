@@ -530,13 +530,18 @@ def load_cvap(cvap_source):
     return df2
 
 @memoize
-def load_vtds(vtds_source, rpvnearme_path):
+def load_rpvs(rpvgeo_source, rpvnearme_path):
     rpv_df1 = pandas.read_csv(rpvnearme_path, dtype={'GEOID': 'object'})
     rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES]]
     
-    vtd_df = geopandas.read_file(vtds_source)[['GEOID20', 'geometry']]
+    rpvgeo_df = geopandas.read_file(rpvgeo_source)
     
-    df = vtd_df.merge(rpv_df2, how='inner', left_on='GEOID20', right_on='GEOID')
+    if "GEOID20" in rpvgeo_df.columns:
+        rpvgeo_df2 = rpvgeo_df[['GEOID20', 'geometry']]
+        df = rpvgeo_df2.merge(rpv_df2, how='inner', left_on='GEOID20', right_on='GEOID')
+    else:
+        rpvgeo_df2 = rpvgeo_df[['GEOID', 'geometry']]
+        df = rpvgeo_df2.merge(rpv_df2, how='inner', left_on='GEOID', right_on='GEOID')
 
     return df
 
@@ -856,28 +861,28 @@ def join_blocks_blockgroups(df_blocks, df_bgs):
     
     return df_blocks6
 
-def join_blocks_vtds(df_blocks, df_vtds):
+def join_blocks_rpvs(df_blocks, df_rpvs):
     
     assert df_blocks.crs == 5070, f'Should not see {df_blocks.crs} df_blocks.crs'
-    assert df_vtds.crs == 5070, f'Should not see {df_vtds.crs} df_vtds.crs'
+    assert df_rpvs.crs == 5070, f'Should not see {df_rpvs.crs} df_rpvs.crs'
     input_population = df_blocks['P0010001'].sum()
     
     df_blocks_original_geometry = df_blocks.geometry.copy()
 
     # Progressively buffer census blocks by larger amounts to intersect
     for r in [100, 1e3, 1e4, 1e5, 1e6, 1e7]:
-        # Join VTD RPV to any land block spatially contained within
+        # Join RPV to any land block spatially contained within
         df_blocks2 = geopandas.sjoin(
             df_blocks,
-            df_vtds,
+            df_rpvs,
             predicate='intersects',
             how='left',
-            rsuffix='vtd',
+            rsuffix='rpv',
         )
         #print_df(df_blocks2, 'df_blocks2')
     
         # Note any unmatched blocks
-        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_vtd')
+        df_blocks2_unmatched = get_unmatched_blocks(df_blocks2, 'index_rpv')
         #print_df(df_blocks2_unmatched, 'df_blocks2_unmatched')
         
         # Stop if no unmatched blocks are found
@@ -890,7 +895,7 @@ def join_blocks_vtds(df_blocks, df_vtds):
         for (bad_index, bad_row) in df_blocks2_unmatched.iterrows():
             df_blocks.iat[bad_index, geom_index] = bad_row.geometry.buffer(r, 2)
 
-    print('*' * 80, 'VTDs')
+    print('*' * 80, 'RPVs')
     
     # Note any duplicate blocks
     df_blocks3 = get_unique_blocks(df_blocks2)
@@ -1121,10 +1126,10 @@ def output_crosswalk(df_blocksV, votes_source):
     postal_code = STATE_LOOKUP[crossed.loc[0].STATE]
     crossed.to_crs(4326).to_csv(f'assembled-crosswalk-{postal_code}.csv')
 
-def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, vtds_source, cvap_source, rpvnearme_path, centroid_path):
+def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, rpvgeo_source, cvap_source, rpvnearme_path, centroid_path):
     df_tracts = load_tracts(tracts_source, '2019').to_crs(5070)
     df_bgs = load_blockgroups(bgs_source, cvap_source, '2020').to_crs(5070)
-    df_vtds = load_vtds(vtds_source, rpvnearme_path).to_crs(5070)
+    df_rpvs = load_rpvs(rpvgeo_source, rpvnearme_path).to_crs(5070)
     df_blocks = load_blocks(blocks_source, centroid_path).to_crs(5070)
     print_df(df_blocks, 'df_blocks')
     
@@ -1165,7 +1170,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, v
     print_df(df_blocksV, 'df_blocksV')
     print_df(df_bgs, 'df_bgs')
     print_df(df_tracts, 'df_tracts')
-    print_df(df_vtds, 'df_vtds')
+    print_df(df_rpvs, 'df_rpvs')
     
     df_blocksBT = join_blocks_tracts(df_blocks, df_tracts)
     print_df(df_blocksBT, 'df_blocksBT')
@@ -1173,7 +1178,7 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, v
     df_blocksB = join_blocks_blockgroups(df_blocksBT, df_bgs)
     print_df(df_blocksB, 'df_blocksB')
     
-    df_blocksR = join_blocks_vtds(df_blocksB, df_vtds)
+    df_blocksR = join_blocks_rpvs(df_blocksB, df_rpvs)
     print_df(df_blocksR, 'df_blocksR')
     
     df_blocks2 = df_blocksV.merge(df_blocksR, how='left', on=BLOCK_FIELDS)
@@ -1297,7 +1302,7 @@ parser.add_argument('votes_sources', nargs='*')
 parser.add_argument('blocks_source')
 parser.add_argument('bgs_source')
 parser.add_argument('tracts_source')
-parser.add_argument('vtds_source')
+parser.add_argument('rpvgeo_source')
 parser.add_argument('cvap_source')
 parser.add_argument('rpvnearme_path')
 parser.add_argument('centroid_path')
@@ -1310,7 +1315,7 @@ if __name__ == '__main__':
         args.blocks_source,
         args.bgs_source,
         args.tracts_source,
-        args.vtds_source,
+        args.rpvgeo_source,
         args.cvap_source,
         args.rpvnearme_path,
         args.centroid_path,
