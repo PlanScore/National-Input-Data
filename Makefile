@@ -145,10 +145,10 @@ assembled-state-GA.parquet: RDH/ga_2024.zip VEST/ga_2020.zip VEST/ga_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-GA_county_2020_precinct_b.csv \
 		Census/DRA_GA_2020_VD_tabblock.centroid.json
 
-assembled-state-HI.parquet: NYT/hi_2024.zip VEST/hi_2020.zip VEST/hi_2018.zip VEST/hi_2016.zip Census/hi2020.pl.zip Census/tl_2020_15_bg.zip Census/tl_2020_15_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-HI_county_2020_precinct_b.csv Census/DRA_HI_2020_VD_tabblock.centroid.json Census/tl_2020_15_vtd20.zip
+assembled-state-HI.parquet: NYT/hi_2024.zip VEST/hi_2020.zip VEST/hi_2018.zip VEST/hi_2016.zip Census/hi2020.pl.zip Census/tl_2020_15_bg.zip Census/tl_2020_15_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-HI_county_2020_precinct_b.csv Census/DRA_HI_2020_VD_tabblock.centroid.json Census/tl_2020_15_tract.zip
 	./assemble-state.py $@ \
 		/vsizip/NYT/hi_2024.zip /vsizip/VEST/hi_2020.zip /vsizip/VEST/hi_2018.zip /vsizip/VEST/hi_2016.zip \
-		Census/hi2020.pl.zip /vsizip/Census/tl_2020_15_bg.zip /vsizip/Census/tl_2020_15_tract.zip /vsizip/Census/tl_2020_15_vtd20.zip \
+		Census/hi2020.pl.zip /vsizip/Census/tl_2020_15_bg.zip /vsizip/Census/tl_2020_15_tract.zip /vsizip/Census/tl_2020_15_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-HI_county_2020_precinct_b.csv \
 		Census/DRA_HI_2020_VD_tabblock.centroid.json
 
@@ -208,10 +208,10 @@ assembled-state-MD.parquet: RDH/md_2024.zip VEST/md_2020.zip VEST/md_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MD_county_2020_precinct_b.csv \
 		Census/DRA_MD_2020_VD_tabblock.centroid.json
 
-assembled-state-ME.parquet: NYT/me_2024.zip VEST/me_2020.zip VEST/me_2018.zip VEST/me_2016.zip Census/me2020.pl.zip Census/tl_2020_23_bg.zip Census/tl_2020_23_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ME_county_2020_precinct_b.csv Census/DRA_ME_2020_VD_tabblock.centroid.json Census/tl_2020_23_vtd20.zip
+assembled-state-ME.parquet: NYT/me_2024.zip VEST/me_2020.zip VEST/me_2018.zip VEST/me_2016.zip Census/me2020.pl.zip Census/tl_2020_23_bg.zip Census/tl_2020_23_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ME_county_2020_precinct_b.csv Census/DRA_ME_2020_VD_tabblock.centroid.json Census/tl_2020_23_tract.zip
 	./assemble-state.py $@ \
 		/vsizip/NYT/me_2024.zip /vsizip/VEST/me_2020.zip /vsizip/VEST/me_2018.zip /vsizip/VEST/me_2016.zip \
-		Census/me2020.pl.zip /vsizip/Census/tl_2020_23_bg.zip /vsizip/Census/tl_2020_23_tract.zip /vsizip/Census/tl_2020_23_vtd20.zip \
+		Census/me2020.pl.zip /vsizip/Census/tl_2020_23_bg.zip /vsizip/Census/tl_2020_23_tract.zip /vsizip/Census/tl_2020_23_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ME_county_2020_precinct_b.csv \
 		Census/DRA_ME_2020_VD_tabblock.centroid.json
 
@@ -426,7 +426,7 @@ assembled-state-WY.parquet: NYT/wy_2024.zip VEST/wy_2020.zip VEST/wy_2018.zip VE
 		Census/DRA_WY_2020_VD_tabblock.centroid.json
 
 Census/RPV-%_county_2020_precinct_b.csv:
-	curl -L https://raw.githubusercontent.com/electionlawclinic/rpvnearme/114dd48/data/$*_county_2020_precinct_b.csv -o $@
+	curl -L https://raw.githubusercontent.com/electionlawclinic/rpvnearme/626be2d/data/$*_county_2020_precinct_b.csv -o $@
 
 Census/CVAP_2019-2023_ACS_csv_files.zip:
 	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/Census/CVAP_2019-2023_ACS_csv_files.zip -o $@
