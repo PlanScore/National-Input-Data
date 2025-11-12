@@ -272,9 +272,9 @@ assembled-state-NV.parquet: NYT/nv_2024.zip VEST/nv_2020.zip VEST/nv_2018.zip VE
 		Census/nv2020.pl.zip /vsizip/Census/tl_2020_32_bg.zip /vsizip/Census/tl_2020_32_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_NV_2020_VD_tabblock.centroid.json
 
-assembled-state-NY.parquet: VEST/ny_2020.zip VEST/ny_2018.zip VEST/ny_2016.zip Census/ny2020.pl.zip Census/tl_2020_36_bg.zip Census/tl_2020_36_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_NY_2020_VD_tabblock.centroid.json
+assembled-state-NY.parquet: ALARM/ny_2024.zip VEST/ny_2020.zip VEST/ny_2018.zip VEST/ny_2016.zip Census/ny2020.pl.zip Census/tl_2020_36_bg.zip Census/tl_2020_36_tract.zip Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_NY_2020_VD_tabblock.centroid.json
 	./assemble-state.py $@ \
-		/vsizip/VEST/ny_2020.zip /vsizip/VEST/ny_2018.zip /vsizip/VEST/ny_2016.zip \
+		/vsizip/ALARM/ny_2024.zip /vsizip/VEST/ny_2020.zip /vsizip/VEST/ny_2018.zip /vsizip/VEST/ny_2016.zip \
 		Census/ny2020.pl.zip /vsizip/Census/tl_2020_36_bg.zip /vsizip/Census/tl_2020_36_tract.zip \
 		Census/CVAP_2016-2020_ACS_csv_files.zip Census/DRA_NY_2020_VD_tabblock.centroid.json
 
