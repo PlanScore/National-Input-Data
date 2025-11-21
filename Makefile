@@ -341,11 +341,11 @@ assembled-state-PA.parquet: NYT/pa_2024.zip VEST/pa_2020.zip VEST/pa_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-PA_county_2020_precinct_b.csv \
 		Census/DRA_PA_2020_VD_tabblock.centroid.json
 
-assembled-state-RI.parquet: NYT/ri_2024.zip VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2020_44_bg.zip Census/tl_2020_44_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json Census/tl_2020_44_vtd20.zip Census/RPV-RI_county_2020_precinct_b.csv
+assembled-state-RI.parquet: NYT/ri_2024.zip VEST/ri_2020.zip VEST/ri_2018.zip VEST/ri_2016.zip Census/ri2020.pl.zip Census/tl_2020_44_bg.zip Census/tl_2020_44_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/DRA_RI_2020_VD_tabblock.centroid.json Census/tl_2020_44_vtd20.zip Census/RPV-RI_county_2024_precinct_b.csv
 	./assemble-state.py $@ \
 		/vsizip/NYT/ri_2024.zip /vsizip/VEST/ri_2020.zip /vsizip/VEST/ri_2018.zip /vsizip/VEST/ri_2016.zip \
 		Census/ri2020.pl.zip /vsizip/Census/tl_2020_44_bg.zip /vsizip/Census/tl_2020_44_tract.zip /vsizip/Census/tl_2020_44_vtd20.zip \
-		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-RI_county_2020_precinct_b.csv \
+		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-RI_county_2024_precinct_b.csv \
 		Census/DRA_RI_2020_VD_tabblock.centroid.json
 
 assembled-state-SC.parquet: RDH/sc_2024.zip VEST/sc_2020.zip VEST/sc_2018.zip VEST/sc_2016.zip Census/sc2020.pl.zip Census/tl_2020_45_bg.zip Census/tl_2020_45_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-SC_county_2020_precinct_b.csv Census/DRA_SC_2020_VD_tabblock.centroid.json Census/tl_2020_45_vtd20.zip
@@ -427,6 +427,9 @@ assembled-state-WY.parquet: NYT/wy_2024.zip VEST/wy_2020.zip VEST/wy_2018.zip VE
 
 Census/RPV-%_county_2020_precinct_b.csv:
 	curl -L https://raw.githubusercontent.com/electionlawclinic/rpvnearme/626be2d/data/$*_county_2020_precinct_b.csv -o $@
+
+Census/RPV-%_county_2024_precinct_b.csv:
+	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/RPV/$*_county_2020_precinct_b.csv -o $@
 
 Census/CVAP_2019-2023_ACS_csv_files.zip:
 	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/Census/CVAP_2019-2023_ACS_csv_files.zip -o $@

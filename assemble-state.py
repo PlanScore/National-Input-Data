@@ -149,13 +149,21 @@ CVAP_VARIABLES = [
 ]
 
 # Select only the Democratic variables, Republican variables are always (1 - dem)
-RPV_VARIABLES = [
+RPV_VARIABLES_2020 = [
     'vap_white.pre_20_dem_bid',
     'vap_black.pre_20_dem_bid',
     'vap_hisp.pre_20_dem_bid',
     'vap_asian.pre_20_dem_bid',
     'vap_aian.pre_20_dem_bid',
     'vap_oth_b.pre_20_dem_bid',
+]
+RPV_VARIABLES_2024 = [
+    'vap_white.pre_24_dem_har',
+    'vap_black.pre_24_dem_har',
+    'vap_hisp.pre_24_dem_har',
+    'vap_asian.pre_24_dem_har',
+    'vap_aian.pre_24_dem_har',
+    'vap_oth_b.pre_24_dem_har',
 ]
 
 TRACT_VARIABLES = [
@@ -532,7 +540,10 @@ def load_cvap(cvap_source):
 @memoize
 def load_rpvs(rpvgeo_source, rpvnearme_path):
     rpv_df1 = pandas.read_csv(rpvnearme_path, dtype={'GEOID': 'object'})
-    rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES]]
+    if RPV_VARIABLES_2024[0] in rpv_df1.columns:
+        rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES_2024]]
+    else:
+        rpv_df2 = rpv_df1[['GEOID'] + [c for c in rpv_df1.columns if c in RPV_VARIABLES_2020]]
     
     rpvgeo_df = geopandas.read_file(rpvgeo_source)
     
@@ -907,7 +918,10 @@ def join_blocks_rpvs(df_blocks, df_rpvs):
     print_df(df_blocks3, "df_blocks3")
     
     # Select just a few columns
-    df_blocks4 = df_blocks3[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES + RPV_VARIABLES]
+    if RPV_VARIABLES_2024[0] in df_blocks3.columns:
+        df_blocks4 = df_blocks3[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES + RPV_VARIABLES_2024]
+    else:
+        df_blocks4 = df_blocks3[BLOCK_FIELDS + TRACT_VARIABLES + ACS_VARIABLES + CVAP_VARIABLES + RPV_VARIABLES_2020]
     
     output_population = df_blocks4['P0010001'].sum()
     assert_expected_number('people', output_population, input_population)
@@ -1279,12 +1293,20 @@ def main(output_dest, votes_sources, blocks_source, bgs_source, tracts_source, r
     df_blocks3['American Indian or Alaska Native Citizen Voting-Age Population 2023 ACS, Margin'] = (df_blocks2['cvap_3_moe'] + df_blocks2['cvap_8_moe']).round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2023 ACS'] = df_blocks2['cvap_13_est'].round(5)
     df_blocks3['Hispanic Citizen Voting-Age Population 2023 ACS, Margin'] = df_blocks2['cvap_13_moe'].round(5)
-    df_blocks3['Expected White 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_white.pre_20_dem_bid']).round(5)
-    df_blocks3['Expected Black 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_black.pre_20_dem_bid']).round(5)
-    df_blocks3['Expected Hispanic 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_hisp.pre_20_dem_bid']).round(5)
-    df_blocks3['Expected Asian 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_asian.pre_20_dem_bid']).round(5)
-    df_blocks3['Expected American Indian or Alaska Native 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_aian.pre_20_dem_bid']).round(5)
     df_blocks3['Voting-Age Population 2020'] = df_blocks2['P0030001'].round(5)
+
+    if 'vap_white.pre_20_dem_bid' in df_blocks2.columns:
+        df_blocks3['Expected White 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_white.pre_20_dem_bid']).round(5)
+        df_blocks3['Expected Black 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_black.pre_20_dem_bid']).round(5)
+        df_blocks3['Expected Hispanic 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_hisp.pre_20_dem_bid']).round(5)
+        df_blocks3['Expected Asian 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_asian.pre_20_dem_bid']).round(5)
+        df_blocks3['Expected American Indian or Alaska Native 2020 Democratic Vote Share (RPV)'] = (df_blocks2['vap_aian.pre_20_dem_bid']).round(5)
+    else:
+        df_blocks3['Expected White 2024 Democratic Vote Share (RPV)'] = (df_blocks2['vap_white.pre_24_dem_har']).round(5)
+        df_blocks3['Expected Black 2024 Democratic Vote Share (RPV)'] = (df_blocks2['vap_black.pre_24_dem_har']).round(5)
+        df_blocks3['Expected Hispanic 2024 Democratic Vote Share (RPV)'] = (df_blocks2['vap_hisp.pre_24_dem_har']).round(5)
+        df_blocks3['Expected Asian 2024 Democratic Vote Share (RPV)'] = (df_blocks2['vap_asian.pre_24_dem_har']).round(5)
+        df_blocks3['Expected American Indian or Alaska Native 2024 Democratic Vote Share (RPV)'] = (df_blocks2['vap_aian.pre_24_dem_har']).round(5)
     
     print_df(df_blocks3, 'df_blocks3')
     print(df_blocks3.columns)
