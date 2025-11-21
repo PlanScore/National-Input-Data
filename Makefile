@@ -429,7 +429,7 @@ Census/RPV-%_county_2020_precinct_b.csv:
 	curl -L https://raw.githubusercontent.com/electionlawclinic/rpvnearme/626be2d/data/$*_county_2020_precinct_b.csv -o $@
 
 Census/RPV-%_county_2024_precinct_b.csv:
-	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/RPV/$*_county_2020_precinct_b.csv -o $@
+	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/ELC/$*_county_2024_precinct_b.csv -o $@
 
 Census/CVAP_2019-2023_ACS_csv_files.zip:
 	curl -L https://planscore.s3.us-east-1.amazonaws.com/data/Census/CVAP_2019-2023_ACS_csv_files.zip -o $@
