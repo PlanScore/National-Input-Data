@@ -96,9 +96,9 @@ assembled-state-AZ.parquet: RDH/az_2024.zip VEST/az_2020.zip VEST/az_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-AZ_county_2024_precinct_b.csv \
 		Census/DRA_AZ_2020_VD_tabblock.centroid.json
 
-assembled-state-CA.parquet: ALARM/ca_2024.zip VEST/ca_2020.zip Census/ca2020.pl.zip Census/tl_2020_06_bg.zip Census/tl_2020_06_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv Census/DRA_CA_2020_VD_tabblock.centroid.json Census/tl_2020_06_tract.zip
+assembled-state-CA.parquet: ALARM/ca_2024.zip VEST/ca_2020.zip VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2020_06_bg.zip Census/tl_2020_06_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv Census/DRA_CA_2020_VD_tabblock.centroid.json Census/tl_2020_06_tract.zip
 	./assemble-state.py $@ \
-		/vsizip/ALARM/ca_2024.zip /vsizip/VEST/ca_2020.zip \
+		/vsizip/ALARM/ca_2024.zip /vsizip/VEST/ca_2020.zip /vsizip/VEST/ca_2016.zip \
 		Census/ca2020.pl.zip /vsizip/Census/tl_2020_06_bg.zip /vsizip/Census/tl_2020_06_tract.zip /vsizip/Census/tl_2020_06_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv \
 		Census/DRA_CA_2020_VD_tabblock.centroid.json
