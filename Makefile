@@ -68,9 +68,9 @@ all: assembled-state-TX.parquet \
      assembled-state-WV.parquet \
      assembled-state-WY.parquet
 
-assembled-state-AK.parquet: VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2020_02_bg.zip Census/tl_2020_02_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-AK_county_2020_precinct_b.csv Census/DRA_AK_2020_VD_tabblock.centroid.json Census/tl_2020_02_vtd20.zip
+assembled-state-AK.parquet: Metcalf/ak_2024.zip VEST/ak_2020.zip Census/ak2020.pl.zip Census/tl_2020_02_bg.zip Census/tl_2020_02_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-AK_county_2020_precinct_b.csv Census/DRA_AK_2020_VD_tabblock.centroid.json Census/tl_2020_02_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ak_2020.zip /vsizip/VEST/ak_2018.zip /vsizip/VEST/ak_2016.zip \
+		/vsizip/Metcalf/ak_2024.zip /vsizip/VEST/ak_2020.zip /vsizip/VEST/ak_2018.zip /vsizip/VEST/ak_2016.zip \
 		Census/ak2020.pl.zip /vsizip/Census/tl_2020_02_bg.zip /vsizip/Census/tl_2020_02_tract.zip /vsizip/Census/tl_2020_02_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-AK_county_2020_precinct_b.csv \
 		Census/DRA_AK_2020_VD_tabblock.centroid.json
@@ -320,9 +320,9 @@ assembled-state-OH.parquet: RDH/oh_2024.zip VEST/oh_2020.zip VEST/oh_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OH_county_2024_precinct_b.csv \
 		Census/DRA_OH_2020_VD_tabblock.centroid.json
 
-assembled-state-OK.parquet: VEST/ok_2020.zip VEST/ok_2018.zip VEST/ok_2016.zip Census/ok2020.pl.zip Census/tl_2020_40_bg.zip Census/tl_2020_40_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OK_county_2020_precinct_b.csv Census/DRA_OK_2020_VD_tabblock.centroid.json Census/tl_2020_40_vtd20.zip
+assembled-state-OK.parquet: Metcalf/ok_2024.zip VEST/ok_2020.zip VEST/ok_2018.zip VEST/ok_2016.zip Census/ok2020.pl.zip Census/tl_2020_40_bg.zip Census/tl_2020_40_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OK_county_2020_precinct_b.csv Census/DRA_OK_2020_VD_tabblock.centroid.json Census/tl_2020_40_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/ok_2020.zip /vsizip/VEST/ok_2018.zip /vsizip/VEST/ok_2016.zip \
+		/vsizip/Metcalf/ok_2024.zip /vsizip/VEST/ok_2020.zip /vsizip/VEST/ok_2018.zip /vsizip/VEST/ok_2016.zip \
 		Census/ok2020.pl.zip /vsizip/Census/tl_2020_40_bg.zip /vsizip/Census/tl_2020_40_tract.zip /vsizip/Census/tl_2020_40_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OK_county_2020_precinct_b.csv \
 		Census/DRA_OK_2020_VD_tabblock.centroid.json
@@ -355,9 +355,9 @@ assembled-state-SC.parquet: RDH/sc_2024.zip VEST/sc_2020.zip VEST/sc_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-SC_county_2024_precinct_b.csv \
 		Census/DRA_SC_2020_VD_tabblock.centroid.json
 
-assembled-state-SD.parquet: VEST/sd_2020.zip VEST/sd_2018.zip VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2020_46_bg.zip Census/tl_2020_46_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-SD_county_2020_precinct_b.csv Census/DRA_SD_2020_VD_tabblock.centroid.json Census/tl_2020_46_vtd20.zip
+assembled-state-SD.parquet: Metcalf/sd_2024.zip VEST/sd_2020.zip VEST/sd_2018.zip VEST/sd_2016.zip Census/sd2020.pl.zip Census/tl_2020_46_bg.zip Census/tl_2020_46_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-SD_county_2020_precinct_b.csv Census/DRA_SD_2020_VD_tabblock.centroid.json Census/tl_2020_46_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/sd_2020.zip /vsizip/VEST/sd_2018.zip /vsizip/VEST/sd_2016.zip \
+		/vsizip/Metcalf/sd_2024.zip /vsizip/VEST/sd_2020.zip /vsizip/VEST/sd_2018.zip /vsizip/VEST/sd_2016.zip \
 		Census/sd2020.pl.zip /vsizip/Census/tl_2020_46_bg.zip /vsizip/Census/tl_2020_46_tract.zip /vsizip/Census/tl_2020_46_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-SD_county_2020_precinct_b.csv \
 		Census/DRA_SD_2020_VD_tabblock.centroid.json
