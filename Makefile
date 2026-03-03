@@ -264,9 +264,9 @@ assembled-state-NC.parquet: NYT/nc_2024.zip VEST/nc_2020.zip VEST/nc_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NC_county_2024_precinct_b.csv \
 		Census/DRA_NC_2020_VD_tabblock.centroid.json
 
-assembled-state-ND.parquet: VEST/nd_2020.zip VEST/nd_2018.zip VEST/nd_2016.zip Census/nd2020.pl.zip Census/tl_2020_38_bg.zip Census/tl_2020_38_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv Census/DRA_ND_2020_VD_tabblock.centroid.json Census/tl_2020_38_vtd20.zip
+assembled-state-ND.parquet: NYT/nd_2024.zip VEST/nd_2020.zip VEST/nd_2018.zip VEST/nd_2016.zip Census/nd2020.pl.zip Census/tl_2020_38_bg.zip Census/tl_2020_38_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv Census/DRA_ND_2020_VD_tabblock.centroid.json Census/tl_2020_38_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nd_2020.zip /vsizip/VEST/nd_2018.zip /vsizip/VEST/nd_2016.zip \
+		/vsizip/NYT/nd_2024.zip /vsizip/VEST/nd_2020.zip /vsizip/VEST/nd_2018.zip /vsizip/VEST/nd_2016.zip \
 		Census/nd2020.pl.zip /vsizip/Census/tl_2020_38_bg.zip /vsizip/Census/tl_2020_38_tract.zip /vsizip/Census/tl_2020_38_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv \
 		Census/DRA_ND_2020_VD_tabblock.centroid.json
