@@ -96,9 +96,9 @@ assembled-state-AZ.parquet: RDH/az_2024.zip VEST/az_2020.zip VEST/az_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-AZ_county_2024_precinct_b.csv \
 		Census/DRA_AZ_2020_VD_tabblock.centroid.json
 
-assembled-state-CA.parquet: ALARM/ca_2024.zip VEST/ca_2020.zip Census/ca2020.pl.zip Census/tl_2020_06_bg.zip Census/tl_2020_06_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv Census/DRA_CA_2020_VD_tabblock.centroid.json Census/tl_2020_06_tract.zip
+assembled-state-CA.parquet: ALARM/ca_2024.zip VEST/ca_2020.zip VEST/ca_2016.zip Census/ca2020.pl.zip Census/tl_2020_06_bg.zip Census/tl_2020_06_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv Census/DRA_CA_2020_VD_tabblock.centroid.json Census/tl_2020_06_tract.zip
 	./assemble-state.py $@ \
-		/vsizip/ALARM/ca_2024.zip /vsizip/VEST/ca_2020.zip \
+		/vsizip/ALARM/ca_2024.zip /vsizip/VEST/ca_2020.zip /vsizip/VEST/ca_2016.zip \
 		Census/ca2020.pl.zip /vsizip/Census/tl_2020_06_bg.zip /vsizip/Census/tl_2020_06_tract.zip /vsizip/Census/tl_2020_06_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-CA_county_2024_precinct_b.csv \
 		Census/DRA_CA_2020_VD_tabblock.centroid.json
@@ -159,9 +159,9 @@ assembled-state-IA.parquet: NYT/ia_2024.zip VEST/ia_2020.zip VEST/ia_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-IA_county_2024_precinct_b.csv \
 		Census/DRA_IA_2020_VD_tabblock.centroid.json
 
-assembled-state-ID.parquet: VEST/id_2020.zip VEST/id_2018.zip VEST/id_2016.zip Census/id2020.pl.zip Census/tl_2020_16_bg.zip Census/tl_2020_16_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ID_county_2020_precinct_b.csv Census/DRA_ID_2020_VD_tabblock.centroid.json Census/tl_2020_16_vtd20.zip
+assembled-state-ID.parquet: NYT/id_2024.zip VEST/id_2020.zip VEST/id_2018.zip VEST/id_2016.zip Census/id2020.pl.zip Census/tl_2020_16_bg.zip Census/tl_2020_16_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ID_county_2020_precinct_b.csv Census/DRA_ID_2020_VD_tabblock.centroid.json Census/tl_2020_16_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/id_2020.zip /vsizip/VEST/id_2018.zip /vsizip/VEST/id_2016.zip \
+		/vsizip/NYT/id_2024.zip /vsizip/VEST/id_2020.zip /vsizip/VEST/id_2018.zip /vsizip/VEST/id_2016.zip \
 		Census/id2020.pl.zip /vsizip/Census/tl_2020_16_bg.zip /vsizip/Census/tl_2020_16_tract.zip /vsizip/Census/tl_2020_16_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ID_county_2020_precinct_b.csv \
 		Census/DRA_ID_2020_VD_tabblock.centroid.json
@@ -222,9 +222,9 @@ assembled-state-MA.parquet: NYT/ma_2024.zip VEST/ma_2020.zip VEST/ma_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MA_county_2024_precinct_b.csv \
 		Census/DRA_MA_2020_VD_tabblock.centroid.json
 
-assembled-state-MI.parquet: VEST/mi_2020.zip VEST/mi_2018.zip VEST/mi_2016.zip Census/mi2020.pl.zip Census/tl_2020_26_bg.zip Census/tl_2020_26_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv Census/DRA_MI_2020_VD_tabblock.centroid.json Census/tl_2020_26_vtd20.zip
+assembled-state-MI.parquet: NYT/mi_2024.zip VEST/mi_2020.zip VEST/mi_2018.zip VEST/mi_2016.zip Census/mi2020.pl.zip Census/tl_2020_26_bg.zip Census/tl_2020_26_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv Census/DRA_MI_2020_VD_tabblock.centroid.json Census/tl_2020_26_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mi_2020.zip /vsizip/VEST/mi_2018.zip /vsizip/VEST/mi_2016.zip \
+		/vsizip/NYT/mi_2024.zip /vsizip/VEST/mi_2020.zip /vsizip/VEST/mi_2018.zip /vsizip/VEST/mi_2016.zip \
 		Census/mi2020.pl.zip /vsizip/Census/tl_2020_26_bg.zip /vsizip/Census/tl_2020_26_tract.zip /vsizip/Census/tl_2020_26_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv \
 		Census/DRA_MI_2020_VD_tabblock.centroid.json
@@ -264,9 +264,9 @@ assembled-state-NC.parquet: NYT/nc_2024.zip VEST/nc_2020.zip VEST/nc_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NC_county_2024_precinct_b.csv \
 		Census/DRA_NC_2020_VD_tabblock.centroid.json
 
-assembled-state-ND.parquet: VEST/nd_2020.zip VEST/nd_2018.zip VEST/nd_2016.zip Census/nd2020.pl.zip Census/tl_2020_38_bg.zip Census/tl_2020_38_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv Census/DRA_ND_2020_VD_tabblock.centroid.json Census/tl_2020_38_vtd20.zip
+assembled-state-ND.parquet: NYT/nd_2024.zip VEST/nd_2020.zip VEST/nd_2018.zip VEST/nd_2016.zip Census/nd2020.pl.zip Census/tl_2020_38_bg.zip Census/tl_2020_38_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv Census/DRA_ND_2020_VD_tabblock.centroid.json Census/tl_2020_38_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nd_2020.zip /vsizip/VEST/nd_2018.zip /vsizip/VEST/nd_2016.zip \
+		/vsizip/NYT/nd_2024.zip /vsizip/VEST/nd_2020.zip /vsizip/VEST/nd_2018.zip /vsizip/VEST/nd_2016.zip \
 		Census/nd2020.pl.zip /vsizip/Census/tl_2020_38_bg.zip /vsizip/Census/tl_2020_38_tract.zip /vsizip/Census/tl_2020_38_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-ND_county_2020_precinct_b.csv \
 		Census/DRA_ND_2020_VD_tabblock.centroid.json
@@ -285,9 +285,9 @@ assembled-state-NH.parquet: RDH/nh_2024.zip VEST/nh_2020.zip VEST/nh_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NH_county_2024_precinct_b.csv \
 		Census/DRA_NH_2020_VD_tabblock.centroid.json
 
-assembled-state-NJ.parquet: VEST/nj_2020.zip VEST/nj_2018.zip VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2020_34_bg.zip Census/tl_2020_34_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv Census/DRA_NJ_2020_VD_tabblock.centroid.json Census/tl_2020_34_vtd20.zip
+assembled-state-NJ.parquet: NYT/nj_2024.zip VEST/nj_2020.zip VEST/nj_2018.zip VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2020_34_bg.zip Census/tl_2020_34_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv Census/DRA_NJ_2020_VD_tabblock.centroid.json Census/tl_2020_34_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nj_2020.zip /vsizip/VEST/nj_2018.zip /vsizip/VEST/nj_2016.zip \
+		/vsizip/NYT/nj_2024.zip /vsizip/VEST/nj_2020.zip /vsizip/VEST/nj_2018.zip /vsizip/VEST/nj_2016.zip \
 		Census/nj2020.pl.zip /vsizip/Census/tl_2020_34_bg.zip /vsizip/Census/tl_2020_34_tract.zip /vsizip/Census/tl_2020_34_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv \
 		Census/DRA_NJ_2020_VD_tabblock.centroid.json
@@ -327,9 +327,9 @@ assembled-state-OK.parquet: VEST/ok_2020.zip VEST/ok_2018.zip VEST/ok_2016.zip C
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OK_county_2020_precinct_b.csv \
 		Census/DRA_OK_2020_VD_tabblock.centroid.json
 
-assembled-state-OR.parquet: VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2020_41_bg.zip Census/tl_2020_41_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv Census/DRA_OR_2020_VD_tabblock.centroid.json Census/tl_2020_41_tract.zip
+assembled-state-OR.parquet: NYT/or_2024.zip VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2020_41_bg.zip Census/tl_2020_41_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv Census/DRA_OR_2020_VD_tabblock.centroid.json Census/tl_2020_41_tract.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/or_2020.zip /vsizip/VEST/or_2018.zip /vsizip/VEST/or_2016.zip \
+		/vsizip/NYT/or_2024.zip /vsizip/VEST/or_2020.zip /vsizip/VEST/or_2018.zip /vsizip/VEST/or_2016.zip \
 		Census/or2020.pl.zip /vsizip/Census/tl_2020_41_bg.zip /vsizip/Census/tl_2020_41_tract.zip /vsizip/Census/tl_2020_41_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv \
 		Census/DRA_OR_2020_VD_tabblock.centroid.json
@@ -390,9 +390,9 @@ assembled-state-TX.parquet: RDH/tx_2024.zip VEST/tx_2020.zip VEST/tx_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-TX_county_2024_precinct_b.csv \
 		Census/DRA_TX_2020_VD_tabblock.centroid.json
 
-assembled-state-VT.parquet: VEST/vt_2020.zip VEST/vt_2018.zip VEST/vt_2016.zip Census/vt2020.pl.zip Census/tl_2020_50_bg.zip Census/tl_2020_50_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-VT_county_2020_precinct_b.csv Census/DRA_VT_2020_VD_tabblock.centroid.json Census/tl_2020_50_vtd20.zip
+assembled-state-VT.parquet: NYT/vt_2024.zip VEST/vt_2020.zip VEST/vt_2018.zip VEST/vt_2016.zip Census/vt2020.pl.zip Census/tl_2020_50_bg.zip Census/tl_2020_50_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-VT_county_2020_precinct_b.csv Census/DRA_VT_2020_VD_tabblock.centroid.json Census/tl_2020_50_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/vt_2020.zip /vsizip/VEST/vt_2018.zip /vsizip/VEST/vt_2016.zip \
+		/vsizip/NYT/vt_2024.zip /vsizip/VEST/vt_2020.zip /vsizip/VEST/vt_2018.zip /vsizip/VEST/vt_2016.zip \
 		Census/vt2020.pl.zip /vsizip/Census/tl_2020_50_bg.zip /vsizip/Census/tl_2020_50_tract.zip /vsizip/Census/tl_2020_50_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-VT_county_2020_precinct_b.csv \
 		Census/DRA_VT_2020_VD_tabblock.centroid.json
