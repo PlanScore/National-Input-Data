@@ -327,9 +327,9 @@ assembled-state-OK.parquet: VEST/ok_2020.zip VEST/ok_2018.zip VEST/ok_2016.zip C
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OK_county_2020_precinct_b.csv \
 		Census/DRA_OK_2020_VD_tabblock.centroid.json
 
-assembled-state-OR.parquet: VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2020_41_bg.zip Census/tl_2020_41_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv Census/DRA_OR_2020_VD_tabblock.centroid.json Census/tl_2020_41_tract.zip
+assembled-state-OR.parquet: NYT/or_2024.zip VEST/or_2020.zip VEST/or_2018.zip VEST/or_2016.zip Census/or2020.pl.zip Census/tl_2020_41_bg.zip Census/tl_2020_41_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv Census/DRA_OR_2020_VD_tabblock.centroid.json Census/tl_2020_41_tract.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/or_2020.zip /vsizip/VEST/or_2018.zip /vsizip/VEST/or_2016.zip \
+		/vsizip/NYT/or_2024.zip /vsizip/VEST/or_2020.zip /vsizip/VEST/or_2018.zip /vsizip/VEST/or_2016.zip \
 		Census/or2020.pl.zip /vsizip/Census/tl_2020_41_bg.zip /vsizip/Census/tl_2020_41_tract.zip /vsizip/Census/tl_2020_41_tract.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-OR_county_2020_precinct_b.csv \
 		Census/DRA_OR_2020_VD_tabblock.centroid.json
