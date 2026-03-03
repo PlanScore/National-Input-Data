@@ -222,9 +222,9 @@ assembled-state-MA.parquet: NYT/ma_2024.zip VEST/ma_2020.zip VEST/ma_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MA_county_2024_precinct_b.csv \
 		Census/DRA_MA_2020_VD_tabblock.centroid.json
 
-assembled-state-MI.parquet: VEST/mi_2020.zip VEST/mi_2018.zip VEST/mi_2016.zip Census/mi2020.pl.zip Census/tl_2020_26_bg.zip Census/tl_2020_26_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv Census/DRA_MI_2020_VD_tabblock.centroid.json Census/tl_2020_26_vtd20.zip
+assembled-state-MI.parquet: NYT/mi_2024.zip VEST/mi_2020.zip VEST/mi_2018.zip VEST/mi_2016.zip Census/mi2020.pl.zip Census/tl_2020_26_bg.zip Census/tl_2020_26_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv Census/DRA_MI_2020_VD_tabblock.centroid.json Census/tl_2020_26_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/mi_2020.zip /vsizip/VEST/mi_2018.zip /vsizip/VEST/mi_2016.zip \
+		/vsizip/NYT/mi_2024.zip /vsizip/VEST/mi_2020.zip /vsizip/VEST/mi_2018.zip /vsizip/VEST/mi_2016.zip \
 		Census/mi2020.pl.zip /vsizip/Census/tl_2020_26_bg.zip /vsizip/Census/tl_2020_26_tract.zip /vsizip/Census/tl_2020_26_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-MI_county_2020_precinct_b.csv \
 		Census/DRA_MI_2020_VD_tabblock.centroid.json
