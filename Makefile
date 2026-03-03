@@ -285,9 +285,9 @@ assembled-state-NH.parquet: RDH/nh_2024.zip VEST/nh_2020.zip VEST/nh_2018.zip VE
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NH_county_2024_precinct_b.csv \
 		Census/DRA_NH_2020_VD_tabblock.centroid.json
 
-assembled-state-NJ.parquet: VEST/nj_2020.zip VEST/nj_2018.zip VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2020_34_bg.zip Census/tl_2020_34_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv Census/DRA_NJ_2020_VD_tabblock.centroid.json Census/tl_2020_34_vtd20.zip
+assembled-state-NJ.parquet: NYT/nj_2024.zip VEST/nj_2020.zip VEST/nj_2018.zip VEST/nj_2016.zip Census/nj2020.pl.zip Census/tl_2020_34_bg.zip Census/tl_2020_34_tract.zip Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv Census/DRA_NJ_2020_VD_tabblock.centroid.json Census/tl_2020_34_vtd20.zip
 	./assemble-state.py $@ \
-		/vsizip/VEST/nj_2020.zip /vsizip/VEST/nj_2018.zip /vsizip/VEST/nj_2016.zip \
+		/vsizip/NYT/nj_2024.zip /vsizip/VEST/nj_2020.zip /vsizip/VEST/nj_2018.zip /vsizip/VEST/nj_2016.zip \
 		Census/nj2020.pl.zip /vsizip/Census/tl_2020_34_bg.zip /vsizip/Census/tl_2020_34_tract.zip /vsizip/Census/tl_2020_34_vtd20.zip \
 		Census/CVAP_2019-2023_ACS_csv_files.zip Census/RPV-NJ_county_2020_precinct_b.csv \
 		Census/DRA_NJ_2020_VD_tabblock.centroid.json
